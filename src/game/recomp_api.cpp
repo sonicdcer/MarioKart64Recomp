@@ -18,8 +18,20 @@ extern "C" void recomp_update_inputs(uint8_t* rdram, recomp_context* ctx) {
     recomp::poll_inputs();
 }
 
-extern "C" void sqrtf_recomp(uint8_t* rdram, recomp_context* ctx) {
-    ctx->f0.fl = sqrtf(ctx->f12.fl);
+// extern "C" void sqrtf_recomp(uint8_t* rdram, recomp_context* ctx) {
+//     ctx->f0.fl = sqrtf(ctx->f12.fl);
+// }
+
+extern "C" void osPfsIsPlug_recomp(uint8_t* rdram, recomp_context* ctx) {
+    ctx->r2 = 0;
+    MEM_B(0, ctx->r5) = 0;
+}
+extern "C" void rmonPrintf_recomp(uint8_t* rdram, recomp_context* ctx) {
+    // Empty
+}
+
+extern "C" void osPfsInit_recomp(uint8_t* rdram, recomp_context* ctx) {
+    ctx->r2 = 1; // PFS_ERR_NOPACK
 }
 
 extern "C" void __ll_rshift_recomp(uint8_t * rdram, recomp_context * ctx) {
