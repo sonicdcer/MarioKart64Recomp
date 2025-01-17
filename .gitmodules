@@ -7,3 +7,6 @@
 [submodule "lib/freetype-windows-binaries"]
 	path = lib/freetype-windows-binaries
 	url = https://github.com/ubawurinna/freetype-windows-binaries
+[submodule "lib/lunasvg"]
+	path = lib/lunasvg
+	url = https://github.com/sammycage/lunasvg
