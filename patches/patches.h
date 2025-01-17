@@ -20,6 +20,7 @@
 #define osContGetReadData osContGetReadData_recomp
 #define osContStartQuery osContStartQuery_recomp
 #define osContGetQuery osContGetQuery_recomp
+#define osPiStartDma osPiStartDma_recomp
 
 #define __sinf __sinf_recomp
 #define __cosf __cosf_recomp
@@ -29,6 +30,13 @@
 
 #include "PR/ultratypes.h"
 #include "rt64_extended_gbi.h"
+#include "PR/gbi.h"
+#include "PR/os_thread.h"
+#include "PR/os_message.h"
+#include "common_structs.h"
+#include "structs.h"
+#include "externs.h"
+#include "misc_funcs.h"
 
 #ifndef gEXFillRectangle
 #define gEXFillRectangle(cmd, lorigin, rorigin, ulx, uly, lrx, lry) \
