@@ -4,3 +4,6 @@
 [submodule "lib/RmlUi"]
 	path = lib/RmlUi
 	url = https://github.com/mikke89/RmlUi
+[submodule "lib/freetype-windows-binaries"]
+	path = lib/freetype-windows-binaries
+	url = https://github.com/ubawurinna/freetype-windows-binaries
