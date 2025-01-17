@@ -1,0 +1,6 @@
+*.d
+*.o
+*.elf
+*.bin
+./funcs.h
+patches.map

@@ -1,0 +1,19 @@
+# Config file for Mario Kart 64 NTSC Recompilation.
+[input]
+entrypoint = 0x80000400
+# Paths are relative to the location of this config file.
+elf_path = "mk64.us.elf"
+# symbols_file_path = "MarioKart64RecompSyms/mk64.us.syms.toml"
+# rom_file_path = "mk64.us.z64"
+output_func_path = "RecompiledFuncs"
+use_absolute_symbols = true
+[patches]
+stubs = [
+]
+
+ignored = [
+    "__osBlockSum",
+    "__osPfsReleasePages",
+    "__osPfsDeclearPage",
+]
+

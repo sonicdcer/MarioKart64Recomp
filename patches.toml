@@ -1,0 +1,23 @@
+# Config file for recompiling patches for the Majora's Mask NTSC 1.0 Recompilation.
+
+[input]
+# Paths are relative to the location of this config file.
+elf_path = "patches/patches.elf"
+output_func_path = "RecompiledPatches"
+single_file_output = true
+
+# Allow absolute symbols to be used as jump targets.
+use_absolute_symbols = true
+
+# Point the recompiler at the symbol files so that it can resolve relocations during recompilation.
+func_reference_syms_file = "MarioKart64RecompSyms/mk64.us.syms.toml"
+data_reference_syms_files = [ "MarioKart64RecompSyms/mk64.us.datasyms.toml" ]
+# data_reference_syms_files = [ "MarioKart64RecompSyms/mk64.us.datasyms.toml", "MarioKart64RecompSyms/mk64.us.datasyms_static.toml" ]
+
+# Tell the recompiler to write the output binary. Doing this instead of using objcopy allows the recompiler to patch MIPS32 relocs.
+output_binary_path = "patches/patches.bin"
+
+# Do not emit warnings for unpaired LO16 values, as clang produces many of them.
+unpaired_lo16_warnings = false
+
+strict_patch_mode = true

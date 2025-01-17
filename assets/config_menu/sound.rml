@@ -1,0 +1,97 @@
+<template name="config-menu__sound">
+    <head>
+    </head>
+    <body>
+        <form class="config__form">
+            <div class="config__hz-wrapper">
+                <!-- Options -->
+                <div class="config__wrapper" data-event-mouseout="set_cur_config_index(-1)">
+                        <div class="config-option" data-event-mouseover="set_cur_config_index(0)">
+                            <label class="config-option__title">Main Volume</label>
+                            <div class="config-option__range-wrapper config-option__list">
+                                <label class="config-option__range-label">{{main_volume}}%</label>
+                                <input
+                                    data-event-blur="set_cur_config_index(-1)"
+                                    data-event-focus="set_cur_config_index(0)"
+                                    class="nav-vert"
+                                    id="main_volume_input"
+                                    type="range"
+                                    min="0"
+                                    max="100"
+                                    style="flex: 1; margin: 0dp; nav-up: #tab_sound; nav-down: #bgm_volume_input;"
+                                    data-value="main_volume"
+                                />
+                            </div>
+                        </div>
+                        <div class="config-option" data-event-mouseover="set_cur_config_index(1)">
+                            <label class="config-option__title">Music Volume</label>
+                            <div class="config-option__range-wrapper config-option__list">
+                                <label class="config-option__range-label">{{bgm_volume}}%</label>
+                                <input
+                                    data-event-blur="set_cur_config_index(-1)"
+                                    data-event-focus="set_cur_config_index(1)"
+                                    class="nav-vert"
+                                    id="bgm_volume_input"
+                                    type="range"
+                                    min="0"
+                                    max="100"
+                                    style="flex: 1; margin: 0dp; nav-up: #main_volume_input; nav-down: #lhb_on;"
+                                    data-value="bgm_volume"
+                                />
+                            </div>
+                        </div>
+                        <div class="config-option" data-event-mouseover="set_cur_config_index(2)">
+                            <label class="config-option__title">Voice Volume</label>
+                            <div class="config-option__range-wrapper config-option__list">
+                                <label class="config-option__range-label">{{voice_volume}}%</label>
+                                <input
+                                    data-event-blur="set_cur_config_index(-1)"
+                                    data-event-focus="set_cur_config_index(1)"
+                                    class="nav-vert"
+                                    id="voice_volume_input"
+                                    type="range"
+                                    min="0"
+                                    max="100"
+                                    style="flex: 1; margin: 0dp; nav-up: #main_volume_input; nav-down: #lhb_on;"
+                                    data-value="voice_volume"
+                                />
+                            </div>
+                        </div>
+                        <div class="config-option" data-event-mouseover="set_cur_config_index(3)">
+                            <label class="config-option__title">Sound Effects Volume</label>
+                            <div class="config-option__range-wrapper config-option__list">
+                                <label class="config-option__range-label">{{sfx_volume}}%</label>
+                                <input
+                                    data-event-blur="set_cur_config_index(-1)"
+                                    data-event-focus="set_cur_config_index(1)"
+                                    class="nav-vert"
+                                    id="sfx_volume_input"
+                                    type="range"
+                                    min="0"
+                                    max="100"
+                                    style="flex: 1; margin: 0dp; nav-up: #main_volume_input; nav-down: #lhb_on;"
+                                    data-value="sfx_volume"
+                                />
+                            </div>
+                        </div>
+                </div>
+                <!-- Descriptions -->
+                <div class="config__wrapper">
+					<p data-if="cur_config_index == 0">
+						Controls the main volume of the game.
+					</p>
+                    <p data-if="cur_config_index == 1">
+                        Controls the overall volume of music.
+                    </p>
+                    <p data-if="cur_config_index == 2">
+                        Controls the overall volume of voices.
+                    </p>
+                    <p data-if="cur_config_index == 3">
+                        Controls the overall volume of sound effects.
+                    </p>
+                </div>
+            </div>
+        </form>
+    </body>
+</template>
+    

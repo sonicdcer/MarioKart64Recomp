@@ -1,0 +1,62 @@
+<rml>
+	<head>
+		<title>Launcher</title>
+		<link type="text/rcss" href="rml.rcss"/>
+		<link type="text/rcss" href="recomp.rcss"/>
+		<style>
+			body
+			{
+				width: 100%;
+				height: 100%;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="window" data-model="launcher_model">
+			<div class="launcher">
+				<div class="launcher__vertical-split">
+					<div class="launcher__title-quadrant">
+						<button class="subtitle-title" enabled>
+							<div><h3>MarioKart 64: Recompiled</h3></div>
+						</button>
+					</div>
+					<div class="launcher__content-quadrant"></div>
+				</div>
+				<div class="launcher__vertical-split launcher__vertical-split--right">
+					<div class="launcher__background-wrapper">
+						<svg src="mm-clipped.svg" class="launcher__background-mm" />
+					</div>
+					<div class="launcher__title-quadrant launcher__title-quadrant--right">
+						<button class="subtitle-title subtitle-title--right" selected>
+						</button>
+					</div>
+					<div class="launcher__content-quadrant">
+						<button data-if="!mm_rom_valid" onclick="select_rom" class="menu-list-item menu-list-item--right" autofocus>
+							<div class="menu-list-item__bullet">•</div>
+							<div class="menu-list-item__label">Select ROM</div>
+						</button>
+						<button data-if="mm_rom_valid" onclick="start_game" class="menu-list-item menu-list-item--right" autofocus>
+							<div class="menu-list-item__bullet">•</div>
+							<div class="menu-list-item__label">Start game</div>
+						</button>
+						<button onclick="open_controls" class="menu-list-item menu-list-item--right">
+							<div class="menu-list-item__bullet">•</div>
+							<div class="menu-list-item__label">Setup controls</div>
+						</button>
+						<button onclick="open_settings" class="menu-list-item menu-list-item--right">
+							<div class="menu-list-item__bullet">•</div>
+							<div class="menu-list-item__label">Settings</div>
+						</button>
+						<button onclick="exit_game" class="menu-list-item menu-list-item--right">
+							<div class="menu-list-item__bullet">•</div>
+							<div class="menu-list-item__label">Exit</div>
+						</button>
+					</div>
+				</div>
+				<div class="bottom-left">
+					<label>{{version_number}}</label>
+				</div>
+			</div>
+		</div>
+	</body>
+</rml>

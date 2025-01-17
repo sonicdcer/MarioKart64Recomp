@@ -1,0 +1,13 @@
+{
+  "version": "0.2.1",
+  "defaults": {},
+  "configurations": [
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "MarioKart64Recompiled.exe",
+      "name": "MarioKart64Recompiled.exe",
+      "currentDir": "${workspaceRoot}"
+    }
+  ]
+}
