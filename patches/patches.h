@@ -28,11 +28,7 @@
 #define gRandFloat sRandFloat
 
 #include "PR/ultratypes.h"
-#include "PR/gbi.h"
 #include "rt64_extended_gbi.h"
-#include "graphics.h"
-#include "PR/abi.h"
-#include "macros.h"
 
 #ifndef gEXFillRectangle
 #define gEXFillRectangle(cmd, lorigin, rorigin, ulx, uly, lrx, lry) \

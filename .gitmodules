@@ -16,3 +16,6 @@
 [submodule "lib/sse2neon"]
 	path = lib/sse2neon
 	url = https://github.com/DLTcollab/sse2neon
+[submodule "lib/mk64"]
+	path = lib/mk64
+	url = https://github.com/sonicdcer/mk64.git
