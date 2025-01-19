@@ -8,6 +8,14 @@
       "projectTarget": "MarioKart64Recompiled.exe",
       "name": "MarioKart64Recompiled.exe",
       "currentDir": "${workspaceRoot}"
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "N64Recomp.exe",
+      "name": "N64Recomp.exe",
+      "currentDir": "${workspaceRoot}",
+      "args" : [ "patches.toml" ]
     }
   ]
 }

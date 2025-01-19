@@ -70,3 +70,8 @@ RSPRecomp
 
 # Controller mappings file
 gamecontrollerdb.txt
+
+# Compressed files
+*.zip
+*.7z
+*.rar

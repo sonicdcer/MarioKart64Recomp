@@ -63,3 +63,5 @@ osAiSetFrequency_recomp = 0x8F0000CC;
 osWritebackDCacheAll_recomp = 0x8F0000D0;
 recomp_get_sfx_volume = 0x8F0000D4;
 recomp_get_voice_volume = 0x8F0000D8;
+osPiStartDma_recomp = 0x8F0000DC;
+osStartThread_recomp = 0x8F0000E0;

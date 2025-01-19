@@ -21,6 +21,7 @@
 #define osContStartQuery osContStartQuery_recomp
 #define osContGetQuery osContGetQuery_recomp
 #define osPiStartDma osPiStartDma_recomp
+#define osStartThread osStartThread_recomp
 
 #define __sinf __sinf_recomp
 #define __cosf __cosf_recomp
@@ -37,6 +38,11 @@
 #include "structs.h"
 #include "externs.h"
 #include "misc_funcs.h"
+#include "defines.h"
+#include "macros.h"
+#include "course.h"
+#include "mk64.h"
+#include "objects.h"
 
 #ifndef gEXFillRectangle
 #define gEXFillRectangle(cmd, lorigin, rorigin, ulx, uly, lrx, lry) \

@@ -17,3 +17,8 @@ ignored = [
     "__osPfsDeclearPage",
 ]
 
+# fixes a bug with the recompiler handling an Indirect tail call.
+[[patches.instruction]]
+func = "func_80040C54"
+vram = 0x80040C8C
+value = 0x03E00008 # jr $s3 -> jr $ra
