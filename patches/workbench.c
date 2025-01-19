@@ -10,6 +10,21 @@ int dummy_val = 1;
 
 bool recompDebugSwitch = 0;
 
+Gfx common_square_plain_render[] = {
+    gsSP1Triangle(0, 1, 2, 0),
+    gsSP1Triangle(0, 2, 3, 0),
+    gsSPEndDisplayList(),
+};
+Gfx common_setting_render_character[] = {
+    gsDPPipeSync(),
+    gsDPSetAlphaCompare(G_AC_NONE),
+    gsSPClearGeometryMode(G_LIGHTING),
+    gsSPTexture(0x8000, 0x8000, 0, G_TX_RENDERTILE, G_ON),
+    gsDPSetTextureFilter(G_TF_BILERP),
+    gsDPSetTexturePersp(G_TP_PERSP),
+    gsSPEndDisplayList(),
+};
+
 RECOMP_PATCH void handle_menus_with_pri_arg(s32 priSpecial) {
     s32 j = 0;
     s32 isRendered = 0;
@@ -17,10 +32,10 @@ RECOMP_PATCH void handle_menus_with_pri_arg(s32 priSpecial) {
     s32 type = 0;
     MenuItem* entry = NULL;
     volatile u8* address;
-    
+
     gDPSetTextureFilter(gDisplayListHead++, G_TF_POINT);
     gEXEnable(gDisplayListHead++); // @recomp
-        gEXSetRefreshRate(gDisplayListHead++, 60 / 2);
+    gEXSetRefreshRate(gDisplayListHead++, 60 / 2);
 
     // @recomp: Patch the sequence bug that prevented the whole end results song from playing.
     {
@@ -63,11 +78,14 @@ RECOMP_PATCH void handle_menus_with_pri_arg(s32 priSpecial) {
         }
 
         switch (type) {
+            case 240:
+                gDPSetTextureFilter(gDisplayListHead++, G_TF_BILERP);
+                break;
             case MENU_ITEM_UI_LOGO_INTRO:
                 gDPSetTextureFilter(gDisplayListHead++, G_TF_BILERP);
                 if (sIntroModelTimer < 0x50) {
                     sIntroModelSpeed = 3.0f;
-                } else if (sIntroModelTimer < 0x5A) {
+                } else if (sIntroModelTimer < 90) {
                     if (sIntroModelMotionSpeed < 1.0) {
                         sIntroModelMotionSpeed += 0.1;
                     }
@@ -177,6 +195,7 @@ RECOMP_PATCH void handle_menus_with_pri_arg(s32 priSpecial) {
                 func_800A9E58(entry);
                 break;
             case MENU_ITEM_TYPE_01B:
+                gDPSetTextureFilter(gDisplayListHead++, G_TF_BILERP);
                 func_800AA2EC(entry);
                 break;
             case CHARACTER_SELECT_MENU_1P_CURSOR:
@@ -323,12 +342,15 @@ RECOMP_PATCH void handle_menus_with_pri_arg(s32 priSpecial) {
                 func_800AD2E8(entry);
                 break;
             case MENU_ITEM_ANNOUNCE_GHOST:
+                gDPSetTextureFilter(gDisplayListHead++, G_TF_BILERP);
                 func_800AEC54(entry);
                 break;
             case MENU_ITEM_PAUSE:
+                gDPSetTextureFilter(gDisplayListHead++, G_TF_BILERP);
                 func_800ADF48(entry);
                 break;
             case MENU_ITEM_END_COURSE_OPTION:
+                gDPSetTextureFilter(gDisplayListHead++, G_TF_BILERP);
                 func_800AE218(entry);
                 break;
             case MENU_ITEM_DATA_COURSE_IMAGE:
@@ -465,6 +487,55 @@ RECOMP_PATCH void handle_menus_with_pri_arg(s32 priSpecial) {
 }
 #endif
 
+#if 0
+RECOMP_PATCH Gfx* render_menu_textures(Gfx* arg0, MenuTexture* arg1, s32 column, s32 row) {
+    MenuTexture* temp_v0;
+    u8* temp_v0_3;
+    s8 var_s4;
+
+    gDPSetTextureFilter(gDisplayListHead++, G_TF_POINT);
+
+    temp_v0 = segmented_to_virtual_dupe(arg1);
+    while (temp_v0->textureData != NULL) {
+        var_s4 = 0;
+        switch (temp_v0->type) {
+            case 0:
+                gSPDisplayList(arg0++, 0x02007708);
+                break;
+            case 1:
+                gSPDisplayList(arg0++, 0x02007728);
+                break;
+            case 2:
+                gSPDisplayList(arg0++, 0x02007748);
+                break;
+            case 3:
+                gSPDisplayList(arg0++, 0x02007768);
+                var_s4 = 3;
+                break;
+            case 4:
+                gSPDisplayList(arg0++, 0x02007788);
+                break;
+            default:
+                gSPDisplayList(arg0++, 0x02007728);
+                break;
+        }
+        temp_v0_3 = (u8*) func_8009B8C4(temp_v0->textureData);
+        if (temp_v0_3 != 0) {
+            if (D_8018E7AC[4] != 4) {
+                arg0 =
+                    func_80095E10(arg0, var_s4, 0x00000400, 0x00000400, 0, 0, temp_v0->width, temp_v0->height,
+                                  temp_v0->dX + column, temp_v0->dY + row, temp_v0_3, temp_v0->width, temp_v0->height);
+            } else {
+                arg0 = func_800987D0(arg0, 0U, 0U, temp_v0->width, temp_v0->height, temp_v0->dX + column,
+                                     temp_v0->dY + row, temp_v0_3, temp_v0->width, temp_v0->height);
+            }
+        }
+        temp_v0++;
+    }
+    return arg0;
+}
+#endif
+
 // Balloons
 #if 1
 Vtx common_vtx_hedgehog[] = {
@@ -533,20 +604,6 @@ RECOMP_PATCH void func_8028FC34(void) {
 
 // Blur characters
 #if 1
-Gfx common_square_plain_render[] = {
-    gsSP1Triangle(0, 1, 2, 0),
-    gsSP1Triangle(0, 2, 3, 0),
-    gsSPEndDisplayList(),
-};
-Gfx common_setting_render_character[] = {
-    gsDPPipeSync(),
-    gsDPSetAlphaCompare(G_AC_NONE),
-    gsSPClearGeometryMode(G_LIGHTING),
-    gsSPTexture(0x8000, 0x8000, 0, G_TX_RENDERTILE, G_ON),
-    gsDPSetTextureFilter(G_TF_BILERP),
-    gsDPSetTexturePersp(G_TP_PERSP),
-    gsSPEndDisplayList(),
-};
 
 RECOMP_PATCH void render_kart(Player* player, s8 playerId, s8 arg2, s8 arg3) {
     UNUSED s32 pad;
@@ -764,8 +821,8 @@ RECOMP_PATCH Gfx* func_8009C434(Gfx* arg0, struct_8018DEE0_entry* arg1, s32 arg2
 #endif
 
 #if 1
-RECOMP_PATCH Gfx* func_80097A14(Gfx* displayListHead, s8 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7, u8* arg8,
-                   u32 arg9, u32 argA) {
+RECOMP_PATCH Gfx* func_80097A14(Gfx* displayListHead, s8 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6,
+                                s32 arg7, u8* arg8, u32 arg9, u32 argA) {
     gDPPipeSync(displayListHead++);
     gDPSetCycleType(displayListHead++, G_CYC_COPY);
     displayListHead = func_80095E10(displayListHead, arg1, 0x00001000, 0x00000400, arg2, arg3, arg4, arg5, arg6, arg7,
@@ -872,3 +929,513 @@ RECOMP_PATCH u16 check_player_camera_collision(Player* player, Camera* camera, f
     // @recomp: always visible
     return true;
 }
+
+#if 0
+Vtx D_0D008BF8[] = {
+    {{{     2,      2,      0}, 0, {     0,      0}, {255, 255, 255, 255}}},
+    {{{     2,     -2,      0}, 0, {     0,   1984}, {255, 255, 255, 255}}},
+    {{{    -2,     -2,      0}, 0, {  1984,   1984}, {255, 255, 255, 255}}},
+    {{{    -2,      2,      0}, 0, {  1984,      0}, {255, 255, 255, 255}}},
+};
+Gfx D_0D008DA0[] = {
+    gsSPDisplayList(common_square_plain_render),
+    gsSPTexture(0x0001, 0x0001, 0, G_TX_RENDERTILE, G_OFF),
+    gsSPEndDisplayList(),
+};
+Gfx D_0D008E48[] = {
+    gsDPSetRenderMode(G_RM_ZB_CLD_SURF, G_RM_ZB_CLD_SURF2),
+    gsSPVertex(D_0D008BF8, 4, 0),
+    gsSPDisplayList(D_0D008DA0),
+    gsDPSetAlphaCompare(G_AC_NONE),
+    gsSPEndDisplayList(),
+};
+Gfx D_0D008DB8[] = {
+    gsDPPipeSync(),
+    gsDPSetTexturePersp(G_TP_PERSP),
+    gsSPClearGeometryMode(G_LIGHTING),
+    gsDPNoOp(),
+    gsDPSetTextureFilter(G_TF_BILERP),
+    gsSPTexture(0x8000, 0x8000, 0, G_TX_RENDERTILE, G_ON),
+    gsDPSetTextureLUT(G_TT_NONE),
+    gsSPEndDisplayList(),
+};
+u8* common_texture_particle_smoke = (u8*) 0xd02bc58;
+
+RECOMP_PATCH void func_8006538C(Player* player, s8 arg1, s16 arg2, s8 arg3) {
+    Vec3f spB4;
+    Vec3s spAC;
+    s32 primColors[] = { MAKE_RGB(0xFB, 0xFF, 0xFB), MAKE_RGB(0xFF, 0xFB, 0x86) };
+    s32 envColors[] = { MAKE_RGB(0x89, 0x62, 0x8F), MAKE_RGB(0xFE, 0x01, 0x09) };
+    s16 primRed;
+    s16 primGreen;
+    s16 primBlue;
+    s16 primAlpha;
+    s16 envRed;
+    s16 envGreen;
+    s16 envBlue;
+
+    recomp_printf("address: %x\n", common_texture_particle_smoke);
+
+    if (player->unk_258[arg2].unk_01C == 1) {
+        spB4[0] = player->unk_258[arg2].unk_000[0];
+        spB4[1] = player->unk_258[arg2].unk_000[1];
+        spB4[2] = player->unk_258[arg2].unk_000[2];
+        spAC[0] = 0;
+        spAC[1] = player->unk_048[arg3];
+        spAC[2] = 0;
+        if ((player->effects & STAR_EFFECT) && (((s32) gCourseTimer - D_8018D930[arg1]) < 9)) {
+            primRed = (primColors[1] >> 0x10) & 0xFF;
+            primGreen = (primColors[1] >> 0x08) & 0xFF;
+            primBlue = (primColors[1] >> 0x00) & 0xFF;
+            envRed = (envColors[1] >> 0x10) & 0xFF;
+            envGreen = (envColors[1] >> 0x08) & 0xFF;
+            envBlue = (envColors[1] >> 0x00) & 0xFF;
+            primAlpha = player->unk_258[arg2].unk_03E;
+            func_800652D4(spB4, spAC, ((player->unk_258[arg2].unk_00C * player->size) * 1.4));
+            gSPDisplayList(gDisplayListHead++, D_0D008DB8);
+            gDPLoadTextureBlock(gDisplayListHead++, common_texture_particle_smoke[player->unk_258[arg2].unk_010],
+                                G_IM_FMT_I, G_IM_SIZ_8b, 32, 32, 0, G_TX_NOMIRROR | G_TX_WRAP,
+                                G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
+            func_8004B72C(primRed, primGreen, primBlue, envRed, envGreen, envBlue, primAlpha);
+            gDPSetAlphaCompare(gDisplayListHead++, G_AC_DITHER);
+            gSPDisplayList(gDisplayListHead++, D_0D008E48);
+        } else {
+            primRed = (primColors[player->unk_258[arg2].unk_038] >> 0x10) & 0xFF;
+            primGreen = (primColors[player->unk_258[arg2].unk_038] >> 0x08) & 0xFF;
+            primBlue = (primColors[player->unk_258[arg2].unk_038] >> 0x00) & 0xFF;
+            envRed = (envColors[player->unk_258[arg2].unk_038] >> 0x10) & 0xFF;
+            envGreen = (envColors[player->unk_258[arg2].unk_038] >> 0x08) & 0xFF;
+            envBlue = (envColors[player->unk_258[arg2].unk_038] >> 0x00) & 0xFF;
+            primAlpha = player->unk_258[arg2].unk_03E;
+            func_800652D4(spB4, spAC, player->unk_258[arg2].unk_00C * player->size);
+            gSPDisplayList(gDisplayListHead++, D_0D008DB8);
+            gDPLoadTextureBlock(gDisplayListHead++, common_texture_particle_smoke[player->unk_258[arg2].unk_010],
+                                G_IM_FMT_I, G_IM_SIZ_8b, 32, 32, 0, G_TX_NOMIRROR | G_TX_WRAP,
+                                G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
+            func_8004B72C(primRed, primGreen, primBlue, envRed, envGreen, envBlue, primAlpha);
+            gSPDisplayList(gDisplayListHead++, D_0D008E48);
+        }
+        gMatrixEffectCount += 1;
+    }
+}
+#endif
+
+// This doesn't work at all
+#if 0
+RECOMP_PATCH void render_kart_particle_on_screen_one(Player* player, s8 playerId, s8 screenId) {
+    // @recomp Tag the transform.
+    gEXMatrixGroupDecomposedNormal(gDisplayListHead++, ((u32) player << 8) + (playerId << 16) + screenId, G_EX_PUSH,
+                                   G_MTX_MODELVIEW, G_EX_EDIT_ALLOW);
+
+    if ((player->type & PLAYER_EXISTS) == PLAYER_EXISTS) {
+        if ((player->effects & BOO_EFFECT) == BOO_EFFECT) {
+            if (playerId == screenId) {
+                func_8006D474(player, playerId, screenId);
+            }
+        } else {
+            func_8006D474(player, playerId, screenId);
+        }
+        func_8006DC54(player, playerId, screenId);
+    }
+
+    // @recomp Pop the transform id.
+    gEXPopMatrixGroup(gDisplayListHead++, G_MTX_MODELVIEW);
+}
+#endif
+
+// Tag smoke and dust
+#if 1
+RECOMP_PATCH void func_8006D474(Player* player, s8 playerId, s8 screenId) {
+    s16 i;
+    gEXEnable(gDisplayListHead++); // @recomp
+
+    if ((player->unk_002 & (8 << (screenId * 4))) == (8 << (screenId * 4))) {
+        for (i = 0; i < 10; i++) {
+            // @recomp Tag the transform.
+            gEXMatrixGroupDecomposedNormal(
+                gDisplayListHead++, TAG_SMOKE_DUST(((u32) player->unk_258[i].unk_012 << 8) + (playerId << 16) + i),
+                G_EX_PUSH, G_MTX_MODELVIEW, G_EX_EDIT_ALLOW);
+            switch (player->unk_258[i].unk_012) {
+                case 1:
+                    if (gActiveScreenMode == SCREEN_MODE_3P_4P_SPLITSCREEN) {
+                        if (screenId == playerId) {
+                            func_8006538C(player, playerId, i, screenId);
+                        }
+                    } else {
+
+                        func_8006538C(player, playerId, i, screenId);
+                    }
+                    break;
+                case 6:
+                    if (gActiveScreenMode == SCREEN_MODE_3P_4P_SPLITSCREEN) {
+                        if (screenId == playerId) {
+                            func_80066BAC(player, playerId, i, screenId);
+                        }
+                    } else if (screenId == playerId) {
+                        func_80066BAC(player, playerId, i, screenId);
+                    }
+                    break;
+            }
+            switch (player->unk_258[i + 30].unk_012) {
+                case 1:
+                case 9:
+                    if (gActiveScreenMode == SCREEN_MODE_1P) {
+                        func_800691B8(player, playerId, i, screenId);
+                    } else if (screenId == playerId) {
+                        func_800691B8(player, playerId, i, screenId);
+                    }
+                    break;
+                case 2:
+                    if (gActiveScreenMode == SCREEN_MODE_1P) {
+                        func_800696CC(player, playerId, i, screenId, player->unk_258[i + 30].unk_00C);
+                    } else if (screenId == playerId) {
+                        func_800696CC(player, playerId, i, screenId, player->unk_258[i + 30].unk_00C);
+                    }
+                    break;
+                case 3:
+                    if (gActiveScreenMode == SCREEN_MODE_1P) {
+                        func_80067280(player, playerId, i, screenId);
+                    } else if (screenId == playerId) {
+                        func_80067280(player, (s32) playerId, i, screenId);
+                    }
+                    break;
+                case 4:
+                    if (gActiveScreenMode == SCREEN_MODE_1P) {
+                        func_80069444(player, playerId, i, screenId);
+                    } else if (screenId == playerId) {
+                        func_80069444(player, playerId, i, screenId);
+                    }
+                    break;
+                case 5:
+                    if (gActiveScreenMode == SCREEN_MODE_1P) {
+                        func_80069938(player, playerId, i, screenId);
+                    } else if (screenId == playerId) {
+                        func_80069938(player, playerId, i, screenId);
+                    }
+                    break;
+                case 6:
+                    if (gActiveScreenMode == SCREEN_MODE_1P) {
+                        func_80069BA8(player, playerId, i, screenId);
+                    } else if (screenId == playerId) {
+                        func_80069BA8(player, playerId, i, screenId);
+                    }
+                    break;
+                case 7:
+                    if (gActiveScreenMode == SCREEN_MODE_1P) {
+                        func_80069DB8(player, playerId, i, screenId);
+                    } else if (screenId == playerId) {
+                        func_80069DB8(player, playerId, i, screenId);
+                    }
+                    break;
+                case 8:
+                    if (gActiveScreenMode == SCREEN_MODE_1P) {
+                        func_80067604(player, playerId, i, screenId);
+                    } else if (screenId == playerId) {
+                        func_80067604(player, playerId, i, screenId);
+                    }
+                    break;
+            }
+            switch (player->unk_258[i + 10].unk_012) {
+                case 1:
+                    if (gActiveScreenMode == SCREEN_MODE_3P_4P_SPLITSCREEN) {
+                        if (screenId == playerId) {
+                            func_80065AB0(player, playerId, i, screenId);
+                        }
+                    } else {
+                        func_80065AB0(player, playerId, i, screenId);
+                    }
+                    break;
+                case 2:
+                case 3:
+                case 4:
+                case 5:
+                    if (gActiveScreenMode == SCREEN_MODE_3P_4P_SPLITSCREEN) {
+                        if (screenId == playerId) {
+                            func_80065F0C(player, playerId, i, screenId);
+                        }
+                    } else {
+                        func_80065F0C(player, playerId, i, screenId);
+                    }
+                    break;
+                case 9:
+                    if (gActiveScreenMode == SCREEN_MODE_3P_4P_SPLITSCREEN) {
+                        if (screenId == playerId) {
+                            func_800664E0(player, (s32) playerId, i, screenId);
+                        }
+                    } else {
+                        func_800664E0(player, (s32) playerId, i, screenId);
+                    }
+                    break;
+                case 11:
+                    if (gActiveScreenMode == SCREEN_MODE_3P_4P_SPLITSCREEN) {
+                        if (screenId == playerId) {
+                            func_8006A01C(player, playerId, i, screenId);
+                        }
+                    } else if (screenId == playerId) {
+                        func_8006A01C(player, playerId, i, screenId);
+                    }
+                    break;
+            }
+            // @recomp Pop the transform id.
+            gEXPopMatrixGroup(gDisplayListHead++, G_MTX_MODELVIEW);
+        }
+    }
+    if ((gModeSelection == BATTLE) && (player->unk_002 & (2 << (screenId * 4)))) {
+        func_8006BA94(player, playerId, screenId);
+    }
+}
+#endif
+
+// EEEEEEEEEEEEEEEEEEEEEEEEEEEE
+#if 1
+RECOMP_PATCH void func_80065AB0(Player* player, UNUSED s8 arg1, s16 arg2, s8 arg3) {
+    Vec3f spB4;
+    Vec3s spAC;
+    s32 var_s0;
+    s16 primRed;
+    s16 primGreen;
+    s16 primBlue;
+    s16 primAlpha;
+    s16 envRed;
+    s16 envGreen;
+    s16 envBlue;
+    s32 sp8C[] = { 0x00ffffff, 0x00ffff00, 0x00ff9600 };
+
+    if (player->unk_258[10 + arg2].unk_01C == 1) {
+        if (player->unk_204 >= 50) {
+            var_s0 = 1;
+        } else {
+            var_s0 = 0;
+        }
+
+        primRed = player->unk_258[10 + arg2].unk_038;
+        primGreen = player->unk_258[10 + arg2].unk_03A;
+        primBlue = player->unk_258[10 + arg2].unk_03C;
+        primAlpha = player->unk_258[10 + arg2].unk_03E;
+        envRed = (sp8C[player->unk_258[10 + arg2].unk_040] >> 0x10) & 0xFF;
+        envGreen = (sp8C[player->unk_258[10 + arg2].unk_040] >> 0x08) & 0xFF;
+        envBlue = (sp8C[player->unk_258[10 + arg2].unk_040] >> 0x00) & 0xFF;
+
+        spB4[0] = player->unk_258[10 + arg2].unk_000[0];
+        spB4[1] = player->unk_258[10 + arg2].unk_000[1];
+        spB4[2] = player->unk_258[10 + arg2].unk_000[2];
+        spAC[0] = 0;
+        spAC[1] = player->unk_048[arg3];
+        spAC[2] = 0;
+
+        // @recomp Tag the transform.
+        gEXMatrixGroupDecomposed(gDisplayListHead++, player->type << 8 | arg2 | var_s0 << 16, G_EX_PUSH,
+                                 G_MTX_MODELVIEW, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO,
+                                 G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP,
+                                 G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
+
+        func_800652D4(spB4, spAC, player->unk_258[10 + arg2].unk_00C * player->size);
+
+        if (var_s0 == 0) {
+            // Blured E
+            gSPDisplayList(gDisplayListHead++, 0x0D008DB8);
+            gDPLoadTextureBlock(gDisplayListHead++, D_800E4770[var_s0][0], G_IM_FMT_I, G_IM_SIZ_8b, 16, 16, 0,
+                                G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK,
+                                G_TX_NOLOD, G_TX_NOLOD);
+            func_8004B72C(primRed, primGreen, primBlue, envRed, envGreen, envBlue, primAlpha);
+            gDPSetRenderMode(gDisplayListHead++, G_RM_ZB_XLU_SURF, G_RM_ZB_XLU_SURF2);
+            gSPDisplayList(gDisplayListHead++, 0xD008DF8);
+        } else {
+            // Normal E
+            gSPDisplayList(gDisplayListHead++, 0x0D008DB8);
+            gDPLoadTextureBlock(gDisplayListHead++, D_800E4770[var_s0][0], G_IM_FMT_I, G_IM_SIZ_8b, 32, 32, 0,
+                                G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK,
+                                G_TX_NOLOD, G_TX_NOLOD);
+            func_8004B72C(primRed, primGreen, primBlue, envRed, envGreen, envBlue, primAlpha);
+            gDPSetRenderMode(gDisplayListHead++, G_RM_ZB_XLU_SURF, G_RM_ZB_XLU_SURF2);
+            gSPDisplayList(gDisplayListHead++, 0x0D008E48);
+        }
+        gMatrixEffectCount += 1;
+
+        // @recomp Pop the transform id.
+        gEXPopMatrixGroup(gDisplayListHead++, G_MTX_MODELVIEW);
+    }
+}
+#endif
+
+#if 0
+RECOMP_PATCH void print_text_mode_1(s32 column, s32 row, char* text, s32 tracking, f32 scaleX, f32 scaleY) {
+    // @recomp Tag the transform.
+    gEXMatrixGroupDecomposed(gDisplayListHead++, (u32) text << 16 | column << 8 | row, G_EX_PUSH, G_MTX_MODELVIEW,
+                             G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_INTERPOLATE,
+                             G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE,
+                             G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
+
+    print_text0(column, row, text, tracking, scaleX, scaleY, 1);
+
+    // @recomp Pop the transform id.
+    gEXPopMatrixGroup(gDisplayListHead++, G_MTX_MODELVIEW);
+}
+#endif
+#if 1
+RECOMP_PATCH void print_text0(s32 column, s32 row, char* text, s32 tracking, f32 scaleX, f32 scaleY, s32 mode) {
+    s32 stringWidth = 0;
+    s32 glyphIndex;
+
+    gSPDisplayList(gDisplayListHead++, (u8*) 0x020077A8);
+    if (*text != 0) {
+        do {
+            // @recomp Tag the transform.
+            gEXMatrixGroupDecomposed(gDisplayListHead++, TAG_LETTER(text), G_EX_PUSH, G_MTX_MODELVIEW, G_EX_COMPONENT_AUTO,
+                                     G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_INTERPOLATE,
+                                     G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE,
+                                     G_EX_ORDER_LINEAR, G_EX_EDIT_ALLOW);
+
+            glyphIndex = char_to_glyph_index(text);
+            if (glyphIndex >= 0) {
+                load_menu_img((MenuTexture*) segmented_to_virtual_dupe((const void*) gGlyphTextureLUT[glyphIndex]));
+                gDisplayListHead =
+                    print_letter(gDisplayListHead,
+                                 (MenuTexture*) segmented_to_virtual_dupe((const void*) gGlyphTextureLUT[glyphIndex]),
+                                 column + (stringWidth * scaleX), row, mode, scaleX, scaleY);
+                stringWidth += gGlyphDisplayWidth[glyphIndex] + tracking;
+            } else if ((glyphIndex != -2) && (glyphIndex == -1)) {
+                stringWidth += tracking + 7;
+            } else {
+                gSPDisplayList(gDisplayListHead++, (u8*) 0x020077D8);
+                return;
+            }
+            if (glyphIndex >= 0x30) {
+                text += 2;
+            } else {
+                text += 1;
+            }
+
+            // @recomp Pop the transform id.
+            gEXPopMatrixGroup(gDisplayListHead++, G_MTX_MODELVIEW);
+
+        } while (*text != 0);
+    }
+    gSPDisplayList(gDisplayListHead++, (u8*) 0x020077D8);
+}
+
+// "tracking" is a uniform spacing between all characters in a given word
+RECOMP_PATCH void print_text1(s32 column, s32 row, char* text, s32 tracking, f32 scaleX, f32 scaleY, s32 arg6) {
+    char* temp_string = text;
+    s32 stringWidth = 0;
+    s32 glyphIndex;
+    s32 sp60;
+
+    while (*temp_string != 0) {
+        glyphIndex = char_to_glyph_index(temp_string);
+        if (glyphIndex >= 0) {
+            stringWidth += ((gGlyphDisplayWidth[glyphIndex] + tracking) * scaleX);
+        } else if ((glyphIndex != -2) && (glyphIndex == -1)) {
+            stringWidth += ((tracking + 7) * scaleX);
+        } else {
+            return;
+        }
+        if (glyphIndex >= 0x30) {
+            temp_string += 2;
+        } else {
+            temp_string += 1;
+        }
+    }
+
+    switch (arg6) {
+        case LEFT_TEXT:
+            // ???
+            do {
+            } while (0);
+        case RIGHT_TEXT:
+            column -= stringWidth;
+            break;
+        case CENTER_TEXT_MODE_1:
+        case CENTER_TEXT_MODE_2:
+            column -= stringWidth / 2;
+            break;
+        default:
+            break;
+    }
+
+    if (arg6 < 3) {
+        sp60 = 1;
+    } else {
+        sp60 = 2;
+    }
+
+    gSPDisplayList(gDisplayListHead++, (u8*) 0x020077A8);
+    while (*text != 0) {
+        // @recomp Tag the transform.
+        gEXMatrixGroupDecomposed(gDisplayListHead++, TAG_LETTER(text), G_EX_PUSH, G_MTX_MODELVIEW, G_EX_COMPONENT_AUTO,
+                                 G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_INTERPOLATE,
+                                 G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE,
+                                 G_EX_ORDER_LINEAR, G_EX_EDIT_ALLOW);
+
+        glyphIndex = char_to_glyph_index(text);
+        if (glyphIndex >= 0) {
+            load_menu_img(segmented_to_virtual_dupe(gGlyphTextureLUT[glyphIndex]));
+            gDisplayListHead = print_letter(gDisplayListHead, segmented_to_virtual_dupe(gGlyphTextureLUT[glyphIndex]),
+                                            column, row, sp60, scaleX, scaleY);
+            column = column + (s32) ((gGlyphDisplayWidth[glyphIndex] + tracking) * scaleX);
+        } else if ((glyphIndex != -2) && (glyphIndex == -1)) {
+            column = column + (s32) ((tracking + 7) * scaleX);
+        } else {
+            gSPDisplayList(gDisplayListHead++, (u8*) 0x020077D8);
+            return;
+        }
+        if (glyphIndex >= 0x30) {
+            text += 2;
+        } else {
+            text += 1;
+        }
+
+        // @recomp Pop the transform id.
+        gEXPopMatrixGroup(gDisplayListHead++, G_MTX_MODELVIEW);
+    }
+    gSPDisplayList(gDisplayListHead++, (u8*) 0x020077D8);
+}
+
+RECOMP_PATCH void print_text2(s32 column, s32 row, char* text, s32 tracking, f32 scaleX, f32 scaleY, s32 arg6) {
+    MenuTexture* glyphTexture;
+    s32 characterWidth;
+    s32 glyphIndex;
+
+    gSPDisplayList(gDisplayListHead++, (u8*) 0x020077A8);
+    if (*text != 0) {
+        do {
+            // @recomp Tag the transform.
+            gEXMatrixGroupDecomposed(gDisplayListHead++, TAG_LETTER(text), G_EX_PUSH, G_MTX_MODELVIEW, G_EX_COMPONENT_AUTO,
+                                     G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_INTERPOLATE,
+                                     G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE,
+                                     G_EX_ORDER_LINEAR, G_EX_EDIT_ALLOW);
+
+            glyphIndex = char_to_glyph_index(text);
+            if (glyphIndex >= 0) {
+                glyphTexture = (MenuTexture*) segmented_to_virtual_dupe((const void*) gGlyphTextureLUT[glyphIndex]);
+                load_menu_img(glyphTexture);
+                gDisplayListHead =
+                    print_letter(gDisplayListHead, glyphTexture, column - (gGlyphDisplayWidth[glyphIndex] / 2), row,
+                                 arg6, scaleX, scaleY);
+                if ((glyphIndex >= 213) && (glyphIndex < 224)) {
+                    characterWidth = 32;
+                } else {
+                    characterWidth = 12;
+                }
+                column = column + (s32) ((characterWidth + tracking) * scaleX);
+            } else if ((glyphIndex != -2) && (glyphIndex == -1)) {
+                column = column + (s32) ((tracking + 7) * scaleX);
+            } else {
+                gSPDisplayList(gDisplayListHead++, (u8*) 0x020077D8);
+                return;
+            }
+            if (glyphIndex >= 0x30) {
+                text += 2;
+            } else {
+                text += 1;
+            }
+
+            // @recomp Pop the transform id.
+            gEXPopMatrixGroup(gDisplayListHead++, G_MTX_MODELVIEW);
+
+        } while (*text != 0);
+    }
+
+    gSPDisplayList(gDisplayListHead++, (u8*) 0x020077D8);
+}
+#endif

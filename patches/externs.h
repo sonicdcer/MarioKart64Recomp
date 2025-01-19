@@ -1,6 +1,244 @@
+#ifndef RECOMP_EXTERNS
+#define RECOMP_EXTERNS
+
 #include "patches.h"
 #include "main.h" // decomp
 
+void func_8005C674(s8, s16*, s16*, s16*);
+void func_80057C60(void);
+void func_80057CE4(void);
+void func_80057DD0(void);
+void func_80057FC4(u32);
+
+void render_object(u32);
+void render_object_p1(void);
+void render_object_p2(void);
+void render_object_p3(void);
+void render_object_p4(void);
+void render_player_snow_effect(u32);
+void render_player_snow_effect_one(void);
+void render_player_snow_effect_two(void);
+void render_player_snow_effect_three(void);
+void render_player_snow_effect_four(void);
+void render_object_for_player(s32);
+void render_snowing_effect(s32);
+void func_80058BF4(void);
+void func_80058C20(u32);
+void render_hud(u32);
+void func_80058F48(void);
+void func_80058F78(void);
+void func_80059AC8(void);
+
+void func_80059024(void);
+void func_8005902C(void);
+void func_800590D4(void);
+void func_800591B4(void);
+void func_80059358(void);
+void render_hud_2p_horizontal_player_two_horizontal_player_one(void);
+void func_800593F0(void);
+void render_hud_2p_horizontal_player_two(void);
+void draw_simplified_hud(s32);
+void func_800594F0(void);
+void render_hud_2p_vertical_player_one(void);
+void func_80059528(void);
+void render_hud_2p_vertical_player_two(void);
+void render_hud_lap_3p_4p(s32);
+void func_800596A8(void);
+void render_hud_1p_multi(void);
+void func_80059710(void);
+void render_hud_2p_multi(void);
+void func_80059750(void);
+void render_hud_3p_multi(void);
+void func_800597B8(void);
+void render_hud_4p_multi(void);
+void func_80059820(s32);
+void randomize_seed_from_controller(s32);
+void func_8005994C(void);
+void func_8005995C(void);
+void func_80059A88(s32);
+void func_80059C50(void);
+void func_80059D00(void);
+
+void func_8005A070(void);
+void func_8005A14C(s32);
+void func_8005A380(void);
+void func_8005A3C0(void);
+void func_8005A71C(void);
+void update_object(void);
+void func_8005A99C(void);
+void func_8005AA34(void);
+void func_8005AA4C(void);
+void func_8005AA6C(s32);
+void func_8005AA80(void);
+void func_8005AA94(s32);
+void func_8005AAF0(void);
+void func_8005AB20(void);
+void func_8005AB60(void);
+
+void func_8005B7A0(void);
+
+void func_8005B914(void);
+
+void func_8005C360(f32);
+void func_8005C64C(s32*);
+void func_8005C654(s32*);
+void func_8005C65C(s32);
+void func_8005C6B4(s8, s16*, s16*, s16*);
+void func_8005C728(void);
+void func_8005C980(void);
+void func_8005CB60(s32, s32);
+
+void func_8005D0FC(s32);
+void func_8005D18C(void);
+void func_8005D1F4(s32);
+
+void func_8005D290(void);
+void func_8005D6C0(Player*);
+void func_8005D794(Player*, UnkPlayerStruct258*, f32, f32, f32, s8, s8);
+s32 func_8005D7D8(UnkPlayerStruct258*, s8, f32);
+s32 func_8005D800(UnkPlayerStruct258*, s32, s16);
+s32 func_8005D82C(UnkPlayerStruct258*, s32, s16);
+void func_8005D898(Player*, s16, s32, s8, s8);
+void func_8005DA30(Player*, s16, s32, s8, s8);
+void func_8005DAD0(void);
+void func_8005DAD8(UnkPlayerStruct258*, s16, s16, s16);
+void func_8005DAF4(Player*, s16, s32, s8, s8);
+void func_8005EA94(Player*, s16, s32, s8, s8);
+void func_8005ED48(Player*, s16, s32, s8, s8);
+
+void func_8005F90C(Player*, s16, s32, s8, s8);
+
+void func_80060504(Player*, s16, s32, s8, s8);
+void func_800608E0(Player*, s16, s32, s8, s8);
+void func_80060B14(Player*, s16, s32, s8, s8);
+void func_80060BCC(Player*, s16, s32, s8, s8);
+void func_80060F50(Player*, s16, s32, s8, s8);
+
+void func_80061094(Player*, s16, s32, s8, s8);
+void func_80061130(Player*, s16, s32, s8, s8);
+void func_80061224(Player*, s16, s32, s8, s8);
+void func_800612F8(Player*, s32, s32, s8, s8);
+void func_80061430(Player*, s32, s32, s8, s8);
+void func_800615AC(Player*, s16, s32, s8, s8);
+void func_80061754(Player*, s16, s32, s32, s32);
+void func_8006199C(Player*, s16, s32, s8, s8);
+void func_80061A34(Player*, s16, s32, s8, s8);
+void func_80061D4C(Player*, s16, s32, s8, s8);
+void func_80061EF4(Player*, s16, s32, s8, s8);
+
+void func_800621BC(Player*, s16, s32, s8, s8);
+void func_80062484(Player*, UnkPlayerStruct258*, s32);
+void func_800624D8(Player*, s32, s32, s8, s8);
+void func_800628C0(Player*, s8, s8, s8);
+void func_80062914(Player*, s8, s8, s8);
+void func_80062968(Player*, s8, s8, s8);
+void func_800629BC(Player*, s8, s8, s8);
+void func_80062A18(Player*, s8, s8, s8);
+void func_80062AA8(Player*, s8, s8, s8);
+void func_80062B18(f32*, f32*, f32*, f32, f32, f32, u16, u16);
+void func_80062C74(Player*, s16, s32, s32);
+void func_80062F98(Player*, s16, s8, s8);
+
+void func_800630C0(Player*, s16, s8, s8);
+void func_800631A8(Player*, s16, s8, s8);
+void func_80063268(Player*, s16, s8, s8);
+void func_80063408(Player*, s16, s8, s8);
+void func_800635D4(Player*, s16, s8, s8);
+void func_800639DC(Player*, s16, s8, s8);
+void func_80063BD4(Player*, s16, s8, s8);
+void func_80063D58(Player*, s16, s8, s8);
+void func_80063FBC(Player*, s16, s32, s32);
+
+void func_80064184(Player*, s16, s8, s8);
+void func_800643A8(Player*, s16, s8, s8);
+void func_800644E8(Player*, s16, s8, s8);
+void func_80064664(Player*, s16, s8, s8);
+void func_800647C8(Player*, s16, s8, s8);
+void func_800648E4(Player*, s16, s8, s8);
+void func_80064988(Player*, s16, s8, s8);
+void func_800649F4(Player*, s16, s8, s8);
+void func_80064B30(Player*, s16, s8, s8);
+void func_80064C74(Player*, s16, s8, s8);
+void func_80064DEC(Player*, s8, s8, s8);
+void func_80064EA4(Player*, s8, s8, s8);
+void func_80064F88(Player*, s8, s8, s8);
+
+void func_80065030(Player*, s8, s8, s8);
+void func_800650FC(Player*, s8, s8, s8);
+void func_800651F4(Player*, s8, s8, s8);
+void func_800652D4(Vec3f, Vec3s, f32);
+void func_8006538C(Player*, s8, s16, s8);
+void func_800658A0(Player*, s8, s16, s8);
+void func_80065AB0(Player*, s8, s16, s8);
+void func_80065F0C(Player*, s8, s16, s8);
+
+void func_800664E0(Player*, s8, s16, s8);
+void func_80066998(Player*, s8, s16, s8);
+void func_80066BAC(Player*, s8, s16, s8);
+
+void func_80067280(Player*, s8, s16, s8);
+void func_80067604(Player*, s8, s16, s8);
+void func_80067964(Player*, s8, f32, s8, s8);
+void func_80067D3C(Player*, s8, u8*, s8, f32, s32);
+
+void func_8006801C(Player*, s8, u8*, s8, f32, s32);
+void func_80068310(Player*, s8, f32, s8, s8);
+void func_80068724(Player*, s8, f32, s8, s8);
+void func_80068AA4(Player*, s8, f32, s8, s8);
+void func_80068DA0(Player*, s8, f32, s8, s8);
+
+void func_800691B8(Player*, s8, s16, s8);
+void func_80069444(Player*, s8, s16, s8);
+void func_800696CC(Player*, s8, s16, s8, f32);
+void func_80069938(Player*, s8, s16, s8);
+void func_80069BA8(Player*, s8, s16, s8);
+void func_80069DB8(Player*, s8, s16, s8);
+
+void func_8006A01C(Player*, s8, s16, s8);
+void func_8006A280(Player*, s8, s16, s8);
+void func_8006A50C(Player*, f32, f32, s8, s8, s16);
+void func_8006A7C0(Player*, f32, f32, s8, s8);
+void render_battle_balloon(Player*, s8, s16, s8);
+
+void func_8006B7E4(Player*, s8);
+void func_8006B87C(Player*, s8);
+void func_8006B8B4(Player*, s8);
+void func_8006B974(s32, s8, s8);
+void func_8006B9CC(Player*, s8);
+void func_8006BA94(Player*, s8, s8);
+void render_balloon(Vec3f, f32, s16, s16);
+
+void func_8006C0C8(Vec3f, f32, s32, s16);
+void func_8006C294(Vec3f, f32, s32, s16);
+void func_8006C4D4(Vec3f, f32, s32, s16, s16);
+void func_8006C6AC(Player*, s16, s8, s8);
+void func_8006C9B8(Player*, s16, s8, s8);
+void func_8006CEC0(Player*, s16, s8, s8);
+
+void func_8006D194(Player*, s8, s8);
+void func_8006D474(Player*, s8, s8);
+void func_8006DC54(Player*, s8, s8);
+void func_8006DD3C(Player*, s8, s8);
+
+void func_8006E058(void);
+void func_8006E420(Player*, s8, s8);
+void render_kart_particle_on_screen_one(Player*, s8, s8);
+void render_kart_particle_on_screen_two(Player*, s8, s8);
+void render_kart_particle_on_screen_three(Player*, s8, s8);
+void render_kart_particle_on_screen_four(Player*, s8, s8);
+void func_8006E7CC(Player*, s8, s8);
+void func_8006E848(Player*, s8, s8);
+void func_8006E8C4(Player*, s8, s8);
+void func_8006E940(Player*, s8, s8);
+void func_80075CA8(void);
+void func_80085214();
+void func_80065F0C(Player *, s8, s16, s8);
+void func_80065AB0(Player *, s8, s16, s8);
+void func_80067604(Player* player, s8 arg1, s16 arg2, s8 arg3);
+void func_800664E0(Player* player, s8 arg1, s16 arg2, s8 arg3);
+void func_8006BA94(Player *player, s8 playerIndex, s8 arg2);
+void func_8006BA94(Player* player, s8 playerIndex, s8 arg2);
+void func_80069BA8(Player* player, s8 arg1, s16 arg2, s8 arg3);
 void func_802B5794(Mat4, Vec3f, Vec3f);
 s32 func_802B4F60(s32, Vec3f, s32, f32, f32);
 s32 render_set_position(Mat4, s32);
@@ -106,7 +344,41 @@ void mtxf_translate_rotate(f32 (*dest)[4], f32 *pos, s16 *orientation);
 void mtxf_scale2(f32 (*arg0)[4], f32 scale);
 void convert_to_fixed_point_matrix(Mtx *dest, f32 (*src)[4]);
 void func_8004B614(s32, s32, s32, s32, s32, s32, s32);
+void func_800652D4(Vec3f, Vec3s, f32);
+void func_800029B0(void);
+void setup_race(void);
+void func_80002DAC(void);
+void clear_nmi_buffer(void);
+void func_80003040(void);
+void render_item_boxes(struct UnkStruct_800DC5EC*);
+void render_course_actors(struct UnkStruct_800DC5EC*);
+void update_course_actors(void);
+void func_80021B0C(void);
+void func_8029122C(struct UnkStruct_800DC5EC*, s32);
+void render_course(struct UnkStruct_800DC5EC*);
+void render_players_on_screen_one(void);
+void func_802A3730(struct UnkStruct_800DC5EC*);
 
+extern u8** D_800E4770[];
+extern s16 gCurrentlyLoadedCourseId;
+extern u16 D_800DC5A8;
+extern s32 D_800DC5AC;
+extern u16 D_800DC5B0;
+extern u16 D_800DC5B4;
+extern u16 D_800DC5B8;
+extern u16 D_800DC5BC;
+extern u16 gIsInQuitToMenuTransition;
+extern u16 gQuitToMenuTransitionCounter;
+extern u16 D_800DC5C8;
+extern u16 D_800DC5CC;
+extern s32 D_800DC5D0;
+extern s32 D_800DC5D4;
+extern s32 D_800DC5D8;
+extern s32 D_800DC5DC;
+extern s32 D_800DC5E0;
+// This is tracking which credit "state" we're in, decides which credits are shown (and probably other stuff)
+extern u16 D_800DC5E4;
+extern s32 gPlayerWinningIndex;
 extern s16 gPlayersToRenderPlayerId[8];
 extern s16 gPlayersToRenderScreenId[8];
 extern Player* gPlayersToRenderPlayer[8];
@@ -168,3 +440,9 @@ extern f32 gCharacterSize[];
 extern u16 gPlayerPalettesList[][4][0x100 * 8];
 extern union_D_802BFB80 D_802BFB80;
 extern Camera cameras[4];
+extern struct UnkStruct_800DC5EC D_8015F480[4];
+extern struct UnkStruct_800DC5EC* D_800DC5EC;
+extern struct UnkStruct_800DC5EC* D_800DC5F0;
+extern struct UnkStruct_800DC5EC* D_800DC5F4;
+extern struct UnkStruct_800DC5EC* D_800DC5F8;
+#endif
