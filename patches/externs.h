@@ -445,4 +445,5 @@ extern struct UnkStruct_800DC5EC* D_800DC5EC;
 extern struct UnkStruct_800DC5EC* D_800DC5F0;
 extern struct UnkStruct_800DC5EC* D_800DC5F4;
 extern struct UnkStruct_800DC5EC* D_800DC5F8;
+extern Gfx* wario_stadium_dls[];
 #endif
