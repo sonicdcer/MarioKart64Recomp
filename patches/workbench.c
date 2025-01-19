@@ -1439,3 +1439,81 @@ RECOMP_PATCH void print_text2(s32 column, s32 row, char* text, s32 tracking, f32
     gSPDisplayList(gDisplayListHead++, (u8*) 0x020077D8);
 }
 #endif
+
+#if 1
+/**
+ * Determines whether an object is within the render distance of a camera.
+ *
+ * @param cameraPos       The position of the camera in 3D space.
+ * @param objectPos       The position of the object in 3D space.
+ * @param orientationY    The orientation angle of the object around the Y-axis.
+ * @param minDistance     The minimum distance at which the object is considered within render distance.
+ * @param fov             The field of view (FOV) of the camera.
+ * @param maxDistance     The maximum render distance.
+ * @return                The distance between the camera and the object if it's within render distance,
+ *                        or -1.0f if it exceeds the render distance.
+ */
+
+RECOMP_PATCH f32 is_within_render_distance(Vec3f cameraPos, Vec3f objectPos, u16 orientationY, f32 minDistance, f32 fov,
+                              f32 maxDistance) {
+    u16 angleObject;
+    UNUSED u16 pad;
+    u16 temp_v0;
+    f32 distanceX;
+    f32 distance;
+    f32 distanceY;
+    s32 plus_fov_angle;
+    s32 minus_fov_angle;
+    u16 temp;
+    UNUSED s32 pad2[3];
+    u16 extended_fov = ((u16) fov * 0xB6);
+
+    distanceX = objectPos[0] - cameraPos[0];
+    distanceX = distanceX * distanceX;
+    if (maxDistance < distanceX) {
+        return -1.0f;
+    }
+
+    distanceY = objectPos[2] - cameraPos[2];
+    distanceY = distanceY * distanceY;
+    if (maxDistance < distanceY) {
+        return -1.0f;
+    }
+
+    distance = distanceX + distanceY;
+    if (distance < minDistance) {
+        return distance;
+    }
+
+    if (distance > maxDistance) {
+        return -1.0f;
+    }
+
+    angleObject = get_angle_between_two_vectors(cameraPos, objectPos);
+    minus_fov_angle = (orientationY - extended_fov);
+    plus_fov_angle = (orientationY + extended_fov);
+
+    if (minDistance == 0.0f) {
+        if (is_visible_between_angle((orientationY + extended_fov), (orientationY - extended_fov), angleObject) == 1) {
+            return distance;
+        }
+        return -1.0f;
+    }
+
+    if (is_visible_between_angle((u16) plus_fov_angle, (u16) minus_fov_angle, angleObject) == 1) {
+        return distance;
+    }
+    temp_v0 = func_802B7CA8(minDistance / distance);
+    temp = angleObject + temp_v0;
+
+    if (is_visible_between_angle(plus_fov_angle, minus_fov_angle, temp) == 1) {
+        return distance;
+    }
+
+    temp = angleObject - temp_v0;
+    if (is_visible_between_angle(plus_fov_angle, minus_fov_angle, temp) == 1) {
+        return distance;
+    }
+    return -1.0f;
+}
+#endif
