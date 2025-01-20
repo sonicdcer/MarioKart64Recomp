@@ -462,6 +462,7 @@ void render_actor_palm_tree(Camera*, Mat4, struct PalmTree*);
 void render_item_boxes(struct UnkStruct_800DC5EC*);
 void render_course_actors(struct UnkStruct_800DC5EC*);
 void update_course_actors(void);
+void mtxf_translation_x_y_rotate_z_scale_x_y(Mat4, s32, s32, u16, f32);
 
 extern u16 gIsGamePaused;
 extern u8* pAppNmiBuffer;
