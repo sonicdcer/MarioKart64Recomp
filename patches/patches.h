@@ -45,6 +45,7 @@
 #include "objects.h"
 #include "render_objects.h"
 #include "mk64_tagging.h"
+#include "actor_types.h"
 
 #define MAKE_RGB(r, g, b) (((r) << 0x10) | ((g) << 0x08) | (b << 0x00))
 

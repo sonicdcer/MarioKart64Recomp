@@ -51,11 +51,11 @@ RECOMP_PATCH void handle_menus_with_pri_arg(s32 priSpecial) {
     {
         if (gControllers[0].button & U_JPAD) {
             recompDebugSwitch = 1;
-            recomp_printf("recompDebugSwitch: %d\n", recompDebugSwitch);
+            recomp_printf("recompDebugSwitch: ON : %d\n", recompDebugSwitch);
         }
         if (gControllers[0].button & D_JPAD) {
             recompDebugSwitch = 0;
-            recomp_printf("recompDebugSwitch: %d\n", recompDebugSwitch);
+            recomp_printf("recompDebugSwitch: OFF : %d\n", recompDebugSwitch);
         }
     }
 #endif
@@ -1467,6 +1467,12 @@ RECOMP_PATCH f32 is_within_render_distance(Vec3f cameraPos, Vec3f objectPos, u16
     u16 temp;
     UNUSED s32 pad2[3];
     u16 extended_fov = ((u16) fov * 0xB6);
+
+    // recomp_printf("maxDistance: %f\n", maxDistance);
+
+    // if (recompDebugSwitch) {
+        maxDistance *= 2.0f;
+    // }
 
     distanceX = objectPos[0] - cameraPos[0];
     distanceX = distanceX * distanceX;

@@ -446,4 +446,10 @@ extern struct UnkStruct_800DC5EC* D_800DC5F0;
 extern struct UnkStruct_800DC5EC* D_800DC5F4;
 extern struct UnkStruct_800DC5EC* D_800DC5F8;
 extern Gfx* wario_stadium_dls[];
+
+extern Camera cameras[4];
+extern Camera* camera1;
+extern Camera* camera2;
+extern Camera* camera3;
+extern Camera* camera4;
 #endif
