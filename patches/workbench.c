@@ -1281,10 +1281,10 @@ RECOMP_PATCH void print_text0(s32 column, s32 row, char* text, s32 tracking, f32
     if (*text != 0) {
         do {
             // @recomp Tag the transform.
-            gEXMatrixGroupDecomposed(gDisplayListHead++, TAG_LETTER(text), G_EX_PUSH, G_MTX_MODELVIEW, G_EX_COMPONENT_AUTO,
-                                     G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_INTERPOLATE,
-                                     G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE,
-                                     G_EX_ORDER_LINEAR, G_EX_EDIT_ALLOW);
+            gEXMatrixGroupDecomposed(gDisplayListHead++, TAG_LETTER(text), G_EX_PUSH, G_MTX_MODELVIEW,
+                                     G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO,
+                                     G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP,
+                                     G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_LINEAR, G_EX_EDIT_ALLOW);
 
             glyphIndex = char_to_glyph_index(text);
             if (glyphIndex >= 0) {
@@ -1400,10 +1400,10 @@ RECOMP_PATCH void print_text2(s32 column, s32 row, char* text, s32 tracking, f32
     if (*text != 0) {
         do {
             // @recomp Tag the transform.
-            gEXMatrixGroupDecomposed(gDisplayListHead++, TAG_LETTER(text), G_EX_PUSH, G_MTX_MODELVIEW, G_EX_COMPONENT_AUTO,
-                                     G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_INTERPOLATE,
-                                     G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE,
-                                     G_EX_ORDER_LINEAR, G_EX_EDIT_ALLOW);
+            gEXMatrixGroupDecomposed(gDisplayListHead++, TAG_LETTER(text), G_EX_PUSH, G_MTX_MODELVIEW,
+                                     G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO,
+                                     G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP,
+                                     G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_LINEAR, G_EX_EDIT_ALLOW);
 
             glyphIndex = char_to_glyph_index(text);
             if (glyphIndex >= 0) {
@@ -1455,7 +1455,7 @@ RECOMP_PATCH void print_text2(s32 column, s32 row, char* text, s32 tracking, f32
  */
 
 RECOMP_PATCH f32 is_within_render_distance(Vec3f cameraPos, Vec3f objectPos, u16 orientationY, f32 minDistance, f32 fov,
-                              f32 maxDistance) {
+                                           f32 maxDistance) {
     u16 angleObject;
     u16 temp_v0;
     f32 distanceX;
@@ -1466,11 +1466,11 @@ RECOMP_PATCH f32 is_within_render_distance(Vec3f cameraPos, Vec3f objectPos, u16
     s32 minus_fov_angle;
     u16 temp;
 
-    // increa maxDistance value and culling of the fov
+    // increase maxDistance value and culling of the fov
     maxDistance *= 3.0f;
     scaleFov = 1.25;
-    
-    f32 extended_fov = ((f32) fov * 0xB6 * scaleFov);  // Sets the Culling for objects on the left and right
+
+    f32 extended_fov = ((f32) fov * 0xB6 * scaleFov); // Sets the Culling for objects on the left and right
 
     distanceX = objectPos[0] - cameraPos[0];
     distanceX = distanceX * distanceX;
@@ -1486,7 +1486,7 @@ RECOMP_PATCH f32 is_within_render_distance(Vec3f cameraPos, Vec3f objectPos, u16
 
     distance = distanceX + distanceY;
     if (distance < minDistance) {
-        return distance;
+        return distance / maxDistance;
     }
 
     if (distance > maxDistance) {
@@ -1499,24 +1499,24 @@ RECOMP_PATCH f32 is_within_render_distance(Vec3f cameraPos, Vec3f objectPos, u16
 
     if (minDistance == 0.0f) {
         if (is_visible_between_angle((orientationY + extended_fov), (orientationY - extended_fov), angleObject) == 1) {
-            return distance;
+            return distance / maxDistance;
         }
         return -1.0f;
     }
 
     if (is_visible_between_angle((u16) plus_fov_angle, (u16) minus_fov_angle, angleObject) == 1) {
-        return distance;
+        return distance / maxDistance;
     }
     temp_v0 = func_802B7CA8(minDistance / distance);
     temp = angleObject + temp_v0;
 
     if (is_visible_between_angle(plus_fov_angle, minus_fov_angle, temp) == 1) {
-        return distance;
+        return 0;
     }
 
     temp = angleObject - temp_v0;
     if (is_visible_between_angle(plus_fov_angle, minus_fov_angle, temp) == 1) {
-        return distance;
+        return distance / maxDistance;
     }
     return -1.0f;
 }
