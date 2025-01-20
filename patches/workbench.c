@@ -121,9 +121,13 @@ RECOMP_PATCH void handle_menus_with_pri_arg(s32 priSpecial) {
                 func_800A97BC(entry);
                 break;
             case MENU_ITEM_UI_START_RECORD_TIME:
+
                 gDPSetTextureFilter(gDisplayListHead++, G_TF_BILERP);
                 switch (entry->state) {
                     case 0:
+                        if (gControllers[0].button & L_TRIG) {
+                            gDebugMenuSelection = 3;
+                        }
                         // @recomp: Change gControllerFive to gControllers[0] to avoid bug where something
                         // is pressing other controllers in memory.
                         if (gControllers[0].button & R_TRIG) {
