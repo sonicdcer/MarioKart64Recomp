@@ -885,6 +885,8 @@ RECOMP_PATCH void thread3_video(UNUSED void* arg0) {
 }
 #endif
 
+//Kart Draw Distance
+#if 1
 RECOMP_PATCH u16 check_player_camera_collision(Player* player, Camera* camera, f32 arg2, f32 arg3) {
     UNUSED f32 pad[6];
     f32 sp64;
@@ -898,6 +900,13 @@ RECOMP_PATCH u16 check_player_camera_collision(Player* player, Camera* camera, f
     f32 sp44;
     s16 var_v0;
     u16 ret;
+
+    // Define a multiplier to scale the draw distance
+    const f32 distanceMultiplier = 5.0f; // Adjust this value as needed
+
+    // Apply the multiplier to arg2 and arg3
+    arg2 *= distanceMultiplier;
+    arg3 *= distanceMultiplier/2;
 
     ret = false;
     switch (gActiveScreenMode) {
@@ -929,10 +938,9 @@ RECOMP_PATCH u16 check_player_camera_collision(Player* player, Camera* camera, f
     if (((sp64 >= 0) && (sp60 >= 0) && (sp5C >= 0)) || (((sp64) <= 0) && (sp60 <= 0) && (sp5C <= 0))) {
         ret = true;
     }
-    // return false;
-    // @recomp: always visible
-    return true;
+    return ret;
 }
+#endif
 
 #if 0
 Vtx D_0D008BF8[] = {
@@ -1471,7 +1479,7 @@ RECOMP_PATCH f32 is_within_render_distance(Vec3f cameraPos, Vec3f objectPos, u16
     u16 temp;
 
     // increase maxDistance value and culling of the fov
-    maxDistance *= 3.0f;
+    maxDistance *= 1.5f;
     scaleFov = 1.25;
 
     f32 extended_fov = ((f32) fov * 0xB6 * scaleFov); // Sets the Culling for objects on the left and right
@@ -1490,7 +1498,7 @@ RECOMP_PATCH f32 is_within_render_distance(Vec3f cameraPos, Vec3f objectPos, u16
 
     distance = distanceX + distanceY;
     if (distance < minDistance) {
-        return distance / maxDistance;
+        return distance;
     }
 
     if (distance > maxDistance) {
@@ -1509,8 +1517,9 @@ RECOMP_PATCH f32 is_within_render_distance(Vec3f cameraPos, Vec3f objectPos, u16
     }
 
     if (is_visible_between_angle((u16) plus_fov_angle, (u16) minus_fov_angle, angleObject) == 1) {
-        return distance / maxDistance;
+        return distance;
     }
+
     temp_v0 = func_802B7CA8(minDistance / distance);
     temp = angleObject + temp_v0;
 
@@ -1520,7 +1529,7 @@ RECOMP_PATCH f32 is_within_render_distance(Vec3f cameraPos, Vec3f objectPos, u16
 
     temp = angleObject - temp_v0;
     if (is_visible_between_angle(plus_fov_angle, minus_fov_angle, temp) == 1) {
-        return distance / maxDistance;
+        return distance;
     }
     return -1.0f;
 }
