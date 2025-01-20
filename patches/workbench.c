@@ -1457,22 +1457,20 @@ RECOMP_PATCH void print_text2(s32 column, s32 row, char* text, s32 tracking, f32
 RECOMP_PATCH f32 is_within_render_distance(Vec3f cameraPos, Vec3f objectPos, u16 orientationY, f32 minDistance, f32 fov,
                               f32 maxDistance) {
     u16 angleObject;
-    UNUSED u16 pad;
     u16 temp_v0;
     f32 distanceX;
     f32 distance;
     f32 distanceY;
+    f32 scaleFov;
     s32 plus_fov_angle;
     s32 minus_fov_angle;
     u16 temp;
-    UNUSED s32 pad2[3];
-    u16 extended_fov = ((u16) fov * 0xB6);
 
-    // recomp_printf("maxDistance: %f\n", maxDistance);
-
-    // if (recompDebugSwitch) {
-        maxDistance *= 2.0f;
-    // }
+    // increa maxDistance value and culling of the fov
+    maxDistance *= 3.0f;
+    scaleFov = 1.25;
+    
+    f32 extended_fov = ((f32) fov * 0xB6 * scaleFov);  // Sets the Culling for objects on the left and right
 
     distanceX = objectPos[0] - cameraPos[0];
     distanceX = distanceX * distanceX;
