@@ -885,7 +885,7 @@ RECOMP_PATCH void thread3_video(UNUSED void* arg0) {
 }
 #endif
 
-//Kart Draw Distance
+// Kart Draw Distance
 #if 1
 RECOMP_PATCH u16 check_player_camera_collision(Player* player, Camera* camera, f32 arg2, f32 arg3) {
     UNUSED f32 pad[6];
@@ -906,7 +906,7 @@ RECOMP_PATCH u16 check_player_camera_collision(Player* player, Camera* camera, f
 
     // Apply the multiplier to arg2 and arg3
     arg2 *= distanceMultiplier;
-    arg3 *= distanceMultiplier/2;
+    arg3 *= distanceMultiplier / 2;
 
     ret = false;
     switch (gActiveScreenMode) {
@@ -1474,12 +1474,14 @@ RECOMP_PATCH f32 is_within_render_distance(Vec3f cameraPos, Vec3f objectPos, u16
     f32 distance;
     f32 distanceY;
     f32 scaleFov;
+    f32 maxDistance2;
     s32 plus_fov_angle;
     s32 minus_fov_angle;
     u16 temp;
 
     // increase maxDistance value and culling of the fov
     maxDistance *= 1.5f;
+    maxDistance2 = 1.0f;
     scaleFov = 1.25;
 
     f32 extended_fov = ((f32) fov * 0xB6 * scaleFov); // Sets the Culling for objects on the left and right
@@ -1511,13 +1513,21 @@ RECOMP_PATCH f32 is_within_render_distance(Vec3f cameraPos, Vec3f objectPos, u16
 
     if (minDistance == 0.0f) {
         if (is_visible_between_angle((orientationY + extended_fov), (orientationY - extended_fov), angleObject) == 1) {
-            return distance / maxDistance;
+            if (gCurrentCourseId == COURSE_KALAMARI_DESERT) {
+                return distance / 8.0f;
+            } else {
+                return distance / 10.0f; // Items
+            }
         }
         return -1.0f;
     }
 
     if (is_visible_between_angle((u16) plus_fov_angle, (u16) minus_fov_angle, angleObject) == 1) {
-        return distance;
+        if (gCurrentCourseId == COURSE_KALAMARI_DESERT) {
+            return distance / 3.0f;
+        } else {
+            return distance / 10.0f; // DD Vhicles
+        }
     }
 
     temp_v0 = func_802B7CA8(minDistance / distance);
