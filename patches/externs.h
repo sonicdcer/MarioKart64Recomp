@@ -3,6 +3,7 @@
 
 #include "patches.h"
 #include "main.h" // decomp
+#include "actor_types.h"
 
 void func_8005C674(s8, s16*, s16*, s16*);
 void func_80057C60(void);
@@ -346,7 +347,6 @@ void convert_to_fixed_point_matrix(Mtx *dest, f32 (*src)[4]);
 void func_8004B614(s32, s32, s32, s32, s32, s32, s32);
 void func_800652D4(Vec3f, Vec3s, f32);
 void func_800029B0(void);
-void setup_race(void);
 void func_80002DAC(void);
 void clear_nmi_buffer(void);
 void func_80003040(void);
@@ -358,6 +358,192 @@ void func_8029122C(struct UnkStruct_800DC5EC*, s32);
 void render_course(struct UnkStruct_800DC5EC*);
 void render_players_on_screen_one(void);
 void func_802A3730(struct UnkStruct_800DC5EC*);
+void func_800029B0(void);
+void setup_race(void);
+void cleanup_red_and_green_shells(struct ShellActor*);
+void actor_init(struct Actor*, Vec3f, Vec3s, Vec3f, s16);
+void actor_not_rendered(Camera*, struct Actor*);
+void actor_rendered(Camera*, struct Actor*);
+void func_80297340(Camera*);
+void func_802976D8(Vec3s);
+void func_802976EC(Collision*, Vec3s);
+void func_80297760(struct Actor*, Vec3f);
+void func_802977B0(Player*);
+void func_802977E4(Player*);
+void init_red_shell_texture(void);
+void func_8029794C(Vec3f, Vec3s, f32);
+void func_802979F8(struct Actor*, f32);
+void render_actor_cow(Camera*, Mat4, struct Actor*);
+void update_actor_yoshi_egg(struct YoshiValleyEgg*);
+void update_actor_static_plant(struct Actor*);
+void update_actor_kiwano_fruit(struct KiwanoFruit*);
+void update_actor_paddle_boat(struct PaddleWheelBoat*);
+void update_actor_train_engine(struct TrainCar*);
+void update_actor_train_tender(struct TrainCar*);
+void update_actor_train_passenger_car(struct TrainCar*);
+void update_actor_piranha_plant(struct PiranhaPlant*);
+void render_actor_piranha_plant(Camera*, Mat4, struct PiranhaPlant*);
+void render_cows(Camera*, Mat4, struct Actor*);
+void evaluate_collision_player_palm_trees(Player*);
+void evaluate_collision_players_palm_trees(void);
+void func_80298D10(void);
+void render_palm_trees(Camera*, Mat4, struct Actor*);
+void render_actor_tree_mario_raceway(Camera*, Mat4, struct Actor*);
+void render_actor_tree_yoshi_valley(Camera*, Mat4, struct Actor*);
+void render_actor_tree_royal_raceway(Camera*, Mat4, struct Actor*);
+void render_actor_tree_moo_moo_farm(Camera*, Mat4, struct Actor*);
+void func_80299864(Camera*, Mat4, struct Actor*);
+void render_actor_tree_bowser_castle(Camera*, Mat4, struct Actor*);
+void render_actor_bush_bowser_castle(Camera*, Mat4, struct Actor*);
+void render_actor_tree_frappe_snowland(Camera*, Mat4, struct Actor*);
+void render_actor_tree_cactus1_kalimari_desert(Camera*, Mat4, struct Actor*);
+void render_actor_tree_cactus2_kalimari_desert(Camera*, Mat4, struct Actor*);
+void render_actor_tree_cactus3_kalimari_desert(Camera*, Mat4, struct Actor*);
+void render_actor_kiwano_fruit(Camera*, Mat4, struct Actor*);
+void render_actor_shell(Camera*, Mat4, struct ShellActor*);
+void render_actor_green_shell(Camera*, Mat4, struct ShellActor*);
+void render_actor_red_shell(Camera*, Mat4, struct ShellActor*);
+void render_actor_blue_shell(Camera*, Mat4, struct ShellActor*);
+void render_actor_banana(Camera*, Mat4, struct BananaActor*);
+void update_actor_wario_sign(struct Actor*);
+void update_actor_railroad_crossing(struct RailroadCrossing*);
+void update_actor_mario_sign(struct Actor*);
+void func_8029AC18(Camera*, Mat4, struct Actor*);
+void render_actor_paddle_boat(Camera*, struct PaddleWheelBoat*, Mat4, u16);
+void render_actor_box_truck(Camera*, struct Actor*);
+void render_actor_school_bus(Camera*, struct Actor*);
+void render_actor_car(Camera*, struct Actor*);
+void render_actor_tanker_truck(Camera*, struct Actor*);
+void render_actor_train_engine(Camera*, struct TrainCar*);
+void render_actor_train_tender(Camera*, struct TrainCar*);
+void render_actor_train_passenger_car(Camera*, struct TrainCar*);
+void render_actor_falling_rock(Camera*, struct FallingRock*);
+void spawn_piranha_plants(struct ActorSpawnData*);
+void spawn_palm_trees(struct ActorSpawnData*);
+void func_8029CF0C(struct ActorSpawnData*, struct FallingRock*);
+void spawn_falling_rocks(struct ActorSpawnData*);
+void update_actor_falling_rocks(struct FallingRock*);
+void spawn_foliage(struct ActorSpawnData*);
+void spawn_all_item_boxes(struct ActorSpawnData*);
+void init_kiwano_fruit(void);
+void destroy_all_actors(void);
+void spawn_course_actors(void);
+void init_actors_and_load_textures(void);
+void play_sound_before_despawn(struct Actor*);
+void destroy_actor(struct Actor*);
+s16 try_remove_destructable_item(Vec3f, Vec3s, Vec3f, s16);
+s16 add_actor_to_empty_slot(Vec3f, Vec3s, Vec3f, s16);
+s16 spawn_actor_at_pos(Vec3f, s16);
+bool query_and_resolve_collision_player_actor(Player*, Vec3f, f32, f32, f32);
+bool collision_mario_sign(Player*, struct Actor*);
+bool collision_piranha_plant(Player*, struct PiranhaPlant*);
+bool collision_yoshi_egg(Player*, struct YoshiValleyEgg*);
+bool collision_tree(Player*, struct Actor*);
+bool query_collision_player_vs_actor_item(Player*, struct Actor*);
+bool query_collision_actor_vs_actor(struct Actor*, struct Actor*);
+void destroy_destructable_actor(struct Actor*);
+void play_sound_on_destructible_actor_collision(struct Actor*, struct Actor*);
+void evaluate_actor_collision_between_two_destructible_actors(struct Actor*, struct Actor*);
+void evaluate_collision_between_player_actor(Player*, struct Actor*);
+void evaluate_collision_for_players_and_actors(void);
+void evaluate_collision_for_destructible_actors(void);
+void func_802A1064(struct FakeItemBox*);
+void update_actor_fake_item_box(struct FakeItemBox*);
+void init_actor_hot_air_balloon_item_box(f32, f32, f32);
+void update_actor_item_box_hot_air_balloon(struct ItemBox*);
+void update_actor_item_box(struct ItemBox*);
+void render_actor_fake_item_box(Camera*, struct FakeItemBox*);
+void render_actor_item_box(Camera*, struct ItemBox*);
+void render_actor_wario_sign(Camera*, struct Actor*);
+void render_actor_yoshi_egg(Camera*, Mat4, struct YoshiValleyEgg*, u16);
+void render_actor_mario_sign(Camera*, Mat4, struct Actor*);
+void render_actor_railroad_crossing(Camera*, struct RailroadCrossing*);
+void render_actor_palm_tree(Camera*, Mat4, struct PalmTree*);
+void render_item_boxes(struct UnkStruct_800DC5EC*);
+void render_course_actors(struct UnkStruct_800DC5EC*);
+void update_course_actors(void);
+
+extern u16 gIsGamePaused;
+extern u8* pAppNmiBuffer;
+extern s32 gIsMirrorMode; // D_800DC604
+extern s16 gCreditsCourseId;
+extern s16 gPlaceItemBoxes;
+
+extern CollisionTriangle* gCollisionMesh;
+extern u16* gCollisionIndices;
+extern u16 gCollisionMeshCount;
+extern u16 gNumCollisionTriangles;
+extern u32 D_8015F58C;
+
+extern Vec3f D_8015F590;
+extern s32 D_8015F59C;
+extern s32 D_8015F5A0;
+extern s32 D_8015F5A4;
+
+extern Vtx* vtxBuffer[];
+extern s16 gCourseMaxX;
+extern s16 gCourseMinX;
+
+extern s16 gCourseMaxY;
+extern s16 gCourseMinY;
+
+extern s16 gCourseMaxZ;
+extern s16 gCourseMinZ;
+extern s16 D_8015F6F4;
+extern s16 D_8015F6F6;
+extern u16 D_8015F6F8;
+extern s16 D_8015F6FA;
+extern s16 D_8015F6FC;
+extern u16 gNumSpawnedShells;
+
+extern u16 D_8015F700;
+extern u16 D_8015F702;
+extern f32 D_8015F704;
+extern Vec3f D_8015F708;
+extern size_t gFreeMemorySize;
+extern uintptr_t gNextFreeMemoryAddress;
+extern uintptr_t gHeapEndPtr;
+
+extern u32 D_8015F730;
+extern uintptr_t gFreeMemoryResetAnchor;
+extern Vec3f D_8015F738;
+extern Vec3f D_8015F748;
+extern Vec3f D_8015F758;
+extern Vec3f D_8015F768;
+extern Vec3f D_8015F778;
+
+extern f32 gCourseDirection;
+extern s32 D_8015F788;
+
+extern s32 D_8015F790[];
+extern u16 D_8015F890;
+extern u16 D_8015F892;
+extern u16 D_8015F894;
+extern f32 gTimePlayerLastTouchedFinishLine[];
+
+extern u8* gNmiUnknown1;
+extern u8* gNmiUnknown2;
+extern u8* gNmiUnknown3;
+extern u8* gNmiUnknown4;
+extern u8* gNmiUnknown5;
+extern u8* gNmiUnknown6;
+
+extern Vec3f D_8015F8D0;
+extern s32 D_8015F8DC;
+
+extern s32 D_8015F8E0;
+extern f32 D_8015F8E4;
+extern f32 D_8015F8E8;
+extern s16 gPlayerPositionLUT[]; // Player index at each position
+extern u16 gNumPermanentActors;
+
+extern s16 gDebugPathCount;
+extern s16 sIsController1Unplugged;
+extern s32 D_801625EC;
+extern s32 D_801625F0;
+extern s32 D_801625F4;
+extern s32 D_801625F8;
+extern f32 D_801625FC;
 
 extern u8** D_800E4770[];
 extern s16 gCurrentlyLoadedCourseId;

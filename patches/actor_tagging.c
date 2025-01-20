@@ -185,3 +185,172 @@ RECOMP_PATCH void render_actor_item_box(Camera* camera, struct ItemBox* item_box
     gEXPopMatrixGroup(gDisplayListHead++, G_MTX_MODELVIEW);
 }
 #endif
+
+#if 1
+/**
+ * @brief Renders the fake item box actor.
+ *
+ * @param camera
+ * @param fakeItemBox
+ */
+RECOMP_PATCH void render_actor_fake_item_box(Camera* camera, struct FakeItemBox* fakeItemBox) {
+    Vec3s someRot;
+    UNUSED s32 pad[3];
+    Vec3f someVec;
+    Mat4 someMatrix2;
+    Mat4 someMatrix3;
+    UNUSED s32 pad2[12];
+    f32 temp_f0_2;
+    f32 temp_f0_3;
+    f32 temp_f12;
+    f32 temp_f2;
+    f32 thing;
+    f32 temp_f2_2;
+    f32 someMultiplier;
+
+    gEXMatrixGroupDecomposed(gDisplayListHead++, TAG_ITEM_ADDR(fakeItemBox), G_EX_PUSH, G_MTX_MODELVIEW,
+                             G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_INTERPOLATE,
+                             G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE,
+                             G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
+
+    if (is_within_render_distance(camera->pos, fakeItemBox->pos, camera->rot[1], 2500.0f, gCameraZoom[camera - camera1],
+                                  1000000.0f) < 0) {
+        actor_not_rendered(camera, (struct Actor*) fakeItemBox);
+        return;
+    }
+    if (((f32) gCourseMaxY + 800.0f) < fakeItemBox->pos[1]) {
+        actor_not_rendered(camera, (struct Actor*) fakeItemBox);
+        return;
+    }
+    if (fakeItemBox->pos[1] < ((f32) gCourseMinY - 800.0f)) {
+        actor_not_rendered(camera, (struct Actor*) fakeItemBox);
+        return;
+    }
+
+    actor_rendered(camera, (struct Actor*) fakeItemBox);
+    someRot[0] = 0;
+    someRot[1] = fakeItemBox->rot[1];
+    someRot[2] = 0;
+    mtxf_pos_rotation_xyz(someMatrix2, fakeItemBox->pos, someRot);
+    mtxf_scale(someMatrix2, fakeItemBox->sizeScaling);
+    if (fakeItemBox->state != 2) {
+        if (!render_set_position(someMatrix2, 0)) {
+            return;
+        }
+
+        gSPDisplayList(gDisplayListHead++, (Gfx*)0xd002f80);
+        mtxf_pos_rotation_xyz(someMatrix2, fakeItemBox->pos, fakeItemBox->rot);
+        mtxf_scale(someMatrix2, fakeItemBox->sizeScaling);
+
+        if (!render_set_position(someMatrix2, 0)) {
+            return;
+        }
+
+        gSPClearGeometryMode(gDisplayListHead++, G_LIGHTING);
+        gDPSetCombineMode(gDisplayListHead++, G_CC_MODULATEIA, G_CC_MODULATEIA);
+        // if ((fakeItemBox->rot[1] < 0xAA1) && (fakeItemBox->rot[1] > 0)) {
+        //     gDPSetRenderMode(gDisplayListHead++, G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
+        // } else if ((fakeItemBox->rot[1] >= 0x6AA5) && (fakeItemBox->rot[1] < 0x754E)) {
+        //     gDPSetRenderMode(gDisplayListHead++, G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
+        // } else if ((fakeItemBox->rot[1] >= 0x38E1) && (fakeItemBox->rot[1] < 0x438A)) {
+        //     gDPSetRenderMode(gDisplayListHead++, G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
+        // } else if ((fakeItemBox->rot[1] >= 0xC711) && (fakeItemBox->rot[1] < 0xD1BA)) {
+        //     gDPSetRenderMode(gDisplayListHead++, G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
+        // } else {
+            gDPSetBlendMask(gDisplayListHead++, 0xFF);
+            gDPSetRenderMode(gDisplayListHead++, G_RM_ZB_CLD_SURF, G_RM_ZB_CLD_SURF2);
+        // }
+        gSPDisplayList(gDisplayListHead++, (Gfx*)0x0D003090);
+    } else {
+        gSPClearGeometryMode(gDisplayListHead++, G_LIGHTING);
+        gSPClearGeometryMode(gDisplayListHead++, G_CULL_BACK);
+        gDPSetBlendMask(gDisplayListHead++, 0xFF);
+        thing = fakeItemBox->someTimer;
+        mtxf_pos_rotation_xyz(someMatrix2, fakeItemBox->pos, fakeItemBox->rot);
+        if (thing < 10.0f) {
+            someMultiplier = 1.0f;
+        } else {
+            someMultiplier = 1.0f - ((thing - 10.0f) * 0.1f);
+        }
+        mtxf_scale(someMatrix2, someMultiplier);
+        if (fakeItemBox->someTimer & 1) {
+            gDPSetRenderMode(gDisplayListHead++, G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
+        } else {
+            gDPSetRenderMode(gDisplayListHead++, G_RM_AA_ZB_XLU_INTER, G_RM_NOOP2);
+        }
+        temp_f2 = 2.0f * thing;
+        someVec[0] = 0.0f;
+        someVec[1] = temp_f2;
+        someVec[2] = thing;
+        add_translate_mat4_vec3f(someMatrix2, someMatrix3, someVec);
+
+        if (!render_set_position(someMatrix3, 0)) {
+            return;
+        }
+
+        gSPDisplayList(gDisplayListHead++, (Gfx*)0x0D003158);
+        temp_f2_2 = 0.8f * thing;
+        temp_f12 = 0.5f * thing;
+        someVec[0] = temp_f2_2;
+        someVec[1] = 2.3f * thing;
+        someVec[2] = temp_f12;
+        add_translate_mat4_vec3f(someMatrix2, someMatrix3, someVec);
+
+        if (!render_set_position(someMatrix3, 0)) {
+            return;
+        }
+
+        gSPDisplayList(gDisplayListHead++, (Gfx*)0x0D0031B8);
+        temp_f0_2 = -0.5f * thing;
+        someVec[0] = temp_f2_2;
+        someVec[1] = 1.2f * thing;
+        someVec[2] = temp_f0_2;
+        add_translate_mat4_vec3f(someMatrix2, someMatrix3, someVec);
+
+        if (!render_set_position(someMatrix3, 0)) {
+            return;
+        }
+
+        gSPDisplayList(gDisplayListHead++, (Gfx*)0x0D003128);
+        if (!(fakeItemBox->someTimer & 1)) {
+            gDPSetRenderMode(gDisplayListHead++, G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
+        } else {
+            gDPSetRenderMode(gDisplayListHead++, G_RM_AA_ZB_XLU_INTER, G_RM_NOOP2);
+        }
+        someVec[0] = 0.0f;
+        someVec[1] = 1.8f * thing;
+        someVec[2] = -1.0f * thing;
+        add_translate_mat4_vec3f(someMatrix2, someMatrix3, someVec);
+
+        if (!render_set_position(someMatrix3, 0)) {
+            return;
+        }
+
+        gSPDisplayList(gDisplayListHead++, (Gfx*)0x0D0031E8);
+        temp_f0_3 = -0.8f * thing;
+        someVec[0] = temp_f0_3;
+        someVec[1] = 0.6f * thing;
+        someVec[2] = temp_f0_2;
+        add_translate_mat4_vec3f(someMatrix2, someMatrix3, someVec);
+
+        if (!render_set_position(someMatrix3, 0)) {
+            return;
+        }
+
+        gSPDisplayList(gDisplayListHead++, (Gfx*)0x0D003188);
+        someVec[0] = temp_f0_3;
+        someVec[1] = temp_f2;
+        someVec[2] = temp_f12;
+        add_translate_mat4_vec3f(someMatrix2, someMatrix3, someVec);
+
+        if (!render_set_position(someMatrix3, 0)) {
+            return;
+        }
+
+        gSPDisplayList(gDisplayListHead++, (Gfx*)0x0D0030F8);
+        gSPSetGeometryMode(gDisplayListHead++, G_CULL_BACK);
+    }
+    // @recomp Pop the transform id.
+    gEXPopMatrixGroup(gDisplayListHead++, G_MTX_MODELVIEW);
+}
+#endif
