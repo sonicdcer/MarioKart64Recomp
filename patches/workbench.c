@@ -495,6 +495,7 @@ RECOMP_PATCH void handle_menus_with_pri_arg(s32 priSpecial) {
 #endif
 
 #if 1
+Gfx* func_8009BC9C_2(Gfx* arg0, MenuTexture* arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, MenuItem* item);
 Gfx* RenderMenuTextures(Gfx* arg0, MenuTexture* arg1, s32 column, s32 row);
 RECOMP_PATCH void render_menus(MenuItem* arg0) {
     s32 var_a1 = 0;
@@ -619,7 +620,7 @@ RECOMP_PATCH void render_menus(MenuItem* arg0) {
             case MAIN_MENU_BACKGROUND:        /* switch 6 */
             case CHARACTER_SELECT_BACKGROUND: /* switch 6 */
             case COURSE_SELECT_BACKGROUND:    /* switch 6 */
-                gDisplayListHead = func_8009BC9C(gDisplayListHead, gMenuTexturesBackground[has_unlocked_extra_mode()],
+                gDisplayListHead = func_8009BC9C_2(gDisplayListHead, gMenuTexturesBackground[has_unlocked_extra_mode()],
                                                  arg0->column, arg0->row, 3, 0, arg0);
                 break;
             case MENU_ITEM_UI_GAME_SELECT: /* switch 6 */
@@ -637,7 +638,7 @@ RECOMP_PATCH void render_menus(MenuItem* arg0) {
             case MENU_ITEM_UI_OK: /* switch 6 */
                 func_800A8564(arg0);
                 gDisplayListHead =
-                    func_8009BC9C(gDisplayListHead, D_0200487C, arg0->column, arg0->row, 2, arg0->param1, NULL);
+                    func_8009BC9C_2(gDisplayListHead, D_0200487C, arg0->column, arg0->row, 2, arg0->param1, NULL);
                 break;
             case MAIN_MENU_OPTION_GFX: /* switch 6 */
             case MAIN_MENU_DATA_GFX:   /* switch 6 */
@@ -656,7 +657,7 @@ RECOMP_PATCH void render_menus(MenuItem* arg0) {
                 }
                 var_v1 = arg0->type - 0xA;
                 gDisplayListHead =
-                    func_8009BC9C(gDisplayListHead, D_800E8254[var_v1], arg0->column, arg0->row, 2, arg0->param1, NULL);
+                    func_8009BC9C_2(gDisplayListHead, D_800E8254[var_v1], arg0->column, arg0->row, 2, arg0->param1, NULL);
                 break;
             case MAIN_MENU_50CC:              /* switch 6 */
             case MAIN_MENU_100CC:             /* switch 6 */
@@ -751,7 +752,7 @@ RECOMP_PATCH void render_menus(MenuItem* arg0) {
             case CHARACTER_SELECT_MENU_OK: /* switch 6 */
                 func_800A8564(arg0);
                 gDisplayListHead =
-                    func_8009BC9C(gDisplayListHead, D_02004B74, arg0->column, arg0->row, 2, arg0->param1, NULL);
+                    func_8009BC9C_2(gDisplayListHead, D_02004B74, arg0->column, arg0->row, 2, arg0->param1, NULL);
                 break;
             case CHARACTER_SELECT_MENU_MARIO:  /* switch 6 */
             case CHARACTER_SELECT_MENU_LUIGI:  /* switch 6 */
@@ -802,7 +803,7 @@ RECOMP_PATCH void render_menus(MenuItem* arg0) {
             case COURSE_SELECT_OK: /* switch 6 */
                 func_800A8564(arg0);
                 gDisplayListHead =
-                    func_8009BC9C(gDisplayListHead, D_02004E80, arg0->column, arg0->row, 2, arg0->param1, NULL);
+                    func_8009BC9C_2(gDisplayListHead, D_02004E80, arg0->column, arg0->row, 2, arg0->param1, NULL);
                 break;
             case MENU_ITEM_TYPE_065: /* switch 6 */
             case MENU_ITEM_TYPE_066: /* switch 6 */
@@ -1056,7 +1057,7 @@ RECOMP_PATCH void render_menus(MenuItem* arg0) {
 #endif
 
 #if 1
-RECOMP_PATCH Gfx* func_8009BC9C(Gfx* arg0, MenuTexture* arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, MenuItem* item) {
+Gfx* func_8009BC9C_2(Gfx* arg0, MenuTexture* arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, MenuItem* item) {
     MenuTexture* var_s0;
     u8* temp_v0_3;
 
