@@ -85,6 +85,15 @@ typedef union {
     struct_D_802BFB80_8 arraySize8[2][2][8];
 } union_D_802BFB80;
 
+typedef struct {
+    /* 0x00 */ s32 unk0;
+    /* 0x04 */ s32 unk4;
+    /* 0x08 */ s32 actorTimer;
+    /* 0x0C */ u8 unk[16]; // 10 bytes
+    /* 0x1C */ s8 unk1C;
+    /* 0x1D */ s8 unk1D;
+    /* 0x1E */ s8 unk1E; // gCharacterSelections
+} struct_D_802874D8;
 
 #define RENDER_SCREEN_MODE_1P_PLAYER_ONE PLAYER_ONE + SCREEN_MODE_1P
 #define RENDER_SCREEN_MODE_2P_HORIZONTAL_PLAYER_ONE PLAYER_ONE + SCREEN_MODE_2P_SPLITSCREEN_HORIZONTAL

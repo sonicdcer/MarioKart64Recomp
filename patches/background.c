@@ -56,7 +56,7 @@ RECOMP_PATCH void func_802A4A0C(Vtx* vtx, struct UnkStruct_800DC5EC* arg1, UNUSE
 }
 #endif
 
-#if 1
+#if 0
 RECOMP_PATCH void func_80042330(s32 x, s32 y, u16 angle, f32 scale) {
     Mat4 matrix;
     mtxf_translation_x_y_rotate_z_scale_x_y(matrix, x, y, angle, scale);

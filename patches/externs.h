@@ -233,11 +233,11 @@ void func_8006E8C4(Player*, s8, s8);
 void func_8006E940(Player*, s8, s8);
 void func_80075CA8(void);
 void func_80085214();
-void func_80065F0C(Player *, s8, s16, s8);
-void func_80065AB0(Player *, s8, s16, s8);
+void func_80065F0C(Player*, s8, s16, s8);
+void func_80065AB0(Player*, s8, s16, s8);
 void func_80067604(Player* player, s8 arg1, s16 arg2, s8 arg3);
 void func_800664E0(Player* player, s8 arg1, s16 arg2, s8 arg3);
-void func_8006BA94(Player *player, s8 playerIndex, s8 arg2);
+void func_8006BA94(Player* player, s8 playerIndex, s8 arg2);
 void func_8006BA94(Player* player, s8 playerIndex, s8 arg2);
 void func_80069BA8(Player* player, s8 arg1, s16 arg2, s8 arg3);
 void func_802B5794(Mat4, Vec3f, Vec3f);
@@ -340,10 +340,10 @@ void set_color_render(s32 primRed, s32 primGreen, s32 primBlue, s32 envRed, s32 
 void func_8028FBD4(void);
 void play_sound2(s32 soundBits);
 void func_800CA388(u8);
-void func_80062B18(f32 *, f32 *, f32 *, f32, f32, f32, u16, u16);
-void mtxf_translate_rotate(f32 (*dest)[4], f32 *pos, s16 *orientation);
+void func_80062B18(f32*, f32*, f32*, f32, f32, f32, u16, u16);
+void mtxf_translate_rotate(f32 (*dest)[4], f32* pos, s16* orientation);
 void mtxf_scale2(f32 (*arg0)[4], f32 scale);
-void convert_to_fixed_point_matrix(Mtx *dest, f32 (*src)[4]);
+void convert_to_fixed_point_matrix(Mtx* dest, f32 (*src)[4]);
 void func_8004B614(s32, s32, s32, s32, s32, s32, s32);
 void func_800652D4(Vec3f, Vec3s, f32);
 void func_800029B0(void);
@@ -463,7 +463,19 @@ void render_item_boxes(struct UnkStruct_800DC5EC*);
 void render_course_actors(struct UnkStruct_800DC5EC*);
 void update_course_actors(void);
 void mtxf_translation_x_y_rotate_z_scale_x_y(Mat4, s32, s32, u16, f32);
+s32 has_unlocked_extra_mode(void);
+u32 func_800B4EB4(s32 recordIndex, s32 courseIndex);
+Gfx* drawBackground(Gfx* displayListHead, s8 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7, u8* arg8,
+                    u32 arg9, u32 argA);
+Gfx* drawBackground2(Gfx* displayListHead, s8 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7,
+                     s32 arg8, s32 arg9, u8* argA, u32 argB, u32 argC);
+Gfx* RenderBackground(Gfx* displayListHead, s8 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7,
+                      s32 arg8, s32 arg9, u8* argA, u32 argB, u32 argC);
 
+extern struct_D_802874D8 D_802874D8;
+extern struct MenuTexture* D_800E82A4[];
+extern struct MenuTexture* D_800E82AC[];
+extern char* gTextNoController[];
 extern u16 gIsGamePaused;
 extern u8* pAppNmiBuffer;
 extern s32 gIsMirrorMode; // D_800DC604
