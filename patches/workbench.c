@@ -724,6 +724,11 @@ RECOMP_PATCH void render_menus(MenuItem* arg0) {
                 gDisplayListHead = render_menu_textures(gDisplayListHead, sp9C, arg0->column, arg0->row);
                 break;
             case MENU_ITEM_TYPE_01B: /* switch 6 */
+                if (arg0->state == 2) {
+                    gDPSetTextureFilter(gDisplayListHead++, G_TF_BILERP);
+                } else {
+                    gDPSetTextureFilter(gDisplayListHead++, G_TF_POINT);
+                }
                 func_800A10CC(arg0);
                 break;
             case CHARACTER_SELECT_MENU_PLAYER_SELECT_BANNER: /* switch 6 */
