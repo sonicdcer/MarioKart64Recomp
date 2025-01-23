@@ -464,6 +464,10 @@ void render_course_actors(struct UnkStruct_800DC5EC*);
 void update_course_actors(void);
 void mtxf_translation_x_y_rotate_z_scale_x_y(Mat4, s32, s32, u16, f32);
 s32 has_unlocked_extra_mode(void);
+void func_80042330(s32, s32, u16, f32);
+void func_800CB2C4(void);
+void func_800C5CB8(void);
+uintptr_t set_segment_base_addr(s32, void *);
 u32 func_800B4EB4(s32 recordIndex, s32 courseIndex);
 Gfx* drawBackground(Gfx* displayListHead, s8 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7, u8* arg8,
                     u32 arg9, u32 argA);

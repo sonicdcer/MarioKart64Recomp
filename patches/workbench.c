@@ -34,8 +34,8 @@ RECOMP_PATCH void handle_menus_with_pri_arg(s32 priSpecial) {
     volatile u8* address;
 
     // gDPSetTextureFilter(gDisplayListHead++, G_TF_POINT);
-    gEXEnable(gDisplayListHead++); // @recomp
-    gEXSetRefreshRate(gDisplayListHead++, 60 / 2);
+    //gEXEnable(gDisplayListHead++); // @recomp
+    //gEXSetRefreshRate(gDisplayListHead++, 60 / 2);
 
     // @recomp: Patch the sequence bug that prevented the whole end results song from playing.
     {
