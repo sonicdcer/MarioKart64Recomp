@@ -46,9 +46,9 @@ RECOMP_PATCH void render_actor_item_box(Camera* camera, struct ItemBox* item_box
             if (!render_set_position(someMatrix1, 0)) {
                 return;
             }
-            
+
             gSPDisplayList(gDisplayListHead++, (u8*) 0x0D002EE8);
-            
+
             someRot[1] = item_box->rot[1] * 2;
             someVec2[1] = item_box->pos[1];
             mtxf_pos_rotation_xyz(someMatrix1, someVec2, someRot);
@@ -90,8 +90,8 @@ RECOMP_PATCH void render_actor_item_box(Camera* camera, struct ItemBox* item_box
             // } else if ((item_box->rot[1] >= -14575) && (item_box->rot[1] < -11878)) {
             //     gDPSetRenderMode(gDisplayListHead++, G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
             // } else {
-                gDPSetBlendMask(gDisplayListHead++, 0xFF);
-                gDPSetRenderMode(gDisplayListHead++, G_RM_ZB_CLD_SURF, G_RM_ZB_CLD_SURF2);
+            gDPSetBlendMask(gDisplayListHead++, 0xFF);
+            gDPSetRenderMode(gDisplayListHead++, G_RM_ZB_CLD_SURF, G_RM_ZB_CLD_SURF2);
             // }
             gSPSetGeometryMode(gDisplayListHead++, G_SHADING_SMOOTH);
             gSPDisplayList(gDisplayListHead++, (u8*) 0x0D003090);
@@ -243,8 +243,9 @@ RECOMP_PATCH void render_actor_fake_item_box(Camera* camera, struct FakeItemBox*
         if (!render_set_position(someMatrix2, 0)) {
             return;
         }
-
-        gSPDisplayList(gDisplayListHead++, (Gfx*)0xd002f80);
+        gDPSetTextureLUT(gDisplayListHead++, G_TT_NONE);
+        gSPDisplayList(gDisplayListHead++, (Gfx*) 0xd002f80);
+        gDPSetTextureLUT(gDisplayListHead++, G_TT_RGBA16);
         mtxf_pos_rotation_xyz(someMatrix2, fakeItemBox->pos, fakeItemBox->rot);
         mtxf_scale(someMatrix2, fakeItemBox->sizeScaling);
 
@@ -263,10 +264,10 @@ RECOMP_PATCH void render_actor_fake_item_box(Camera* camera, struct FakeItemBox*
         // } else if ((fakeItemBox->rot[1] >= 0xC711) && (fakeItemBox->rot[1] < 0xD1BA)) {
         //     gDPSetRenderMode(gDisplayListHead++, G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
         // } else {
-            gDPSetBlendMask(gDisplayListHead++, 0xFF);
-            gDPSetRenderMode(gDisplayListHead++, G_RM_ZB_CLD_SURF, G_RM_ZB_CLD_SURF2);
+        gDPSetBlendMask(gDisplayListHead++, 0xFF);
+        gDPSetRenderMode(gDisplayListHead++, G_RM_ZB_CLD_SURF, G_RM_ZB_CLD_SURF2);
         // }
-        gSPDisplayList(gDisplayListHead++, (Gfx*)0x0D003090);
+        gSPDisplayList(gDisplayListHead++, (Gfx*) 0x0D003090);
     } else {
         gSPClearGeometryMode(gDisplayListHead++, G_LIGHTING);
         gSPClearGeometryMode(gDisplayListHead++, G_CULL_BACK);
@@ -294,7 +295,7 @@ RECOMP_PATCH void render_actor_fake_item_box(Camera* camera, struct FakeItemBox*
             return;
         }
 
-        gSPDisplayList(gDisplayListHead++, (Gfx*)0x0D003158);
+        gSPDisplayList(gDisplayListHead++, (Gfx*) 0x0D003158);
         temp_f2_2 = 0.8f * thing;
         temp_f12 = 0.5f * thing;
         someVec[0] = temp_f2_2;
@@ -306,7 +307,7 @@ RECOMP_PATCH void render_actor_fake_item_box(Camera* camera, struct FakeItemBox*
             return;
         }
 
-        gSPDisplayList(gDisplayListHead++, (Gfx*)0x0D0031B8);
+        gSPDisplayList(gDisplayListHead++, (Gfx*) 0x0D0031B8);
         temp_f0_2 = -0.5f * thing;
         someVec[0] = temp_f2_2;
         someVec[1] = 1.2f * thing;
@@ -317,7 +318,7 @@ RECOMP_PATCH void render_actor_fake_item_box(Camera* camera, struct FakeItemBox*
             return;
         }
 
-        gSPDisplayList(gDisplayListHead++, (Gfx*)0x0D003128);
+        gSPDisplayList(gDisplayListHead++, (Gfx*) 0x0D003128);
         if (!(fakeItemBox->someTimer & 1)) {
             gDPSetRenderMode(gDisplayListHead++, G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
         } else {
@@ -332,7 +333,7 @@ RECOMP_PATCH void render_actor_fake_item_box(Camera* camera, struct FakeItemBox*
             return;
         }
 
-        gSPDisplayList(gDisplayListHead++, (Gfx*)0x0D0031E8);
+        gSPDisplayList(gDisplayListHead++, (Gfx*) 0x0D0031E8);
         temp_f0_3 = -0.8f * thing;
         someVec[0] = temp_f0_3;
         someVec[1] = 0.6f * thing;
@@ -343,7 +344,7 @@ RECOMP_PATCH void render_actor_fake_item_box(Camera* camera, struct FakeItemBox*
             return;
         }
 
-        gSPDisplayList(gDisplayListHead++, (Gfx*)0x0D003188);
+        gSPDisplayList(gDisplayListHead++, (Gfx*) 0x0D003188);
         someVec[0] = temp_f0_3;
         someVec[1] = temp_f2;
         someVec[2] = temp_f12;
@@ -353,7 +354,7 @@ RECOMP_PATCH void render_actor_fake_item_box(Camera* camera, struct FakeItemBox*
             return;
         }
 
-        gSPDisplayList(gDisplayListHead++, (Gfx*)0x0D0030F8);
+        gSPDisplayList(gDisplayListHead++, (Gfx*) 0x0D0030F8);
         gSPSetGeometryMode(gDisplayListHead++, G_CULL_BACK);
     }
     // @recomp Pop the transform id.
