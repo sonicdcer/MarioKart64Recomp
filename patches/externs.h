@@ -475,6 +475,9 @@ Gfx* drawBackground2(Gfx* displayListHead, s8 arg1, s32 arg2, s32 arg3, s32 arg4
                      s32 arg8, s32 arg9, u8* argA, u32 argB, u32 argC);
 Gfx* RenderBackground(Gfx* displayListHead, s8 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7,
                       s32 arg8, s32 arg9, u8* argA, u32 argB, u32 argC);
+void set_object_flag_status_false(s32 objectIndex, s32 flag);
+void set_object_flag_status_true(s32 objectIndex, s32 flag);
+s32 get_angle_between_xy(f32 x1, f32 x2, f32 y1, f32 y2);
 
 extern struct_D_802874D8 D_802874D8;
 extern struct MenuTexture* D_800E82A4[];
@@ -677,4 +680,10 @@ extern s8 D_801657E4;
 extern u16 D_8018D300;
 extern u16 D_8018D308;
 extern u16 D_8018D310;
+extern u8 *D_8018D488;
+extern u8 D_8018D228;
+extern s16 D_8018D210;
+extern s16 D_8018D208;
+extern s16 D_8018D218;
+extern f32 D_8018D1E8;
 #endif

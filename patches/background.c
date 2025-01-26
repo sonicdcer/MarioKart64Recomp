@@ -1,5 +1,4 @@
 #include "patches.h"
-#include "misc_funcs.h"
 
 // Background Extended for Widescreen
 #if 1
@@ -84,19 +83,12 @@ RECOMP_PATCH void func_802A4A0C(Vtx* vtx, struct UnkStruct_800DC5EC* arg1, UNUSE
         gSP2Triangles(gDisplayListHead++, 0, 3, 1, 0, 1, 3, 2, 0);
     }
 }
-
 #endif
+
+#include "patches.h"
 
 // clouds
 #if 1
-void set_object_flag_status_false(s32 objectIndex, s32 flag);
-void set_object_flag_status_true(s32 objectIndex, s32 flag);
-
-extern s16 D_8018D210;
-extern s16 D_8018D208;
-extern s16 D_8018D218;
-extern f32 D_8018D1E8;
-
 RECOMP_PATCH void func_800788F8(s32 objectIndex, u16 rot, Camera* camera) {
     s16 cameraRot;
     // Adjustable culling factor
@@ -123,42 +115,3 @@ RECOMP_PATCH void func_800788F8(s32 objectIndex, u16 rot, Camera* camera) {
 }
 #endif
 
-#if 1
-extern u8 D_8018D228;
-
-RECOMP_PATCH void func_80051ABC(s16 arg0, s32 arg1) {
-    s32 i;
-    s32 objectIndex;
-    Object* object;
-    u32 margin = 0;
-
-    D_8018D228 = 0xFF;
-    gSPDisplayList(gDisplayListHead++, (Gfx*) 0x0D007A60);
-    if ((u8) D_8018D230 != 0) {
-        func_8004B414(255, 255, 255, 255);
-        for (i = 0; i < D_8018D1F0; i++) {
-            objectIndex = D_8018CC80[arg1 + i];
-            object = &gObjectList[objectIndex];
-            func_800519D4(objectIndex, object->unk_09C, arg0 - object->unk_09E);
-        }
-    } else {
-        func_8004B6C4(255, 255, 255);
-        for (i = 0; i < D_8018D1F0; i++) {
-            objectIndex = D_8018CC80[arg1 + i];
-            object = &gObjectList[objectIndex];
-            gEXMatrixGroupDecomposed(gDisplayListHead++, TAG_OBJECT(object), G_EX_PUSH, G_MTX_MODELVIEW,
-                                     G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO,
-                                     G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP,
-                                     G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_LINEAR, G_EX_EDIT_ALLOW);
-
-            gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, 0 + margin, 0 + margin, SCREEN_WIDTH - margin,
-                          SCREEN_HEIGHT - margin);
-
-            func_800518F8(objectIndex, object->unk_09C, arg0 - object->unk_09E);
-
-            // @recomp Pop the transform id.
-            gEXPopMatrixGroup(gDisplayListHead++, G_MTX_MODELVIEW);
-        }
-    }
-}
-#endif
