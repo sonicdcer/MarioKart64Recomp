@@ -10,21 +10,6 @@ int dummy_val = 1;
 
 bool recompDebugSwitch = 0;
 
-Gfx common_square_plain_render[] = {
-    gsSP1Triangle(0, 1, 2, 0),
-    gsSP1Triangle(0, 2, 3, 0),
-    gsSPEndDisplayList(),
-};
-Gfx common_setting_render_character[] = {
-    gsDPPipeSync(),
-    gsDPSetAlphaCompare(G_AC_NONE),
-    gsSPClearGeometryMode(G_LIGHTING),
-    gsSPTexture(0x8000, 0x8000, 0, G_TX_RENDERTILE, G_ON),
-    gsDPSetTextureFilter(G_TF_BILERP),
-    gsDPSetTexturePersp(G_TP_PERSP),
-    gsSPEndDisplayList(),
-};
-
 RECOMP_PATCH void handle_menus_with_pri_arg(s32 priSpecial) {
     s32 j = 0;
     s32 isRendered = 0;
@@ -34,8 +19,8 @@ RECOMP_PATCH void handle_menus_with_pri_arg(s32 priSpecial) {
     volatile u8* address;
 
     // gDPSetTextureFilter(gDisplayListHead++, G_TF_POINT);
-    //gEXEnable(gDisplayListHead++); // @recomp
-    //gEXSetRefreshRate(gDisplayListHead++, 60 / 2);
+    // gEXEnable(gDisplayListHead++); // @recomp
+    // gEXSetRefreshRate(gDisplayListHead++, 60 / 2);
 
     // @recomp: Patch the sequence bug that prevented the whole end results song from playing.
     {
@@ -127,12 +112,17 @@ RECOMP_PATCH void handle_menus_with_pri_arg(s32 priSpecial) {
                         if (gControllers[0].button & L_TRIG) {
                             gDebugMenuSelection = 3;
                         }
+                        if (gControllers[0].button & U_CBUTTONS) {
+                            gGamestateNext = CREDITS_SEQUENCE;
+                        }
+                        if (gControllers[0].button & R_CBUTTONS) {
+                            gGamestateNext = ENDING;
+                        }
                         // @recomp: Change gControllerFive to gControllers[0] to avoid bug where something
                         // is pressing other controllers in memory.
                         if (gControllers[0].button & R_TRIG) {
                             entry->state = 1;
                             play_sound2(SOUND_ACTION_PING);
-                            // gGamestateNext = 4;
                         } else {
                             entry->visible = 0;
                         }
@@ -175,7 +165,7 @@ RECOMP_PATCH void handle_menus_with_pri_arg(s32 priSpecial) {
                     case MAIN_MENU_OPTION:
                     case MAIN_MENU_DATA:
                     case MAIN_MENU_PLAYER_SELECT:
-                    gDPSetTextureFilter(gDisplayListHead++, G_TF_POINT);
+                        gDPSetTextureFilter(gDisplayListHead++, G_TF_POINT);
                         func_800A9B9C(entry);
                         break;
                     case MAIN_MENU_MODE_SELECT:
@@ -183,7 +173,7 @@ RECOMP_PATCH void handle_menus_with_pri_arg(s32 priSpecial) {
                     case MAIN_MENU_OK_SELECT:
                     case MAIN_MENU_OK_SELECT_GO_BACK:
                     case MAIN_MENU_MODE_SUB_SELECT_GO_BACK:
-                    gDPSetTextureFilter(gDisplayListHead++, G_TF_POINT);
+                        gDPSetTextureFilter(gDisplayListHead++, G_TF_POINT);
                         func_800A9C40(entry);
                         break;
                 }
@@ -226,7 +216,8 @@ RECOMP_PATCH void handle_menus_with_pri_arg(s32 priSpecial) {
                     case CHARACTER_SELECT_MENU_YOSHI:
                     case CHARACTER_SELECT_MENU_DK:
                     case CHARACTER_SELECT_MENU_WARIO:
-                    case CHARACTER_SELECT_MENU_BOWSER:gDPSetTextureFilter(gDisplayListHead++, G_TF_POINT);
+                    case CHARACTER_SELECT_MENU_BOWSER:
+                        gDPSetTextureFilter(gDisplayListHead++, G_TF_POINT);
                         func_800AA69C(entry);
                         break;
                 }
@@ -293,7 +284,7 @@ RECOMP_PATCH void handle_menus_with_pri_arg(s32 priSpecial) {
             case MENU_ITEM_TYPE_08D:
                 func_800ABB24(entry);
                 break;
-            case MENU_ITEM_TYPE_07C: 
+            case MENU_ITEM_TYPE_07C:
             case MENU_ITEM_TYPE_07D:
             case MENU_ITEM_TYPE_07E:
             case MENU_ITEM_TYPE_07F:
@@ -521,28 +512,28 @@ RECOMP_PATCH void render_menus(MenuItem* arg0) {
 
     if (arg0->visible) {
         gDPPipeSync(gDisplayListHead++);
-        switch (arg0->type) {             /* switch 6; irregular */
-            case MENU_ITEM_UI_LOGO_INTRO: /* switch 6 */
+        switch (arg0->type) { /* switch 6; irregular */
+            case MENU_ITEM_UI_LOGO_INTRO:
                 func_80094660(gGfxPool, arg0->param1);
                 break;
-            case START_MENU_FLAG: /* switch 6 */
+            case START_MENU_FLAG:
                 render_checkered_flag(gGfxPool, arg0->param1);
                 break;
-            case MENU_ITEM_TYPE_0D2: /* switch 6 */
+            case MENU_ITEM_TYPE_0D2:
                 gDisplayListHead = func_8009B9D0(gDisplayListHead, D_020014C8);
                 break;
-            case MENU_ITEM_TYPE_0D3: /* switch 6 */
+            case MENU_ITEM_TYPE_0D3:
                 gDisplayListHead = func_8009B9D0(gDisplayListHead, D_02001540);
                 break;
-            case MENU_ITEM_TYPE_0D4: /* switch 6 */
+            case MENU_ITEM_TYPE_0D4:
                 func_800A09E0(arg0);
                 func_800A0AD0(arg0);
                 func_800A0B80(arg0);
                 break;
-            case MENU_ITEM_TYPE_0D5: /* switch 6 */
-                                     // Sets the text color of the text on the Controller Pak menu
-                                     // Also sets the color of the shading at the top and bottom of the menu
-                                     // Does not set color of the text in the table itself
+            case MENU_ITEM_TYPE_0D5:
+                // Sets the text color of the text on the Controller Pak menu
+                // Also sets the color of the shading at the top and bottom of the menu
+                // Does not set color of the text in the table itself
                 gDPSetPrimColor(gDisplayListHead++, 0, 0, 0x00, 0x00, 0x00, 0xFF);
                 gDisplayListHead = func_8009B9D0(gDisplayListHead, D_020015A4);
                 gDPSetPrimColor(gDisplayListHead++, 0, 0, 0x32, 0x00, 0x00, 0xFF);
@@ -552,32 +543,32 @@ RECOMP_PATCH void render_menus(MenuItem* arg0) {
                 gDPSetPrimColor(gDisplayListHead++, 0, 0, 0x32, 0x32, 0x00, 0xFF);
                 gDisplayListHead = func_8009B9D0(gDisplayListHead, D_02001658);
                 break;
-            case MENU_ITEM_TYPE_0D6: /* switch 6 */
+            case MENU_ITEM_TYPE_0D6:
                 func_8009A76C(arg0->D_8018DEE0_index, arg0->column, arg0->row, -1);
                 break;
-            case MENU_ITEM_TYPE_0D7: /* switch 6 */
+            case MENU_ITEM_TYPE_0D7:
                 func_800A0DFC();
                 break;
-            case MENU_ITEM_TYPE_0D8: /* switch 6 */
-            case MENU_ITEM_TYPE_0D9: /* switch 6 */
+            case MENU_ITEM_TYPE_0D8:
+            case MENU_ITEM_TYPE_0D9:
                 func_800A0EB8(arg0, arg0->type - 0xD8);
                 break;
-            case MENU_ITEM_UI_START_BACKGROUND: /* switch 6 */
+            case MENU_ITEM_UI_START_BACKGROUND:
                 gDisplayListHead = RenderMenuTextures(
                     gDisplayListHead, gMenuTexturesBackground[has_unlocked_extra_mode()], arg0->column, arg0->row);
                 break;
-            case MENU_ITEM_UI_LOGO_AND_COPYRIGHT: /* switch 6 */
+            case MENU_ITEM_UI_LOGO_AND_COPYRIGHT:
                 render_game_logo((arg0->column + 0xA0), (arg0->row + 0x47));
                 gDisplayListHead =
                     render_menu_textures(gDisplayListHead, seg2_copyright_1996_texture, arg0->column, arg0->row);
                 break;
-            case MENU_ITEM_UI_PUSH_START_BUTTON: /* switch 6 */
+            case MENU_ITEM_UI_PUSH_START_BUTTON:
                 if (((gGlobalTimer / 8) % 3) != 0) {
                     gDisplayListHead =
                         render_menu_textures(gDisplayListHead, seg2_push_start_button_texture, arg0->column, arg0->row);
                 }
                 break;
-            case MENU_ITEM_UI_START_RECORD_TIME: /* switch 6 */
+            case MENU_ITEM_UI_START_RECORD_TIME:
                 var_t0 = (s32) ((f32) (get_string_width(gCourseNamesDup[0]) + 5) * 0.9f) / 2;
                 gDisplayListHead = draw_box(gDisplayListHead, 0xA0 - var_t0, 0x0000007B, var_t0 + 0xA0, 0x000000A4, 0,
                                             0, 0, 0x00000096);
@@ -600,7 +591,7 @@ RECOMP_PATCH void render_menus(MenuItem* arg0) {
                 get_time_record_centiseconds(temp_v1, sp80);
                 func_800939C8(0x000000B4, 0x000000A0, sp80, 0, 1.0f, 1.0f);
                 break;
-            case MENU_ITEM_UI_NO_CONTROLLER: /* switch 6 */
+            case MENU_ITEM_UI_NO_CONTROLLER:
                 var_t0 = get_string_width(gTextNoController[0]);
                 temp_v1 = get_string_width(gTextNoController[1]);
                 if (var_t0 < temp_v1) {
@@ -617,31 +608,31 @@ RECOMP_PATCH void render_menus(MenuItem* arg0) {
                                               gTextNoController[temp_t9], 0, why, why);
                 }
                 break;
-            case MAIN_MENU_BACKGROUND:        /* switch 6 */
-            case CHARACTER_SELECT_BACKGROUND: /* switch 6 */
-            case COURSE_SELECT_BACKGROUND:    /* switch 6 */
+            case MAIN_MENU_BACKGROUND:
+            case CHARACTER_SELECT_BACKGROUND:
+            case COURSE_SELECT_BACKGROUND:
                 gDisplayListHead = func_8009BC9C_2(gDisplayListHead, gMenuTexturesBackground[has_unlocked_extra_mode()],
-                                                 arg0->column, arg0->row, 3, 0, arg0);
+                                                   arg0->column, arg0->row, 3, 0, arg0);
                 break;
-            case MENU_ITEM_UI_GAME_SELECT: /* switch 6 */
+            case MENU_ITEM_UI_GAME_SELECT:
                 gDisplayListHead =
                     render_menu_textures(gDisplayListHead, seg2_game_select_texture, arg0->column, arg0->row);
                 break;
-            case MENU_ITEM_UI_1P_GAME: /* switch 6 */
-            case MENU_ITEM_UI_2P_GAME: /* switch 6 */
-            case MENU_ITEM_UI_3P_GAME: /* switch 6 */
-            case MENU_ITEM_UI_4P_GAME: /* switch 6 */
+            case MENU_ITEM_UI_1P_GAME:
+            case MENU_ITEM_UI_2P_GAME:
+            case MENU_ITEM_UI_3P_GAME:
+            case MENU_ITEM_UI_4P_GAME:
                 var_a1 = arg0->type - 0xB;
                 func_800A8270(var_a1, arg0);
                 func_800A0FA4(arg0, var_a1);
                 break;
-            case MENU_ITEM_UI_OK: /* switch 6 */
+            case MENU_ITEM_UI_OK:
                 func_800A8564(arg0);
                 gDisplayListHead =
                     func_8009BC9C_2(gDisplayListHead, D_0200487C, arg0->column, arg0->row, 2, arg0->param1, NULL);
                 break;
-            case MAIN_MENU_OPTION_GFX: /* switch 6 */
-            case MAIN_MENU_DATA_GFX:   /* switch 6 */
+            case MAIN_MENU_OPTION_GFX:
+            case MAIN_MENU_DATA_GFX:
                 var_a1 = arg0->type - 0xF;
                 if (arg0->param1 < 0x20) {
                     temp_t9 = (arg0->param1 * 0x3A) / 64;
@@ -656,17 +647,17 @@ RECOMP_PATCH void render_menus(MenuItem* arg0) {
                     }
                 }
                 var_v1 = arg0->type - 0xA;
-                gDisplayListHead =
-                    func_8009BC9C_2(gDisplayListHead, D_800E8254[var_v1], arg0->column, arg0->row, 2, arg0->param1, NULL);
+                gDisplayListHead = func_8009BC9C_2(gDisplayListHead, D_800E8254[var_v1], arg0->column, arg0->row, 2,
+                                                   arg0->param1, NULL);
                 break;
-            case MAIN_MENU_50CC:              /* switch 6 */
-            case MAIN_MENU_100CC:             /* switch 6 */
-            case MAIN_MENU_150CC:             /* switch 6 */
-            case MAIN_MENU_EXTRA_CC:          /* switch 6 */
-            case MENU_ITEM_TYPE_016:          /* switch 6 */
-            case MENU_ITEM_TYPE_017:          /* switch 6 */
-            case MAIN_MENU_TIME_TRIALS_BEGIN: /* switch 6 */
-            case MAIN_MENU_TIME_TRIALS_DATA:  /* switch 6 */
+            case MAIN_MENU_50CC:
+            case MAIN_MENU_100CC:
+            case MAIN_MENU_150CC:
+            case MAIN_MENU_EXTRA_CC:
+            case MENU_ITEM_TYPE_016:
+            case MENU_ITEM_TYPE_017:
+            case MAIN_MENU_TIME_TRIALS_BEGIN:
+            case MAIN_MENU_TIME_TRIALS_DATA:
                 var_v1 = gGameModeSubMenuColumn[gPlayerCount - 1][gGameModeMenuColumn[gPlayerCount - 1]];
                 var_a1 = gGameModePlayerSelection[gPlayerCount - 1][gGameModeMenuColumn[gPlayerCount - 1]];
                 switch (arg0->type) {        /* switch 5 */
@@ -723,7 +714,7 @@ RECOMP_PATCH void render_menus(MenuItem* arg0) {
                 }
                 gDisplayListHead = render_menu_textures(gDisplayListHead, sp9C, arg0->column, arg0->row);
                 break;
-            case MENU_ITEM_TYPE_01B: /* switch 6 */
+            case MENU_ITEM_TYPE_01B:
                 if (arg0->state == 2) {
                     gDPSetTextureFilter(gDisplayListHead++, G_TF_BILERP);
                 } else {
@@ -731,13 +722,13 @@ RECOMP_PATCH void render_menus(MenuItem* arg0) {
                 }
                 func_800A10CC(arg0);
                 break;
-            case CHARACTER_SELECT_MENU_PLAYER_SELECT_BANNER: /* switch 6 */
+            case CHARACTER_SELECT_MENU_PLAYER_SELECT_BANNER:
                 gDisplayListHead = render_menu_textures(gDisplayListHead, D_02004B4C, arg0->column, arg0->row);
                 break;
-            case CHARACTER_SELECT_MENU_1P_CURSOR: /* switch 6 */
-            case CHARACTER_SELECT_MENU_2P_CURSOR: /* switch 6 */
-            case CHARACTER_SELECT_MENU_3P_CURSOR: /* switch 6 */
-            case CHARACTER_SELECT_MENU_4P_CURSOR: /* switch 6 */
+            case CHARACTER_SELECT_MENU_1P_CURSOR:
+            case CHARACTER_SELECT_MENU_2P_CURSOR:
+            case CHARACTER_SELECT_MENU_3P_CURSOR:
+            case CHARACTER_SELECT_MENU_4P_CURSOR:
                 temp_a0 = arg0->type - CHARACTER_SELECT_MENU_1P_CURSOR;
                 if (gCharacterGridSelections[temp_a0]) {
                     if (gCharacterGridIsSelected[temp_a0] == 0) {
@@ -754,30 +745,30 @@ RECOMP_PATCH void render_menus(MenuItem* arg0) {
                     render_cursor_player(arg0, temp_a0, temp_t2);
                 }
                 break;
-            case CHARACTER_SELECT_MENU_OK: /* switch 6 */
+            case CHARACTER_SELECT_MENU_OK:
                 func_800A8564(arg0);
                 gDisplayListHead =
                     func_8009BC9C_2(gDisplayListHead, D_02004B74, arg0->column, arg0->row, 2, arg0->param1, NULL);
                 break;
-            case CHARACTER_SELECT_MENU_MARIO:  /* switch 6 */
-            case CHARACTER_SELECT_MENU_LUIGI:  /* switch 6 */
-            case CHARACTER_SELECT_MENU_TOAD:   /* switch 6 */
-            case CHARACTER_SELECT_MENU_PEACH:  /* switch 6 */
-            case CHARACTER_SELECT_MENU_YOSHI:  /* switch 6 */
-            case CHARACTER_SELECT_MENU_DK:     /* switch 6 */
-            case CHARACTER_SELECT_MENU_WARIO:  /* switch 6 */
-            case CHARACTER_SELECT_MENU_BOWSER: /* switch 6 */
+            case CHARACTER_SELECT_MENU_MARIO:
+            case CHARACTER_SELECT_MENU_LUIGI:
+            case CHARACTER_SELECT_MENU_TOAD:
+            case CHARACTER_SELECT_MENU_PEACH:
+            case CHARACTER_SELECT_MENU_YOSHI:
+            case CHARACTER_SELECT_MENU_DK:
+            case CHARACTER_SELECT_MENU_WARIO:
+            case CHARACTER_SELECT_MENU_BOWSER:
                 func_800A12BC(arg0, segmented_to_virtual_dupe(D_800E7D54[arg0->type - 0x2B]));
                 /* fallthrough */
-            case MENU_ITEM_TYPE_0A0: /* switch 6 */
-            case MENU_ITEM_TYPE_0A1: /* switch 6 */
+            case MENU_ITEM_TYPE_0A0:
+            case MENU_ITEM_TYPE_0A1:
                 func_8009A76C(arg0->D_8018DEE0_index, arg0->column, arg0->row, arg0->param1);
                 break;
-            case MENU_ITEM_TYPE_058:         /* switch 6 */
-            case COURSE_SELECT_COURSE_NAMES: /* switch 6 */
-            case MENU_ITEM_TYPE_05A:         /* switch 6 */
-            case MENU_ITEM_TYPE_05B:         /* switch 6 */
-            case COURSE_SELECT_BATTLE_NAMES: /* switch 6 */
+            case MENU_ITEM_TYPE_058:
+            case COURSE_SELECT_COURSE_NAMES:
+            case MENU_ITEM_TYPE_05A:
+            case MENU_ITEM_TYPE_05B:
+            case COURSE_SELECT_BATTLE_NAMES:
                 func_800A8A98(arg0);
                 gDisplayListHead = render_menu_textures(
                     gDisplayListHead,
@@ -785,33 +776,33 @@ RECOMP_PATCH void render_menus(MenuItem* arg0) {
                     arg0->column, arg0->row);
                 func_800A8CA4(arg0);
                 break;
-            case COURSE_SELECT_MAP_SELECT: /* switch 6 */
+            case COURSE_SELECT_MAP_SELECT:
                 gDisplayListHead = render_menu_textures(
                     gDisplayListHead,
                     segmented_to_virtual_dupe(gMenuTexturesTrackSelection[arg0->type - COURSE_SELECT_MAP_SELECT]),
                     arg0->column, arg0->row);
                 break;
-            case MENU_ITEM_TYPE_05F: /* switch 6 */
-            case MENU_ITEM_TYPE_060: /* switch 6 */
-            case MENU_ITEM_TYPE_061: /* switch 6 */
-            case MENU_ITEM_TYPE_062: /* switch 6 */
+            case MENU_ITEM_TYPE_05F:
+            case MENU_ITEM_TYPE_060:
+            case MENU_ITEM_TYPE_061:
+            case MENU_ITEM_TYPE_062:
                 func_800A1500(arg0);
                 break;
-            case COURSE_SELECT_MUSHROOM_CUP: /* switch 6 */
-            case COURSE_SELECT_FLOWER_CUP:   /* switch 6 */
-            case COURSE_SELECT_STAR_CUP:     /* switch 6 */
-            case COURSE_SELECT_SPECIAL_CUP:  /* switch 6 */
+            case COURSE_SELECT_MUSHROOM_CUP:
+            case COURSE_SELECT_FLOWER_CUP:
+            case COURSE_SELECT_STAR_CUP:
+            case COURSE_SELECT_SPECIAL_CUP:
                 var_a1 = arg0->type - 0x53;
                 func_800A890C(var_a1, arg0);
                 func_800A143C(arg0, var_a1);
                 break;
-            case COURSE_SELECT_OK: /* switch 6 */
+            case COURSE_SELECT_OK:
                 func_800A8564(arg0);
                 gDisplayListHead =
                     func_8009BC9C_2(gDisplayListHead, D_02004E80, arg0->column, arg0->row, 2, arg0->param1, NULL);
                 break;
-            case MENU_ITEM_TYPE_065: /* switch 6 */
-            case MENU_ITEM_TYPE_066: /* switch 6 */
+            case MENU_ITEM_TYPE_065:
+            case MENU_ITEM_TYPE_066:
                 if (arg0->type == MENU_ITEM_TYPE_065) {
                     scaleX = 0.6f;
                 } else {
@@ -823,30 +814,30 @@ RECOMP_PATCH void render_menus(MenuItem* arg0) {
                                   0.8f);
                 func_800A874C(arg0);
                 break;
-            case MENU_ITEM_TYPE_06E: /* switch 6 */
+            case MENU_ITEM_TYPE_06E:
                 render_battle_introduction(arg0);
                 break;
-            case MENU_ITEM_TYPE_067: /* switch 6 */
+            case MENU_ITEM_TYPE_067:
                 func_800A8EC0(arg0);
                 break;
-            case MENU_ITEM_TYPE_068: /* switch 6 */
+            case MENU_ITEM_TYPE_068:
                 gDisplayListHead = draw_box_fill(gDisplayListHead, arg0->column, arg0->row, arg0->column + 0x3F,
                                                  arg0->row + 0x11, 1, 1, 1, 0x000000FF);
                 gDisplayListHead = render_menu_textures(
                     gDisplayListHead, segmented_to_virtual_dupe(D_800E8294[gCCSelection]), arg0->column, arg0->row);
                 break;
-            case MENU_ITEM_TYPE_069: /* switch 6 */
+            case MENU_ITEM_TYPE_069:
                 func_800A8F48(arg0);
                 break;
-            case MENU_ITEM_TYPE_078: /* switch 6 */
-            case MENU_ITEM_TYPE_079: /* switch 6 */
-            case MENU_ITEM_TYPE_07A: /* switch 6 */
-            case MENU_ITEM_TYPE_07B: /* switch 6 */
+            case MENU_ITEM_TYPE_078:
+            case MENU_ITEM_TYPE_079:
+            case MENU_ITEM_TYPE_07A:
+            case MENU_ITEM_TYPE_07B:
                 var_a1 = arg0->type - 0x78;
                 func_800A90D4(var_a1, arg0);
                 func_800A143C(arg0, var_a1);
                 break;
-            case MENU_ITEM_TYPE_08C: /* switch 6 */
+            case MENU_ITEM_TYPE_08C:
                 if ((gMainMenuSelection >= MAIN_MENU_MODE_SUB_SELECT) && (var_a1 == (arg0->type - var_v1))) {
                     if (gMainMenuSelection > MAIN_MENU_MODE_SUB_SELECT) {
                         gDisplayListHead =
@@ -864,61 +855,61 @@ RECOMP_PATCH void render_menus(MenuItem* arg0) {
                 set_text_color(TEXT_YELLOW);
                 print_text1_left(0x00000125, 0x0000001C, gTextMenuData, 0, 0.55f, 0.55f);
                 break;
-            case MENU_ITEM_TYPE_08D: /* switch 6 */
+            case MENU_ITEM_TYPE_08D:
                 func_800A1780(arg0);
                 break;
-            case MENU_ITEM_TYPE_07C: /* switch 6 */
-            case MENU_ITEM_TYPE_07D: /* switch 6 */
-            case MENU_ITEM_TYPE_07E: /* switch 6 */
-            case MENU_ITEM_TYPE_07F: /* switch 6 */
-            case MENU_ITEM_TYPE_080: /* switch 6 */
-            case MENU_ITEM_TYPE_081: /* switch 6 */
-            case MENU_ITEM_TYPE_082: /* switch 6 */
-            case MENU_ITEM_TYPE_083: /* switch 6 */
-            case MENU_ITEM_TYPE_084: /* switch 6 */
-            case MENU_ITEM_TYPE_085: /* switch 6 */
-            case MENU_ITEM_TYPE_086: /* switch 6 */
-            case MENU_ITEM_TYPE_087: /* switch 6 */
-            case MENU_ITEM_TYPE_088: /* switch 6 */
-            case MENU_ITEM_TYPE_089: /* switch 6 */
-            case MENU_ITEM_TYPE_08A: /* switch 6 */
-            case MENU_ITEM_TYPE_08B: /* switch 6 */
+            case MENU_ITEM_TYPE_07C:
+            case MENU_ITEM_TYPE_07D:
+            case MENU_ITEM_TYPE_07E:
+            case MENU_ITEM_TYPE_07F:
+            case MENU_ITEM_TYPE_080:
+            case MENU_ITEM_TYPE_081:
+            case MENU_ITEM_TYPE_082:
+            case MENU_ITEM_TYPE_083:
+            case MENU_ITEM_TYPE_084:
+            case MENU_ITEM_TYPE_085:
+            case MENU_ITEM_TYPE_086:
+            case MENU_ITEM_TYPE_087:
+            case MENU_ITEM_TYPE_088:
+            case MENU_ITEM_TYPE_089:
+            case MENU_ITEM_TYPE_08A:
+            case MENU_ITEM_TYPE_08B:
                 func_800A15EC(arg0);
                 break;
-            case MENU_ITEM_TYPE_096: /* switch 6 */
+            case MENU_ITEM_TYPE_096:
                 set_text_color(TEXT_BLUE_GREEN_RED_CYCLE_1);
                 print_text1_left(arg0->column, arg0->row, gCupNames[D_800DC540], arg0->param1, arg0->paramf, 1.0f);
                 break;
-            case MENU_ITEM_TYPE_097: /* switch 6 */
+            case MENU_ITEM_TYPE_097:
                 set_text_color(TEXT_BLUE_GREEN_RED_CYCLE_2);
                 print_text_mode_1(arg0->column, arg0->row, gCourseNames[gCurrentCourseId], arg0->param1, arg0->paramf,
                                   1.0f);
                 break;
-            case MENU_ITEM_TYPE_098: /* switch 6 */
+            case MENU_ITEM_TYPE_098:
                 func_800A2D1C(arg0);
                 break;
-            case MENU_ITEM_TYPE_05E: /* switch 6 */
+            case MENU_ITEM_TYPE_05E:
                 gDisplayListHead = func_80096CD8(gDisplayListHead, 0x00000019, 0x00000072, 0x0000007CU, 0x0000004AU);
                 break;
-            case MENU_ITEM_TYPE_0AA: /* switch 6 */
+            case MENU_ITEM_TYPE_0AA:
                 func_800A2EB8(arg0);
                 break;
-            case MENU_ITEM_TYPE_0AB: /* switch 6 */
+            case MENU_ITEM_TYPE_0AB:
                 func_800A34A8(arg0);
                 break;
-            case MENU_ITEM_TYPE_0AC: /* switch 6 */
+            case MENU_ITEM_TYPE_0AC:
                 func_800A6154(arg0);
                 break;
-            case MENU_ITEM_TYPE_0AF: /* switch 6 */
+            case MENU_ITEM_TYPE_0AF:
                 func_800A6034(arg0);
                 break;
-            case MENU_ITEM_TYPE_0B0: /* switch 6 */
+            case MENU_ITEM_TYPE_0B0:
                 func_800A638C(arg0);
                 break;
-            case MENU_ITEM_TYPE_0B1: /* switch 6 */
-            case MENU_ITEM_TYPE_0B2: /* switch 6 */
-            case MENU_ITEM_TYPE_0B3: /* switch 6 */
-            case MENU_ITEM_TYPE_0B4: /* switch 6 */
+            case MENU_ITEM_TYPE_0B1:
+            case MENU_ITEM_TYPE_0B2:
+            case MENU_ITEM_TYPE_0B3:
+            case MENU_ITEM_TYPE_0B4:
                 if (arg0->state != 0) {
                     var_v1 = arg0->type - MENU_ITEM_TYPE_0B1;
                     gDisplayListHead = render_menu_textures(
@@ -929,61 +920,61 @@ RECOMP_PATCH void render_menus(MenuItem* arg0) {
                     render_cursor_player(arg0, var_v1, 0x000000FF);
                 }
                 break;
-            case MENU_ITEM_TYPE_0B9: /* switch 6 */
+            case MENU_ITEM_TYPE_0B9:
                 time_trials_finish_text_render(arg0);
                 break;
-            case MENU_ITEM_TYPE_0BA: /* switch 6 */
+            case MENU_ITEM_TYPE_0BA:
                 func_800A3E60(arg0);
                 break;
-            case MENU_ITEM_ANNOUNCE_GHOST: /* switch 6 */
+            case MENU_ITEM_ANNOUNCE_GHOST:
                 render_menu_item_announce_ghost(arg0);
                 break;
-            case MENU_ITEM_PAUSE: /* switch 6 */
+            case MENU_ITEM_PAUSE:
                 render_pause_menu(arg0);
                 break;
-            case MENU_ITEM_END_COURSE_OPTION: /* switch 6 */
+            case MENU_ITEM_END_COURSE_OPTION:
                 render_menu_item_end_course_option(arg0);
                 break;
-            case MENU_ITEM_DATA_COURSE_IMAGE: /* switch 6 */
+            case MENU_ITEM_DATA_COURSE_IMAGE:
                 render_menu_item_data_course_image(arg0);
                 break;
-            case MENU_ITEM_DATA_COURSE_INFO: /* switch 6 */
+            case MENU_ITEM_DATA_COURSE_INFO:
                 render_menu_item_data_course_info(arg0);
                 break;
-            case MENU_ITEM_DATA_COURSE_SELECTABLE: /* switch 6 */
+            case MENU_ITEM_DATA_COURSE_SELECTABLE:
                 menu_item_data_course_selectable(arg0);
                 break;
-            case MENU_ITEM_TYPE_0E9: /* switch 6 */
+            case MENU_ITEM_TYPE_0E9:
                 func_800A1DE0(arg0);
                 break;
-            case MENU_ITEM_TYPE_0EA: /* switch 6 */
+            case MENU_ITEM_TYPE_0EA:
                 func_800A1F30(arg0);
                 break;
-            case MENU_ITEM_TYPE_0F0: /* switch 6 */
+            case MENU_ITEM_TYPE_0F0:
                 func_800A1FB0(arg0);
                 break;
-            case MENU_ITEM_TYPE_0F1: /* switch 6 */
+            case MENU_ITEM_TYPE_0F1:
                 gDisplayListHead = render_menu_textures(gDisplayListHead, D_02004638, arg0->column, arg0->row);
                 break;
-            case MENU_ITEM_TYPE_10E: /* switch 6 */
+            case MENU_ITEM_TYPE_10E:
                 func_800A70E8(arg0);
                 break;
-            case MENU_ITEM_TYPE_12B: /* switch 6 */
+            case MENU_ITEM_TYPE_12B:
                 func_800A7258(arg0);
                 break;
-            case MENU_ITEM_TYPE_12C: /* switch 6 */
+            case MENU_ITEM_TYPE_12C:
                 func_800A72FC(arg0);
                 break;
-            case MENU_ITEM_TYPE_12D: /* switch 6 */
+            case MENU_ITEM_TYPE_12D:
                 func_800A7448(arg0);
                 break;
-            case MENU_ITEM_TYPE_12E: /* switch 6 */
+            case MENU_ITEM_TYPE_12E:
                 func_800A75A0(arg0);
                 break;
-            case MENU_ITEM_TYPE_12F: /* switch 6 */
+            case MENU_ITEM_TYPE_12F:
                 func_800A761C(arg0);
                 break;
-            case MENU_ITEM_TYPE_130: /* switch 6 */
+            case MENU_ITEM_TYPE_130:
                 if (arg0->state != 0) {
                     gDisplayListHead = render_menu_textures(
                         gDisplayListHead, segmented_to_virtual_dupe(D_800E7D54[D_800EFD64[D_802874D8.unk1E]]),
@@ -991,69 +982,69 @@ RECOMP_PATCH void render_menus(MenuItem* arg0) {
                     func_8009A7EC(arg0->D_8018DEE0_index, arg0->column, arg0->row, 0, arg0->param1);
                 }
                 break;
-            case MENU_ITEM_TYPE_190: /* switch 6 */
-            case MENU_ITEM_TYPE_191: /* switch 6 */
-            case MENU_ITEM_TYPE_192: /* switch 6 */
-            case MENU_ITEM_TYPE_193: /* switch 6 */
-            case MENU_ITEM_TYPE_194: /* switch 6 */
-            case MENU_ITEM_TYPE_195: /* switch 6 */
-            case MENU_ITEM_TYPE_196: /* switch 6 */
-            case MENU_ITEM_TYPE_197: /* switch 6 */
-            case MENU_ITEM_TYPE_198: /* switch 6 */
-            case MENU_ITEM_TYPE_199: /* switch 6 */
-            case MENU_ITEM_TYPE_19A: /* switch 6 */
-            case MENU_ITEM_TYPE_19B: /* switch 6 */
-            case MENU_ITEM_TYPE_19C: /* switch 6 */
-            case MENU_ITEM_TYPE_19D: /* switch 6 */
-            case MENU_ITEM_TYPE_19E: /* switch 6 */
-            case MENU_ITEM_TYPE_19F: /* switch 6 */
-            case MENU_ITEM_TYPE_1A0: /* switch 6 */
-            case MENU_ITEM_TYPE_1A1: /* switch 6 */
-            case MENU_ITEM_TYPE_1A2: /* switch 6 */
-            case MENU_ITEM_TYPE_1A3: /* switch 6 */
-            case MENU_ITEM_TYPE_1A4: /* switch 6 */
-            case MENU_ITEM_TYPE_1A5: /* switch 6 */
-            case MENU_ITEM_TYPE_1A6: /* switch 6 */
-            case MENU_ITEM_TYPE_1A7: /* switch 6 */
-            case MENU_ITEM_TYPE_1A8: /* switch 6 */
-            case MENU_ITEM_TYPE_1A9: /* switch 6 */
-            case MENU_ITEM_TYPE_1AA: /* switch 6 */
-            case MENU_ITEM_TYPE_1AB: /* switch 6 */
-            case MENU_ITEM_TYPE_1AC: /* switch 6 */
-            case MENU_ITEM_TYPE_1AD: /* switch 6 */
-            case MENU_ITEM_TYPE_1AE: /* switch 6 */
-            case MENU_ITEM_TYPE_1AF: /* switch 6 */
-            case MENU_ITEM_TYPE_1B0: /* switch 6 */
-            case MENU_ITEM_TYPE_1B1: /* switch 6 */
-            case MENU_ITEM_TYPE_1B2: /* switch 6 */
-            case MENU_ITEM_TYPE_1B3: /* switch 6 */
-            case MENU_ITEM_TYPE_1B4: /* switch 6 */
-            case MENU_ITEM_TYPE_1B5: /* switch 6 */
-            case MENU_ITEM_TYPE_1B6: /* switch 6 */
-            case MENU_ITEM_TYPE_1B7: /* switch 6 */
-            case MENU_ITEM_TYPE_1B8: /* switch 6 */
-            case MENU_ITEM_TYPE_1B9: /* switch 6 */
-            case MENU_ITEM_TYPE_1BA: /* switch 6 */
-            case MENU_ITEM_TYPE_1BB: /* switch 6 */
-            case MENU_ITEM_TYPE_1BC: /* switch 6 */
-            case MENU_ITEM_TYPE_1BD: /* switch 6 */
-            case MENU_ITEM_TYPE_1BE: /* switch 6 */
-            case MENU_ITEM_TYPE_1BF: /* switch 6 */
-            case MENU_ITEM_TYPE_1C0: /* switch 6 */
-            case MENU_ITEM_TYPE_1C1: /* switch 6 */
-            case MENU_ITEM_TYPE_1C2: /* switch 6 */
-            case MENU_ITEM_TYPE_1C3: /* switch 6 */
-            case MENU_ITEM_TYPE_1C4: /* switch 6 */
-            case MENU_ITEM_TYPE_1C5: /* switch 6 */
-            case MENU_ITEM_TYPE_1C6: /* switch 6 */
-            case MENU_ITEM_TYPE_1C7: /* switch 6 */
-            case MENU_ITEM_TYPE_1C8: /* switch 6 */
-            case MENU_ITEM_TYPE_1C9: /* switch 6 */
-            case MENU_ITEM_TYPE_1CA: /* switch 6 */
-            case MENU_ITEM_TYPE_1CB: /* switch 6 */
-            case MENU_ITEM_TYPE_1CC: /* switch 6 */
-            case MENU_ITEM_TYPE_1CD: /* switch 6 */
-            case MENU_ITEM_TYPE_1CE: /* switch 6 */
+            case MENU_ITEM_TYPE_190:
+            case MENU_ITEM_TYPE_191:
+            case MENU_ITEM_TYPE_192:
+            case MENU_ITEM_TYPE_193:
+            case MENU_ITEM_TYPE_194:
+            case MENU_ITEM_TYPE_195:
+            case MENU_ITEM_TYPE_196:
+            case MENU_ITEM_TYPE_197:
+            case MENU_ITEM_TYPE_198:
+            case MENU_ITEM_TYPE_199:
+            case MENU_ITEM_TYPE_19A:
+            case MENU_ITEM_TYPE_19B:
+            case MENU_ITEM_TYPE_19C:
+            case MENU_ITEM_TYPE_19D:
+            case MENU_ITEM_TYPE_19E:
+            case MENU_ITEM_TYPE_19F:
+            case MENU_ITEM_TYPE_1A0:
+            case MENU_ITEM_TYPE_1A1:
+            case MENU_ITEM_TYPE_1A2:
+            case MENU_ITEM_TYPE_1A3:
+            case MENU_ITEM_TYPE_1A4:
+            case MENU_ITEM_TYPE_1A5:
+            case MENU_ITEM_TYPE_1A6:
+            case MENU_ITEM_TYPE_1A7:
+            case MENU_ITEM_TYPE_1A8:
+            case MENU_ITEM_TYPE_1A9:
+            case MENU_ITEM_TYPE_1AA:
+            case MENU_ITEM_TYPE_1AB:
+            case MENU_ITEM_TYPE_1AC:
+            case MENU_ITEM_TYPE_1AD:
+            case MENU_ITEM_TYPE_1AE:
+            case MENU_ITEM_TYPE_1AF:
+            case MENU_ITEM_TYPE_1B0:
+            case MENU_ITEM_TYPE_1B1:
+            case MENU_ITEM_TYPE_1B2:
+            case MENU_ITEM_TYPE_1B3:
+            case MENU_ITEM_TYPE_1B4:
+            case MENU_ITEM_TYPE_1B5:
+            case MENU_ITEM_TYPE_1B6:
+            case MENU_ITEM_TYPE_1B7:
+            case MENU_ITEM_TYPE_1B8:
+            case MENU_ITEM_TYPE_1B9:
+            case MENU_ITEM_TYPE_1BA:
+            case MENU_ITEM_TYPE_1BB:
+            case MENU_ITEM_TYPE_1BC:
+            case MENU_ITEM_TYPE_1BD:
+            case MENU_ITEM_TYPE_1BE:
+            case MENU_ITEM_TYPE_1BF:
+            case MENU_ITEM_TYPE_1C0:
+            case MENU_ITEM_TYPE_1C1:
+            case MENU_ITEM_TYPE_1C2:
+            case MENU_ITEM_TYPE_1C3:
+            case MENU_ITEM_TYPE_1C4:
+            case MENU_ITEM_TYPE_1C5:
+            case MENU_ITEM_TYPE_1C6:
+            case MENU_ITEM_TYPE_1C7:
+            case MENU_ITEM_TYPE_1C8:
+            case MENU_ITEM_TYPE_1C9:
+            case MENU_ITEM_TYPE_1CA:
+            case MENU_ITEM_TYPE_1CB:
+            case MENU_ITEM_TYPE_1CC:
+            case MENU_ITEM_TYPE_1CD:
+            case MENU_ITEM_TYPE_1CE:
                 menu_item_credits_render(arg0);
                 break;
         }
@@ -1160,9 +1151,9 @@ Gfx* RenderMenuTextures(Gfx* arg0, MenuTexture* arg1, s32 column, s32 row) {
         temp_v0_3 = (u8*) func_8009B8C4(temp_v0->textureData);
         if (temp_v0_3 != 0) {
             if (D_8018E7AC[4] != 4) {
-                arg0 =
-                    RenderBackground(arg0, var_s4, 0x00000400, 0x00000400, 0, 0, temp_v0->width, temp_v0->height,
-                                  temp_v0->dX + column, temp_v0->dY + row, temp_v0_3, temp_v0->width, temp_v0->height);
+                arg0 = RenderBackground(arg0, var_s4, 0x00000400, 0x00000400, 0, 0, temp_v0->width, temp_v0->height,
+                                        temp_v0->dX + column, temp_v0->dY + row, temp_v0_3, temp_v0->width,
+                                        temp_v0->height);
             } else {
                 arg0 = func_800987D0(arg0, 0U, 0U, temp_v0->width, temp_v0->height, temp_v0->dX + column,
                                      temp_v0->dY + row, temp_v0_3, temp_v0->width, temp_v0->height);
@@ -1173,8 +1164,8 @@ Gfx* RenderMenuTextures(Gfx* arg0, MenuTexture* arg1, s32 column, s32 row) {
     return arg0;
 }
 
-Gfx* RenderBackground(Gfx* displayListHead, s8 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7, s32 arg8,
-                   s32 arg9, u8* argA, u32 argB, u32 argC) {
+Gfx* RenderBackground(Gfx* displayListHead, s8 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7,
+                      s32 arg8, s32 arg9, u8* argA, u32 argB, u32 argC) {
     u32 var_a1_2 = arg4;
     u32 var_s3 = arg5;
     s32 sp7C;
@@ -1253,8 +1244,9 @@ Gfx* RenderBackground(Gfx* displayListHead, s8 arg1, s32 arg2, s32 arg3, s32 arg
             gDPLoadTextureTile(displayListHead++, argA, arg1, G_IM_SIZ_16b, argB, 0, var_a1_2, var_s3,
                                var_a1_2 + var_s2, var_s3 + var_s4, 0, G_TX_NOMIRROR | G_TX_WRAP,
                                G_TX_NOMIRROR | G_TX_WRAP, sp68, sp64, G_TX_NOLOD, G_TX_NOLOD);
-            gEXTextureRectangle(displayListHead++, G_EX_ORIGIN_LEFT, G_EX_ORIGIN_RIGHT, arg8 * 4, arg9 * 4, (arg8 + var_s2) * 4, (arg9 + var_s4) * 4, 0,
-                                (var_a1_2 * 32) & 0xFFFF, (var_s3 * 32) & 0xFFFF, arg2, arg3);
+            gEXTextureRectangle(displayListHead++, G_EX_ORIGIN_LEFT, G_EX_ORIGIN_RIGHT, arg8 * 4, arg9 * 4,
+                                (arg8 + var_s2) * 4, (arg9 + var_s4) * 4, 0, (var_a1_2 * 32) & 0xFFFF,
+                                (var_s3 * 32) & 0xFFFF, arg2, arg3);
 
             arg8 += var_t0;
         }
@@ -1398,7 +1390,7 @@ RECOMP_PATCH void render_kart(Player* player, s8 playerId, s8 arg2, s8 arg3) {
         if (arg2 == playerId) {
             gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxKart[playerId + (arg2 * 8)]),
                       G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-            gSPDisplayList(gDisplayListHead++, common_setting_render_character);
+            gSPDisplayList(gDisplayListHead++, (Gfx*) 0xd008cd8);
             gDPLoadTLUT_pal256(gDisplayListHead++, gPlayerPalette);
             gDPSetTextureLUT(gDisplayListHead++, G_TT_RGBA16);
             func_8004B614(gPlayerRedEffect[playerId], gPlayerGreenEffect[playerId], gPlayerBlueEffect[playerId],
@@ -1412,7 +1404,7 @@ RECOMP_PATCH void render_kart(Player* player, s8 playerId, s8 arg2, s8 arg3) {
         } else {
             gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxKart[playerId + (arg2 * 8)]),
                       G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-            gSPDisplayList(gDisplayListHead++, common_setting_render_character);
+            gSPDisplayList(gDisplayListHead++, (Gfx*) 0xd008cd8);
             gDPLoadTLUT_pal256(gDisplayListHead++, gPlayerPalette);
             gDPSetTextureLUT(gDisplayListHead++, G_TT_RGBA16);
             func_8004B614(gPlayerRedEffect[playerId], gPlayerGreenEffect[playerId], gPlayerBlueEffect[playerId],
@@ -1428,7 +1420,7 @@ RECOMP_PATCH void render_kart(Player* player, s8 playerId, s8 arg2, s8 arg3) {
                (player->soundEffects & 0x04000000)) {
         gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxKart[playerId + (arg2 * 8)]),
                   G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-        gSPDisplayList(gDisplayListHead++, common_setting_render_character);
+        gSPDisplayList(gDisplayListHead++, (Gfx*) 0xd008cd8);
         gDPLoadTLUT_pal256(gDisplayListHead++, gPlayerPalette);
         gDPSetTextureLUT(gDisplayListHead++, G_TT_RGBA16);
         func_8004B614(gPlayerRedEffect[playerId], gPlayerGreenEffect[playerId], gPlayerBlueEffect[playerId],
@@ -1439,7 +1431,7 @@ RECOMP_PATCH void render_kart(Player* player, s8 playerId, s8 arg2, s8 arg3) {
     } else {
         gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxKart[playerId + (arg2 * 8)]),
                   G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-        gSPDisplayList(gDisplayListHead++, common_setting_render_character);
+        gSPDisplayList(gDisplayListHead++, (Gfx*) 0xd008cd8);
         gDPLoadTLUT_pal256(gDisplayListHead++, gPlayerPalette);
         gDPSetTextureLUT(gDisplayListHead++, G_TT_RGBA16);
         func_8004B614(gPlayerRedEffect[playerId], gPlayerGreenEffect[playerId], gPlayerBlueEffect[playerId],
@@ -1459,93 +1451,15 @@ RECOMP_PATCH void render_kart(Player* player, s8 playerId, s8 arg2, s8 arg3) {
                         G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD,
                         G_TX_NOLOD);
     gSPVertex(gDisplayListHead++, &D_800DDBB4[playerId][arg3], 4, 0);
-    gSPDisplayList(gDisplayListHead++, common_square_plain_render);
+    gSPDisplayList(gDisplayListHead++, (Gfx*) 0xd008c78);
 
     gDPLoadTextureBlock(gDisplayListHead++, sKartLowerTexture, G_IM_FMT_CI, G_IM_SIZ_8b, 64, 32, 0,
                         G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD,
                         G_TX_NOLOD);
     gSPVertex(gDisplayListHead++, &D_800DDBB4[playerId][arg3 + 4], 4, 0);
-    gSPDisplayList(gDisplayListHead++, common_square_plain_render);
+    gSPDisplayList(gDisplayListHead++, (Gfx*) 0xd008c78);
     gSPTexture(gDisplayListHead++, 1, 1, 0, G_TX_RENDERTILE, G_OFF);
     gDPSetAlphaCompare(gDisplayListHead++, G_AC_NONE);
-}
-#endif
-
-#if 0
-Gfx D_02007708[] = {
-    gsDPPipeSync(),
-    gsDPSetRenderMode(G_RM_OPA_SURF, G_RM_OPA_SURF2),
-    gsDPSetCombineMode(G_CC_DECALRGBA, G_CC_DECALRGBA),
-    gsSPEndDisplayList(),
-};
-Gfx D_02007728[] = {
-    gsDPPipeSync(),
-    gsDPSetRenderMode(G_RM_XLU_SURF, G_RM_XLU_SURF2),
-    gsDPSetCombineMode(G_CC_DECALRGBA, G_CC_DECALRGBA),
-    gsSPEndDisplayList(),
-};
-Gfx D_02007768[] = {
-    gsDPPipeSync(),
-    gsDPSetRenderMode(G_RM_XLU_SURF, G_RM_XLU_SURF2),
-    gsDPSetCombineMode(G_CC_MODULATEIA_PRIM, G_CC_MODULATEIA_PRIM),
-    gsSPEndDisplayList(),
-};
-
-RECOMP_PATCH Gfx* func_8009C434(Gfx* arg0, struct_8018DEE0_entry* arg1, s32 arg2, s32 arg3, s32 arg4) {
-    s32 var_t0;
-    s32 var_t1;
-    Gfx* temp;
-    MenuTexture* var_s0 = segmented_to_virtual_dupe(arg1->textureSequence[arg1->sequenceIndex].mk64Texture);
-    
-    temp = D_02007728;
-    while (var_s0->textureData != NULL) {
-        var_t1 = 0;
-        switch (var_s0->type) {
-            default:
-                gSPDisplayList(arg0++, D_02007728);
-                break;
-            case 0:
-                gSPDisplayList(arg0++, D_02007708);
-                break;
-            case 1:
-                gSPDisplayList(arg0++, D_02007728);
-                break;
-            case 3:
-                gSPDisplayList(arg0++, D_02007768);
-                var_t1 = 3;
-                break;
-        }
-
-        if (arg1->unk14 != 0) {
-            var_t0 = sMenuTextureMap[arg1->menuTextureIndex + 1].offset;
-        } else {
-            var_t0 = sMenuTextureMap[arg1->menuTextureIndex].offset;
-            if (1) {}
-            if (1) {}
-            if (1) {}
-        }
-        
-        if (arg4 >= 0) {
-            arg0 =
-                func_80097E58(arg0, var_t1, 0, 0U, var_s0->width, var_s0->height, var_s0->dX + arg2, var_s0->dY + arg3,
-                              (u8*) &gMenuTextureBuffer[var_t0], var_s0->width, var_s0->height, (u32) arg4);
-        } else {
-            switch (arg4) {
-                case -1:
-                    arg0 = func_80095E10(arg0, var_t1, 0x00000400, 0x00000400, 0, 0, var_s0->width, var_s0->height,
-                                         var_s0->dX + arg2, var_s0->dY + arg3, (u8*) &gMenuTextureBuffer[var_t0],
-                                         var_s0->width, var_s0->height);
-                    break;
-                case -2:
-                    arg0 = func_800963F0(arg0, var_t1, 0x00000400, 0x00000400, 0.5f, 0.5f, 0, 0, var_s0->width,
-                                         var_s0->height, var_s0->dX + arg2, var_s0->dY + arg3,
-                                         (u8*) &gMenuTextureBuffer[var_t0], var_s0->width, var_s0->height);
-                    break;
-            }
-        }
-        var_s0++;
-    }
-    return arg0;
 }
 #endif
 
@@ -1644,54 +1558,6 @@ Gfx* drawBackground2(Gfx* displayListHead, s8 arg1, s32 arg2, s32 arg3, s32 arg4
 }
 #endif
 
-#if 0
-extern u16 gFramebuffer0[SCREEN_WIDTH * SCREEN_HEIGHT];
-extern u16 gFramebuffer1[SCREEN_WIDTH * SCREEN_HEIGHT];
-extern u16 gFramebuffer2[SCREEN_WIDTH * SCREEN_HEIGHT];
-
-RECOMP_PATCH void thread3_video(UNUSED void* arg0) {
-    s32 i;
-    u64* framebuffer1;
-    OSMesg msg;
-
-    gPhysicalFramebuffers[0] = (u16*) &gFramebuffer0;
-    gPhysicalFramebuffers[1] = (u16*) &gFramebuffer1;
-    gPhysicalFramebuffers[2] = (u16*) &gFramebuffer2;
-
-    // Clear framebuffer.
-    framebuffer1 = (u64*) &gFramebuffer1;
-    for (i = 0; i < 19200; i++) {
-        framebuffer1[i] = 0;
-    }
-    setup_mesg_queues();
-    setup_game_memory();
-
-    create_thread(&gAudioThread, 4, &thread4_audio, 0, gAudioThreadStack + 8192, 20);
-    osStartThread(&gAudioThread);
-    create_thread(&gGameLoopThread, 5, &thread5_game_loop, 0, gGameLoopThreadStack + 8192, 10);
-    osStartThread(&gGameLoopThread);
-
-    while (true) {
-        
-        osRecvMesg(&gIntrMesgQueue, &msg, OS_MESG_BLOCK);
-        switch ((u32) msg) {
-            case MESG_VI_VBLANK:
-                handle_vblank();
-                break;
-            case MESG_SP_COMPLETE:
-                handle_sp_complete();
-                break;
-            case MESG_DP_COMPLETE:
-                handle_dp_complete();
-                break;
-            case MESG_START_GFX_SPTASK:
-                start_gfx_sptask();
-                break;
-        }
-    }
-}
-#endif
-
 // Kart Draw Distance
 #if 1
 RECOMP_PATCH u16 check_player_camera_collision(Player* player, Camera* camera, f32 arg2, f32 arg3) {
@@ -1713,7 +1579,7 @@ RECOMP_PATCH u16 check_player_camera_collision(Player* player, Camera* camera, f
 
     // Apply the multiplier to arg2 and arg3
     arg2 *= distanceMultiplier;
-    arg3 *= distanceMultiplier/5;
+    arg3 *= distanceMultiplier / 5;
 
     ret = false;
     switch (gActiveScreenMode) {
@@ -1746,119 +1612,6 @@ RECOMP_PATCH u16 check_player_camera_collision(Player* player, Camera* camera, f
         ret = true;
     }
     return ret;
-}
-#endif
-
-#if 0
-Vtx D_0D008BF8[] = {
-    {{{     2,      2,      0}, 0, {     0,      0}, {255, 255, 255, 255}}},
-    {{{     2,     -2,      0}, 0, {     0,   1984}, {255, 255, 255, 255}}},
-    {{{    -2,     -2,      0}, 0, {  1984,   1984}, {255, 255, 255, 255}}},
-    {{{    -2,      2,      0}, 0, {  1984,      0}, {255, 255, 255, 255}}},
-};
-Gfx D_0D008DA0[] = {
-    gsSPDisplayList(common_square_plain_render),
-    gsSPTexture(0x0001, 0x0001, 0, G_TX_RENDERTILE, G_OFF),
-    gsSPEndDisplayList(),
-};
-Gfx D_0D008E48[] = {
-    gsDPSetRenderMode(G_RM_ZB_CLD_SURF, G_RM_ZB_CLD_SURF2),
-    gsSPVertex(D_0D008BF8, 4, 0),
-    gsSPDisplayList(D_0D008DA0),
-    gsDPSetAlphaCompare(G_AC_NONE),
-    gsSPEndDisplayList(),
-};
-Gfx D_0D008DB8[] = {
-    gsDPPipeSync(),
-    gsDPSetTexturePersp(G_TP_PERSP),
-    gsSPClearGeometryMode(G_LIGHTING),
-    gsDPNoOp(),
-    gsDPSetTextureFilter(G_TF_BILERP),
-    gsSPTexture(0x8000, 0x8000, 0, G_TX_RENDERTILE, G_ON),
-    gsDPSetTextureLUT(G_TT_NONE),
-    gsSPEndDisplayList(),
-};
-u8* common_texture_particle_smoke = (u8*) 0xd02bc58;
-
-RECOMP_PATCH void func_8006538C(Player* player, s8 arg1, s16 arg2, s8 arg3) {
-    Vec3f spB4;
-    Vec3s spAC;
-    s32 primColors[] = { MAKE_RGB(0xFB, 0xFF, 0xFB), MAKE_RGB(0xFF, 0xFB, 0x86) };
-    s32 envColors[] = { MAKE_RGB(0x89, 0x62, 0x8F), MAKE_RGB(0xFE, 0x01, 0x09) };
-    s16 primRed;
-    s16 primGreen;
-    s16 primBlue;
-    s16 primAlpha;
-    s16 envRed;
-    s16 envGreen;
-    s16 envBlue;
-
-    recomp_printf("address: %x\n", common_texture_particle_smoke);
-
-    if (player->unk_258[arg2].unk_01C == 1) {
-        spB4[0] = player->unk_258[arg2].unk_000[0];
-        spB4[1] = player->unk_258[arg2].unk_000[1];
-        spB4[2] = player->unk_258[arg2].unk_000[2];
-        spAC[0] = 0;
-        spAC[1] = player->unk_048[arg3];
-        spAC[2] = 0;
-        if ((player->effects & STAR_EFFECT) && (((s32) gCourseTimer - D_8018D930[arg1]) < 9)) {
-            primRed = (primColors[1] >> 0x10) & 0xFF;
-            primGreen = (primColors[1] >> 0x08) & 0xFF;
-            primBlue = (primColors[1] >> 0x00) & 0xFF;
-            envRed = (envColors[1] >> 0x10) & 0xFF;
-            envGreen = (envColors[1] >> 0x08) & 0xFF;
-            envBlue = (envColors[1] >> 0x00) & 0xFF;
-            primAlpha = player->unk_258[arg2].unk_03E;
-            func_800652D4(spB4, spAC, ((player->unk_258[arg2].unk_00C * player->size) * 1.4));
-            gSPDisplayList(gDisplayListHead++, D_0D008DB8);
-            gDPLoadTextureBlock(gDisplayListHead++, common_texture_particle_smoke[player->unk_258[arg2].unk_010],
-                                G_IM_FMT_I, G_IM_SIZ_8b, 32, 32, 0, G_TX_NOMIRROR | G_TX_WRAP,
-                                G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
-            func_8004B72C(primRed, primGreen, primBlue, envRed, envGreen, envBlue, primAlpha);
-            gDPSetAlphaCompare(gDisplayListHead++, G_AC_DITHER);
-            gSPDisplayList(gDisplayListHead++, D_0D008E48);
-        } else {
-            primRed = (primColors[player->unk_258[arg2].unk_038] >> 0x10) & 0xFF;
-            primGreen = (primColors[player->unk_258[arg2].unk_038] >> 0x08) & 0xFF;
-            primBlue = (primColors[player->unk_258[arg2].unk_038] >> 0x00) & 0xFF;
-            envRed = (envColors[player->unk_258[arg2].unk_038] >> 0x10) & 0xFF;
-            envGreen = (envColors[player->unk_258[arg2].unk_038] >> 0x08) & 0xFF;
-            envBlue = (envColors[player->unk_258[arg2].unk_038] >> 0x00) & 0xFF;
-            primAlpha = player->unk_258[arg2].unk_03E;
-            func_800652D4(spB4, spAC, player->unk_258[arg2].unk_00C * player->size);
-            gSPDisplayList(gDisplayListHead++, D_0D008DB8);
-            gDPLoadTextureBlock(gDisplayListHead++, common_texture_particle_smoke[player->unk_258[arg2].unk_010],
-                                G_IM_FMT_I, G_IM_SIZ_8b, 32, 32, 0, G_TX_NOMIRROR | G_TX_WRAP,
-                                G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
-            func_8004B72C(primRed, primGreen, primBlue, envRed, envGreen, envBlue, primAlpha);
-            gSPDisplayList(gDisplayListHead++, D_0D008E48);
-        }
-        gMatrixEffectCount += 1;
-    }
-}
-#endif
-
-// This doesn't work at all
-#if 0
-RECOMP_PATCH void render_kart_particle_on_screen_one(Player* player, s8 playerId, s8 screenId) {
-    // @recomp Tag the transform.
-    gEXMatrixGroupDecomposedNormal(gDisplayListHead++, ((u32) player << 8) + (playerId << 16) + screenId, G_EX_PUSH,
-                                   G_MTX_MODELVIEW, G_EX_EDIT_ALLOW);
-
-    if ((player->type & PLAYER_EXISTS) == PLAYER_EXISTS) {
-        if ((player->effects & BOO_EFFECT) == BOO_EFFECT) {
-            if (playerId == screenId) {
-                func_8006D474(player, playerId, screenId);
-            }
-        } else {
-            func_8006D474(player, playerId, screenId);
-        }
-        func_8006DC54(player, playerId, screenId);
-    }
-
-    // @recomp Pop the transform id.
-    gEXPopMatrixGroup(gDisplayListHead++, G_MTX_MODELVIEW);
 }
 #endif
 
@@ -2259,19 +2012,7 @@ RECOMP_PATCH void print_text2(s32 column, s32 row, char* text, s32 tracking, f32
 }
 #endif
 
-#if 1
-/**
- * Determines whether an object is within the render distance of a camera.
- *
- * @param cameraPos       The position of the camera in 3D space.
- * @param objectPos       The position of the object in 3D space.
- * @param orientationY    The orientation angle of the object around the Y-axis.
- * @param minDistance     The minimum distance at which the object is considered within render distance.
- * @param fov             The field of view (FOV) of the camera.
- * @param maxDistance     The maximum render distance.
- * @return                The distance between the camera and the object if it's within render distance,
- *                        or -1.0f if it exceeds the render distance.
- */
+#if 1 // Draw Distance Improved@tb181
 
 RECOMP_PATCH f32 is_within_render_distance(Vec3f cameraPos, Vec3f objectPos, u16 orientationY, f32 minDistance, f32 fov,
                                            f32 maxDistance) {
@@ -2287,14 +2028,6 @@ RECOMP_PATCH f32 is_within_render_distance(Vec3f cameraPos, Vec3f objectPos, u16
     u16 temp;
     s32 count = 0;
 
-    // for (s32 i = 0; i < ACTOR_LIST_SIZE; i++) {
-    //     if (gActorList[i].flags != 0) {
-    //         count++;
-    //     }
-    // }
-    // // recomp_printf("Actor Count: %d\n", count);
-    // recomp_printf("gNumActors: %d\n", gNumActors);
-    // increase maxDistance value and culling of the fov
     maxDistance *= 1.5f;
     maxDistance2 = 1.0f;
     scaleFov = 1.25;
@@ -2329,7 +2062,7 @@ RECOMP_PATCH f32 is_within_render_distance(Vec3f cameraPos, Vec3f objectPos, u16
     if (minDistance == 0.0f) {
         if (is_visible_between_angle((orientationY + extended_fov), (orientationY - extended_fov), angleObject) == 1) {
             if (gCurrentCourseId == COURSE_KALAMARI_DESERT) {
-                return distance / 8.0f;
+                return distance / 6.5f; // set for better DD settings in Desert
             } else {
                 return distance / 10.0f; // Items
             }
@@ -2357,5 +2090,16 @@ RECOMP_PATCH f32 is_within_render_distance(Vec3f cameraPos, Vec3f objectPos, u16
         return distance;
     }
     return -1.0f;
+}
+#endif
+
+#if 1 // Increase DD for effects, snowmen, ect... @tb181
+RECOMP_PATCH u32 get_horizontal_distance_to_camera(s32 objectIndex, Camera* camera) {
+    s32 x;
+    s32 y;
+
+    x = gObjectList[objectIndex].pos[0] - camera->pos[0];
+    y = gObjectList[objectIndex].pos[2] - camera->pos[2];
+    return (x * x) + (y * y) / 5; // Increase DD
 }
 #endif
