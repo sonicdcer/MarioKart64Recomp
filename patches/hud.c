@@ -119,6 +119,7 @@ RECOMP_PATCH void func_8004ED40(s32 arg0) {
                   D_8018D310, 0xFF, (u8*) 0xd009958, (Vtx*) 0x0D0064B0, 64, 96, 64, 48);
     func_8004A258(D_8018CFEC, D_8018CFF4, D_8016579E, 1.0f, (u8*) 0xd00a558, (Vtx*) 0x0D005FF0, 0x40, 0x20, 0x40, 0x20);
     gEXSetViewportAlign(gDisplayListHead++, G_EX_ORIGIN_NONE, 0, 0);
+    gEXSetRectAlign(gDisplayListHead++, G_EX_ORIGIN_NONE, G_EX_ORIGIN_NONE, 0, 0, 0, 0);
 }
 #endif
 
@@ -179,6 +180,7 @@ RECOMP_PATCH void func_800591B4(void) {
             }
             func_800590D4(); // Player Ranking position (ex. 1st, 2nd, etc)
             gEXSetViewportAlign(gDisplayListHead++, G_EX_ORIGIN_NONE, 0, 0);
+            gEXSetRectAlign(gDisplayListHead++, G_EX_ORIGIN_NONE, G_EX_ORIGIN_NONE, 0, 0, 0, 0); // @recomp
         }
         func_8005902C();
         func_80057DD0();

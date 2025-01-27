@@ -1,7 +1,6 @@
 #include "patches.h"
 
 #if 1 // Draw Distance Improved@tb181
-
 RECOMP_PATCH f32 is_within_render_distance(Vec3f cameraPos, Vec3f objectPos, u16 orientationY, f32 minDistance, f32 fov,
                                            f32 maxDistance) {
     u16 angleObject;
@@ -16,11 +15,12 @@ RECOMP_PATCH f32 is_within_render_distance(Vec3f cameraPos, Vec3f objectPos, u16
     u16 temp;
     s32 count = 0;
 
-    maxDistance *= 1.5f;
+    maxDistance *= 6.5f;
     maxDistance2 = 1.0f;
     scaleFov = 1.25;
 
     f32 extended_fov = ((f32) fov * 0xB6 * scaleFov); // Sets the Culling for objects on the left and right
+
 
     distanceX = objectPos[0] - cameraPos[0];
     distanceX = distanceX * distanceX;
@@ -60,7 +60,7 @@ RECOMP_PATCH f32 is_within_render_distance(Vec3f cameraPos, Vec3f objectPos, u16
 
     if (is_visible_between_angle((u16) plus_fov_angle, (u16) minus_fov_angle, angleObject) == 1) {
         if (gCurrentCourseId == COURSE_KALAMARI_DESERT) {
-            return distance / 3.0f;
+            return distance / 2.0f;
         } else {
             return distance / 10.0f; // DD Vhicles
         }
