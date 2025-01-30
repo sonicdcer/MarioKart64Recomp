@@ -883,10 +883,36 @@ RECOMP_PATCH void render_menus(MenuItem* arg0) {
                 gDisplayListHead = func_80096CD8(gDisplayListHead, 0x00000019, 0x00000072, 0x0000007CU, 0x0000004AU);
                 break;
             case MENU_ITEM_TYPE_0AA:
+                // scissor
+                gEXSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, G_EX_ORIGIN_LEFT, G_EX_ORIGIN_RIGHT, 0, 0,
+                              SCREEN_WIDTH, SCREEN_HEIGHT);
+                // color
+                gDPSetPrimColor(gDisplayListHead++, 0, 0, 0, 0, 0, 255);
+                // black box in the top-right
+                gEXTextureRectangle(gDisplayListHead++, G_EX_ORIGIN_LEFT, G_EX_ORIGIN_RIGHT, (SCREEN_WIDTH / 2) << 2,
+                                    0 << 2, SCREEN_WIDTH << 2, (SCREEN_HEIGHT / 2) << 2, 0, 0, 0, 0, 0);
+                // black box in the bottom-left
+                gEXTextureRectangle(gDisplayListHead++, G_EX_ORIGIN_LEFT, G_EX_ORIGIN_RIGHT, 0 << 2,
+                                    (SCREEN_HEIGHT / 2) << 2, (-SCREEN_WIDTH / 2) << 2, SCREEN_HEIGHT << 2, 0, 0, 0, 0,
+                                    0);
                 func_800A2EB8(arg0);
                 break;
             case MENU_ITEM_TYPE_0AB:
+
+                // scissor
+                gEXSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, G_EX_ORIGIN_LEFT, G_EX_ORIGIN_RIGHT, 0, 0,
+                              SCREEN_WIDTH, SCREEN_HEIGHT);
+                // color
+                gDPSetPrimColor(gDisplayListHead++, 0, 0, 0, 0, 0, 255);
+                // black box in the top-left
+                gEXTextureRectangle(gDisplayListHead++, G_EX_ORIGIN_LEFT, G_EX_ORIGIN_RIGHT, 0 << 2, 0 << 2,
+                                    (-SCREEN_WIDTH / 2) << 2, (SCREEN_HEIGHT / 2) << 2, 0, 0, 0, 0, 0);
+                // black box in the bottom-right
+                gEXTextureRectangle(gDisplayListHead++, G_EX_ORIGIN_LEFT, G_EX_ORIGIN_RIGHT, (SCREEN_WIDTH / 2) << 2,
+                                    (SCREEN_HEIGHT / 2) << 2, SCREEN_WIDTH << 2, SCREEN_HEIGHT << 2, 0, 0, 0, 0, 0);
+
                 func_800A34A8(arg0);
+
                 break;
             case MENU_ITEM_TYPE_0AC:
                 func_800A6154(arg0);

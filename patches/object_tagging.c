@@ -407,3 +407,85 @@ RECOMP_PATCH void func_80051ABC(s16 arg0, s32 arg1) {
     }
 }
 #endif
+
+#if 1
+RECOMP_PATCH void func_80054D00(s32 objectIndex, s32 cameraId) {
+    Camera* camera;
+
+    camera = &camera1[cameraId];
+    if (gObjectList[objectIndex].state >= 3) {
+        func_8008A364(objectIndex, cameraId, 0x2AABU, 0x0000012C);
+        if (is_obj_flag_status_active(objectIndex, VISIBLE) != 0) {
+            recomp_printf("TAG: %x\n", &gObjectList[objectIndex]);
+            gEXMatrixGroupDecomposed(gDisplayListHead++, TAG_OBJECT(&gObjectList[objectIndex]), G_EX_PUSH,
+                                     G_MTX_MODELVIEW, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO,
+                                     G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP,
+                                     G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_LINEAR, G_EX_EDIT_ALLOW);
+
+            D_80183E80[0] = (s16) gObjectList[objectIndex].orientation[0];
+            D_80183E80[1] =
+                func_800418AC(gObjectList[objectIndex].pos[0], gObjectList[objectIndex].pos[2], camera->pos);
+            D_80183E80[2] = (u16) gObjectList[objectIndex].orientation[2];
+            func_80048130(gObjectList[objectIndex].pos, (u16*) D_80183E80, gObjectList[objectIndex].sizeScaling,
+                          (u8*) gObjectList[objectIndex].activeTLUT, gObjectList[objectIndex].activeTexture,
+                          (Vtx*) 0x0D0062B0, 0x00000020, 0x00000040, 0x00000020, 0x00000040, 5);
+
+            // @recomp Pop the transform id.
+            gEXPopMatrixGroup(gDisplayListHead++, G_MTX_MODELVIEW);
+        }
+    }
+}
+
+RECOMP_PATCH void func_80054E10(s32 objectIndex) {
+    if (gObjectList[objectIndex].state > 0) {
+        if (is_obj_flag_status_active(objectIndex, 0x00800000) != 0) {
+            gEXMatrixGroupDecomposed(gDisplayListHead++, TAG_OBJECT(&gObjectList[objectIndex]), G_EX_PUSH,
+                                     G_MTX_MODELVIEW, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO,
+                                     G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP,
+                                     G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_LINEAR, G_EX_EDIT_ALLOW);
+
+            D_80183E50[0] = gObjectList[objectIndex].pos[0];
+            D_80183E50[1] = gObjectList[objectIndex].surfaceHeight + 0.8;
+            D_80183E50[2] = gObjectList[objectIndex].pos[2];
+            D_80183E70[0] = gObjectList[objectIndex].velocity[0];
+            D_80183E70[1] = gObjectList[objectIndex].velocity[1];
+            D_80183E70[2] = gObjectList[objectIndex].velocity[2];
+            func_8004A9B8(gObjectList[objectIndex].sizeScaling);
+
+            // @recomp Pop the transform id.
+            gEXPopMatrixGroup(gDisplayListHead++, G_MTX_MODELVIEW);
+        }
+    }
+}
+
+RECOMP_PATCH void func_80054F04(s32 cameraId) {
+    s32 i;
+    s32 objectIndex;
+    Camera* sp44;
+    Object* object;
+
+    sp44 = &camera1[cameraId];
+    gSPDisplayList(gDisplayListHead++, (Gfx*) 0x0D0079C8);
+    load_texture_block_rgba16_mirror((u8*) 0x6013670, 16, 16);
+    for (i = 0; i < gObjectParticle2_SIZE; i++) {
+        objectIndex = gObjectParticle2[i];
+        object = &gObjectList[objectIndex];
+        gEXMatrixGroupDecomposed(gDisplayListHead++, TAG_OBJECT(object) | (i << 16), G_EX_PUSH,
+                                     G_MTX_MODELVIEW, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO,
+                                     G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP,
+                                     G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_LINEAR, G_EX_EDIT_ALLOW);
+
+        if (object->state > 0) {
+            func_8008A364(objectIndex, cameraId, 0x2AABU, 200);
+            if ((is_obj_flag_status_active(objectIndex, VISIBLE) != 0) && (gMatrixHudCount <= MTX_HUD_POOL_SIZE_MAX)) {
+                object->orientation[1] = func_800418AC(object->pos[0], object->pos[2], sp44->pos);
+                rsp_set_matrix_gObjectList(objectIndex);
+                gSPDisplayList(gDisplayListHead++, (Gfx*) 0x0D006980);
+            }
+        }
+        // @recomp Pop the transform id.
+        gEXPopMatrixGroup(gDisplayListHead++, G_MTX_MODELVIEW);
+    }
+    gSPTexture(gDisplayListHead++, 1, 1, 0, G_TX_RENDERTILE, G_OFF);
+}
+#endif

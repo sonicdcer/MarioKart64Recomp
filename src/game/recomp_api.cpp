@@ -18,6 +18,11 @@ extern "C" void recomp_update_inputs(uint8_t* rdram, recomp_context* ctx) {
     recomp::poll_inputs();
 }
 
+extern "C" void recomp_sleep_miliseconds(uint8_t* rdram, recomp_context* ctx) {
+    int time = _arg<0, u32>(rdram, ctx);
+    ultramodern::sleep_milliseconds(time);
+}
+
 // extern "C" void sqrtf_recomp(uint8_t* rdram, recomp_context* ctx) {
 //     ctx->f0.fl = sqrtf(ctx->f12.fl);
 // }

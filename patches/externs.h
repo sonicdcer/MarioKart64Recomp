@@ -478,7 +478,13 @@ Gfx* RenderBackground(Gfx* displayListHead, s8 arg1, s32 arg2, s32 arg3, s32 arg
 void set_object_flag_status_false(s32 objectIndex, s32 flag);
 void set_object_flag_status_true(s32 objectIndex, s32 flag);
 s32 get_angle_between_xy(f32 x1, f32 x2, f32 y1, f32 y2);
+s32 func_8008A364(s32, s32, u16, s32);
+s32 func_800418AC(f32, f32, f32*);
+signed int is_obj_flag_status_active(s32, s32);
+void rsp_set_matrix_gObjectList(s32);
 
+extern Vec3f D_80183E50;
+extern Vec3f D_80183E70;
 extern struct_D_802874D8 D_802874D8;
 extern struct MenuTexture* D_800E82A4[];
 extern struct MenuTexture* D_800E82AC[];

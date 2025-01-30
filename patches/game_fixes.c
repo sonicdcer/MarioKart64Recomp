@@ -24,7 +24,7 @@ RECOMP_PATCH void func_8028FC34(void) {
     }
 }
 
-#if 1
+#if 0
 RECOMP_PATCH void read_controllers(void) {
     OSMesg msg;
 
