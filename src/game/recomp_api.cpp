@@ -1,6 +1,6 @@
 #include <cmath>
 
-#include "librecomp/recomp.h"
+#include "recomp.h"
 #include "librecomp/overlays.hpp"
 #include "zelda_config.h"
 #include "recomp_input.h"

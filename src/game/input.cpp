@@ -2,7 +2,7 @@
 #include <mutex>
 
 #include "ultramodern/ultramodern.hpp"
-#include "librecomp/recomp.h"
+#include "recomp.h"
 #include "recomp_input.h"
 #include "zelda_config.h"
 #include "recomp_ui.h"
