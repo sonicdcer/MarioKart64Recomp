@@ -3,8 +3,6 @@
 // Fixes a bug with the recompiler.
 int dummy_val = 1;
 
-// @recomp: Change gControllerFive to gControllers[0] to avoid bug where something
-// is pressing other controllers in memory.
 RECOMP_PATCH void func_8028FC34(void) {
     if (D_802BA038 < 0) {
         D_802BA038 = 1920;
@@ -12,7 +10,10 @@ RECOMP_PATCH void func_8028FC34(void) {
     }
     D_802BA038--;
 
-    
+// @recomp: Change gControllerFive to gControllers[0] to avoid bug where something
+// is pressing other controllers in memory.
+
+// if (gControllerFive->buttonPressed != 0) {
     if (gControllers[0].buttonPressed != 0) {
         func_8028FBD4();
         gMenuSelection = START_MENU;

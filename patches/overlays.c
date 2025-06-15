@@ -1,19 +1,5 @@
 #include "patches.h"
 
-void* memcpy2(void* s1, const void* s2, size_t n) {
-    unsigned char* su1 = (unsigned char*) s1;
-    const unsigned char* su2 = (const unsigned char*) s2;
-
-    while (n > 0) {
-        *su1 = *su2;
-        su1++;
-        su2++;
-        n--;
-    }
-
-    return s1;
-}
-
 #define SEG_RACING_ (uintptr_t) 0x8028DF00
 #define SEG_RACING_ROM_START_ (u8*) 0xf7510
 #define SEG_RACING_SIZE_ (size_t) 0x2C470
@@ -22,12 +8,11 @@ void* memcpy2(void* s1, const void* s2, size_t n) {
 #if 1
 RECOMP_PATCH void dma_copy(u8* dest, u8* romAddr, size_t size) {
     recomp_load_overlays((u32) romAddr, dest, size);
-    recomp_printf("%08X %08X %08X\n", (u32) romAddr, (u32) dest, (u32) size);
+    // recomp_printf("%08X %08X %08X\n", (u32) romAddr, (u32) dest, (u32) size);
 
     // osInvalDCache(dest, size);
     while (size > 0x100) {
         osPiStartDma(&gDmaIoMesg, 0, 0, (uintptr_t) romAddr, dest, 0x100, &gDmaMesgQueue);
-        // memcpy2(dest, romAddr, 0x100);
         osRecvMesg(&gDmaMesgQueue, &gMainReceivedMesg, 1);
         size -= 0x100;
         romAddr += 0x100;
@@ -35,7 +20,6 @@ RECOMP_PATCH void dma_copy(u8* dest, u8* romAddr, size_t size) {
     }
     if (size != 0) {
         osPiStartDma(&gDmaIoMesg, 0, 0, (uintptr_t) romAddr, dest, size, &gDmaMesgQueue);
-        // memcpy2(dest, romAddr, size);
         osRecvMesg(&gDmaMesgQueue, &gMainReceivedMesg, 1);
     }
 }
