@@ -20,19 +20,19 @@
 		}
 		.col {
 			flex: 1;
-    		text-align: center;
+			text-align: center;
 		}
 	</style>
 	<link type="text/template" href="config_menu/general.rml" />
 	<link type="text/template" href="config_menu/controls.rml" />
 	<link type="text/template" href="config_menu/graphics.rml" />
 	<link type="text/template" href="config_menu/sound.rml" />
+	<link type="text/template" href="config_menu/mods.rml" />
 	<link type="text/template" href="config_menu/debug.rml" />
-	<link type="text/template" href="components/prompt.rml" />
 </head>
 <body class="window">
 	<!-- <handle move_target="#document"> -->
-		<div id="window" class="rmlui-window rmlui-window--hidden" style="display:flex; flex-flow: column; background-color:rgba(0,0,0,0)" onkeydown="config_keydown">
+		<div id="window" class="rmlui-window" style="display:flex; flex-flow: column; background-color:rgba(0,0,0,0)" onkeydown="config_keydown">
 			<div class="centered-page" onclick="close_config_menu_backdrop">
 				<div class="centered-page__modal">
 					<tabset class="tabs" id="config_tabset">
@@ -63,6 +63,13 @@
 						</tab>
 						<panel class="config" data-model="sound_options_model">
 							<template src="config-menu__sound" />
+						</panel>
+						<tab class="tab" id="tab_mods">
+							<div>Mods</div>
+							<div class="tab__indicator"></div>
+						</tab>
+						<panel class="config">
+							<template src="config-menu__mods" />
 						</panel>
 						<tab class="tab" data-model="debug_model" data-if="debug_enabled" id="tab_debug">
 							<div>Debug</div>
@@ -108,19 +115,6 @@
 					<!-- <label><span style="font-family:promptfont;">&#x21F3;</span> Navigate</label>
 					<label><span style="font-family:promptfont;">&#x21A7;</span> Accept</label> -->
 				</div>
-			</div>
-			<div
-				id="prompt-root"
-				data-model="prompt_model"
-				data-if="prompt__open"
-				data-alias-promptOpen="prompt__open"
-				data-alias-promptHeader="prompt__header"
-				data-alias-promptContent="prompt__content"
-				data-alias-promptConfirmLabel="prompt__confirmLabel"
-				data-alias-promptCancelLabel="prompt__cancelLabel"
-				data-event-click="prompt__on_click"
-			>
-				<template src="prompt"/>
 			</div>
 		</div>
 	<!-- </handle> -->

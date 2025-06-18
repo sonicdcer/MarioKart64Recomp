@@ -3,125 +3,144 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
+#include <list>
+
+// TODO move this file into src/ui
 
 #include "SDL.h"
 #include "RmlUi/Core.h"
 
+#include "../src/ui/util/hsv.h"
+#include "../src/ui/util/bem.h"
+
+#include "../src/ui/core/ui_context.h"
+
 namespace Rml {
-	class ElementDocument;
-	class EventListenerInstancer;
-	class Context;
-	class Event;
+    class ElementDocument;
+    class EventListenerInstancer;
+    class Context;
+    class Event;
 }
 
 namespace recompui {
-	class UiEventListenerInstancer;
+    class UiEventListenerInstancer;
 
-	class MenuController {
-	public:
-		virtual ~MenuController() {}
-		virtual Rml::ElementDocument* load_document(Rml::Context* context) = 0;
-		virtual void register_events(UiEventListenerInstancer& listener) = 0;
-		virtual void make_bindings(Rml::Context* context) = 0;
-	};
+    // TODO remove this once the UI has been ported over to the new system.
+    class MenuController {
+    public:
+        virtual ~MenuController() {}
+        virtual void load_document() = 0;
+        virtual void register_events(UiEventListenerInstancer& listener) = 0;
+        virtual void make_bindings(Rml::Context* context) = 0;
+    };
 
-	std::unique_ptr<MenuController> create_launcher_menu();
-	std::unique_ptr<MenuController> create_config_menu();
+    std::unique_ptr<MenuController> create_launcher_menu();
+    std::unique_ptr<MenuController> create_config_menu();
 
-	using event_handler_t = void(const std::string& param, Rml::Event&);
+    using event_handler_t = void(const std::string& param, Rml::Event&);
 
-	void queue_event(const SDL_Event& event);
-	bool try_deque_event(SDL_Event& out);
+    void queue_event(const SDL_Event& event);
+    bool try_deque_event(SDL_Event& out);
 
-	std::unique_ptr<UiEventListenerInstancer> make_event_listener_instancer();
-	void register_event(UiEventListenerInstancer& listener, const std::string& name, event_handler_t* handler);
+    std::unique_ptr<UiEventListenerInstancer> make_event_listener_instancer();
+    void register_event(UiEventListenerInstancer& listener, const std::string& name, event_handler_t* handler);
 
-	enum class Menu {
-		Launcher,
-		Config,
-		None
-	};
+    void show_context(ContextId context, std::string_view param);
+    void hide_context(ContextId context);
+    void hide_all_contexts();
+    bool is_context_shown(ContextId context);
+    bool is_context_capturing_input();
+    bool is_context_capturing_mouse();
+    bool is_any_context_shown();
+    ContextId try_close_current_context();
 
-	void set_current_menu(Menu menu);
-	Menu get_current_menu();
+    ContextId get_launcher_context_id();
+    ContextId get_config_context_id();
+    ContextId get_config_sub_menu_context_id();
 
-	enum class ConfigSubmenu {
-		General,
-		Controls,
-		Graphics,
-		Audio,
-		Debug,
-		Count
-	};
+    enum class ConfigTab {
+        General,
+        Controls,
+        Graphics,
+        Sound,
+        Mods,
+        Debug,
+    };
 
-	enum class ButtonVariant {
-		Primary,
-		Secondary,
-		Tertiary,
-		Success,
-		Error,
-		Warning,
-		NumVariants,
-	};
+    void set_config_tab(ConfigTab tab);
+    int config_tab_to_index(ConfigTab tab);
+    Rml::ElementTabSet* get_config_tabset();
+    Rml::Element* get_mod_tab();
+    void set_config_tabset_mod_nav();
+    void focus_mod_configure_button();
 
-	void set_config_submenu(ConfigSubmenu submenu);
+    enum class ButtonVariant {
+        Primary,
+        Secondary,
+        Tertiary,
+        Success,
+        Error,
+        Warning,
+        NumVariants,
+    };
 
-	void destroy_ui();
-	void apply_color_hack();
-	void get_window_size(int& width, int& height);
-	void set_cursor_visible(bool visible);
-	void update_supported_options();
-	void toggle_fullscreen();
-	void update_rml_display_refresh_rate();
+    void init_styling(const std::filesystem::path& rcss_file);
+    void init_prompt_context();
+    void open_choice_prompt(
+        const std::string& header_text,
+        const std::string& content_text,
+        const std::string& confirm_label_text,
+        const std::string& cancel_label_text,
+        std::function<void()> confirm_action,
+        std::function<void()> cancel_action,
+        ButtonVariant confirm_variant = ButtonVariant::Success,
+        ButtonVariant cancel_variant = ButtonVariant::Error,
+        bool focus_on_cancel = true,
+        const std::string& return_element_id = ""
+    );
+    void open_info_prompt(
+        const std::string& header_text,
+        const std::string& content_text,
+        const std::string& okay_label_text,
+        std::function<void()> okay_action,
+        ButtonVariant okay_variant = ButtonVariant::Error,
+        const std::string& return_element_id = ""
+    );
+    void open_notification(
+        const std::string& header_text,
+        const std::string& content_text,
+        const std::string& return_element_id = ""
+    );
+    void close_prompt();
+    bool is_prompt_open();
+    void update_mod_list(bool scan_mods = true);
+    void process_game_started();
 
-	extern const std::unordered_map<ButtonVariant, std::string> button_variants;
+    void apply_color_hack();
+    void get_window_size(int& width, int& height);
+    void set_cursor_visible(bool visible);
+    void update_supported_options();
+    void toggle_fullscreen();
 
-	struct PromptContext {
-		Rml::DataModelHandle model_handle;
-		std::string header = "";
-		std::string content = "";
-		std::string confirmLabel = "Confirm";
-		std::string cancelLabel = "Cancel";
-		ButtonVariant confirmVariant = ButtonVariant::Success;
-		ButtonVariant cancelVariant = ButtonVariant::Error;
-		std::function<void()> onConfirm;
-		std::function<void()> onCancel;
+    bool get_cont_active(void);
+    void set_cont_active(bool active);
+    void activate_mouse();
 
-		std::string returnElementId = "";
+    void message_box(const char* msg);
 
-		bool open = false;
-		bool shouldFocus = false;
-		bool focusOnCancel = true;
+    void set_render_hooks();
 
-		PromptContext() = default;
+    Rml::ElementPtr create_custom_element(Rml::Element* parent, std::string tag);
+    Rml::ElementDocument* load_document(const std::filesystem::path& path);
+    Rml::ElementDocument* create_empty_document();
+    Rml::Element* get_child_by_tag(Rml::Element* parent, const std::string& tag);
 
-		void close_prompt();
-		void open_prompt(
-			const std::string& headerText,
-			const std::string& contentText,
-			const std::string& confirmLabelText,
-			const std::string& cancelLabelText,
-			std::function<void()> confirmCb,
-			std::function<void()> cancelCb,
-			ButtonVariant _confirmVariant = ButtonVariant::Success,
-			ButtonVariant _cancelVariant = ButtonVariant::Error,
-			bool _focusOnCancel = true,
-			const std::string& _returnElementId = ""
-		);
-		void on_confirm(void);
-		void on_cancel(void);
-		void on_click(Rml::DataModelHandle model_handle, Rml::Event& event, const Rml::VariantList& inputs);
-	};
+    void queue_image_from_bytes_rgba32(const std::string &src, const std::vector<char> &bytes, uint32_t width, uint32_t height);
+    void queue_image_from_bytes_file(const std::string &src, const std::vector<char> &bytes);
+    void release_image(const std::string &src);
 
-	PromptContext *get_prompt_context(void);
-
-	bool get_cont_active(void);
-	void set_cont_active(bool active);
-	void activate_mouse();
-
-	void message_box(const char* msg);
-
-	void set_render_hooks();
+    void drop_files(const std::list<std::filesystem::path> &file_list);
 }
 
 #endif
