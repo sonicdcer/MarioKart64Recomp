@@ -304,8 +304,8 @@ target_link_libraries(MarioKart64Recompiled PRIVATE
     librecomp
     ultramodern
     rt64
-    RmlCore
-    RmlDebugger
+    RmlUi::Core
+    RmlUi::Debugger
     nfd
     lunasvg
 )
