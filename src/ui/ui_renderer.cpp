@@ -1,32 +1,20 @@
 #ifdef _WIN32
 #define _CRT_SECURE_NO_WARNINGS
+#define WIN32_LEAN_AND_MEAN
 #endif
 
 #include <fstream>
 #include <filesystem>
-#ifdef _WIN32
-#include <SDL_video.h>
-#else
-#include <SDL2/SDL_video.h>
-#endif
 
-
-#include "recomp_ui.h"
-#include "recomp_input.h"
-#include "librecomp/game.hpp"
-#include "zelda_config.h"
-#include "ui_rml_hacks.hpp"
-
-#include "concurrentqueue.h"
+#include <concurrentqueue.h>
 
 #include "rt64_render_hooks.h"
 #include "rt64_render_interface_builders.h"
+#include "rt64_texture_cache.h"
 
-#include "RmlUi/Core.h"
-#include "RmlUi/Debugger.h"
 #include "RmlUi/Core/RenderInterfaceCompatibility.h"
-#include "RmlUi/../../Source/Core/Elements/ElementLabel.h"
-#include "RmlUi_Platform_SDL.h"
+
+#include "ui_renderer.h"
 
 #include "InterfaceVS.hlsl.spirv.h"
 #include "InterfacePS.hlsl.spirv.h"
@@ -34,6 +22,9 @@
 #ifdef _WIN32
 #   include "InterfaceVS.hlsl.dxil.h"
 #   include "InterfacePS.hlsl.dxil.h"
+#elif defined(__APPLE__)
+#   include "InterfaceVS.hlsl.metal.h"
+#   include "InterfacePS.hlsl.metal.h"
 #endif
 
 #ifdef _WIN32
@@ -43,18 +34,19 @@
 #    define GET_SHADER_SIZE(name, format) \
         ((format) == RT64::RenderShaderFormat::SPIRV ? std::size(name##BlobSPIRV) : \
         (format) == RT64::RenderShaderFormat::DXIL ? std::size(name##BlobDXIL) : 0)
+#elif defined(__APPLE__)
+#    define GET_SHADER_BLOB(name, format) \
+((format) == RT64::RenderShaderFormat::SPIRV ? name##BlobSPIRV : \
+(format) == RT64::RenderShaderFormat::METAL ? name##BlobMSL : nullptr)
+#    define GET_SHADER_SIZE(name, format) \
+((format) == RT64::RenderShaderFormat::SPIRV ? std::size(name##BlobSPIRV) : \
+(format) == RT64::RenderShaderFormat::METAL ? std::size(name##BlobMSL) : 0)
 #else
 #    define GET_SHADER_BLOB(name, format) \
         ((format) == RT64::RenderShaderFormat::SPIRV ? name##BlobSPIRV : nullptr)
 #    define GET_SHADER_SIZE(name, format) \
         ((format) == RT64::RenderShaderFormat::SPIRV ? std::size(name##BlobSPIRV) : 0)
 #endif
-
-struct UIRenderContext {
-    RT64::RenderInterface* interface;
-    RT64::RenderDevice* device;
-    Rml::ElementDocument* document;
-};
 
 // TODO deduplicate from rt64_common.h
 void CalculateTextureRowWidthPadding(uint32_t rowPitch, uint32_t &rowWidth, uint32_t &rowPadding) {
@@ -72,36 +64,38 @@ struct RmlPushConstants {
 struct TextureHandle {
     std::unique_ptr<RT64::RenderTexture> texture;
     std::unique_ptr<RT64::RenderDescriptorSet> set;
+    bool transitioned = false;
 };
-
-static std::vector<char> read_file(const std::filesystem::path& filepath) {
-    std::vector<char> ret{};
-    std::ifstream input_file{ filepath, std::ios::binary };
-
-    if (!input_file) {
-        return ret;
-    }
-
-    input_file.seekg(0, std::ios::end);
-    std::streampos filesize = input_file.tellg();
-    input_file.seekg(0, std::ios::beg);
-
-    ret.resize(filesize);
-
-    input_file.read(ret.data(), filesize);
-
-    return ret;
-}
-
 
 template <typename T>
 T from_bytes_le(const char* input) {
     return *reinterpret_cast<const T*>(input);
 }
 
-void load_document();
+enum class ImageType {
+    File,
+    RGBA32
+};
 
-class RmlRenderInterface_RT64 : public Rml::RenderInterfaceCompatibility {
+struct ImageFromBytes {
+    ImageType type;
+    // Dimensions only used for RGBA32 data. Files pull the size from the file data. 
+    uint32_t width;
+    uint32_t height;
+    std::string name;
+    std::vector<char> bytes;
+};
+
+namespace recompui {
+class RmlRenderInterface_RT64_impl : public Rml::RenderInterfaceCompatibility {
+    struct DynamicBuffer {
+        std::unique_ptr<RT64::RenderBuffer> buffer_{};
+        uint32_t size_ = 0;
+        uint32_t bytes_used_ = 0;
+        uint8_t* mapped_data_ = nullptr;
+        RT64::RenderBufferFlags flags_ = RT64::RenderBufferFlag::NONE;
+    };
+
     static constexpr uint32_t per_frame_descriptor_set = 0;
     static constexpr uint32_t per_draw_descriptor_set = 1;
 
@@ -113,7 +107,8 @@ class RmlRenderInterface_RT64 : public Rml::RenderInterfaceCompatibility {
     static constexpr RT64::RenderFormat SwapChainFormat = RT64::RenderFormat::B8G8R8A8_UNORM;
     static constexpr uint32_t RmlTextureFormatBytesPerPixel = RenderFormatSize(RmlTextureFormat);
     static_assert(RenderFormatSize(RmlTextureFormatBgra) == RmlTextureFormatBytesPerPixel);
-    struct UIRenderContext* render_context_;
+    RT64::RenderInterface* interface_;
+    RT64::RenderDevice* device_;
     int scissor_x_ = 0;
     int scissor_y_ = 0;
     int scissor_width_ = 0;
@@ -125,10 +120,10 @@ class RmlRenderInterface_RT64 : public Rml::RenderInterfaceCompatibility {
     Rml::Matrix4f transform_ = Rml::Matrix4f::Identity();
     Rml::Matrix4f mvp_ = Rml::Matrix4f::Identity();
     std::unordered_map<Rml::TextureHandle, TextureHandle> textures_{};
-    Rml::TextureHandle texture_count_ = 1; // Start at 1 to reserve texture 0 as the 1x1 pixel white texture
-    std::unique_ptr<RT64::RenderBuffer> upload_buffer_{};
-    std::unique_ptr<RT64::RenderBuffer> vertex_buffer_{};
-    std::unique_ptr<RT64::RenderBuffer> index_buffer_{};
+    Rml::TextureHandle texture_count_ = 2; // Start at 1 to reserve texture 0 as the 1x1 pixel white texture
+    DynamicBuffer upload_buffer_;
+    DynamicBuffer vertex_buffer_;
+    DynamicBuffer index_buffer_;
     std::unique_ptr<RT64::RenderSampler> nearestSampler_{};
     std::unique_ptr<RT64::RenderSampler> linearSampler_{};
     std::unique_ptr<RT64::RenderShader> vertex_shader_{};
@@ -143,31 +138,37 @@ class RmlRenderInterface_RT64 : public Rml::RenderInterfaceCompatibility {
     std::unique_ptr<RT64::RenderFramebuffer> screen_framebuffer_{};
     std::unique_ptr<RT64::RenderDescriptorSet> screen_descriptor_set_{};
     std::unique_ptr<RT64::RenderBuffer> screen_vertex_buffer_{};
+    std::unique_ptr<RT64::RenderCommandQueue> copy_command_queue_{};
+    std::unique_ptr<RT64::RenderCommandList> copy_command_list_{};
+    std::unique_ptr<RT64::RenderBuffer> copy_buffer_{};
+    std::unique_ptr<RT64::RenderCommandFence> copy_command_fence_;
+    uint64_t copy_buffer_size_ = 0;
     uint64_t screen_vertex_buffer_size_ = 0;
-    uint32_t upload_buffer_size_ = 0;
-    uint32_t upload_buffer_bytes_used_ = 0;
-    uint8_t* upload_buffer_mapped_data_ = nullptr;
-    uint32_t vertex_buffer_size_ = 0;
-    uint32_t index_buffer_size_ = 0;
     uint32_t gTexture_descriptor_index;
     RT64::RenderInputSlot vertex_slot_{ 0, sizeof(Rml::Vertex) };
     RT64::RenderCommandList* list_ = nullptr;
     bool scissor_enabled_ = false;
     std::vector<std::unique_ptr<RT64::RenderBuffer>> stale_buffers_{};
+    moodycamel::ConcurrentQueue<ImageFromBytes> image_from_bytes_queue;
+    std::unordered_map<std::string, ImageFromBytes> image_from_bytes_map;
 public:
-    RmlRenderInterface_RT64(struct UIRenderContext* render_context) {
-        render_context_ = render_context;
+    RmlRenderInterface_RT64_impl(RT64::RenderInterface* interface, RT64::RenderDevice* device) {
+        interface_ = interface;
+        device_ = device;
 
         // Enable 4X MSAA if supported by the device.
         const RT64::RenderSampleCounts desired_sample_count = RT64::RenderSampleCount::COUNT_8;
-        if (render_context->device->getSampleCountsSupported(SwapChainFormat) & desired_sample_count) {
+        if (device_->getSampleCountsSupported(SwapChainFormat) & desired_sample_count) {
             multisampling_.sampleCount = desired_sample_count;
         }
 
+        vertex_buffer_.flags_ = RT64::RenderBufferFlag::VERTEX;
+        index_buffer_.flags_ = RT64::RenderBufferFlag::INDEX;
+
         // Create the texture upload buffer, vertex buffer and index buffer
-        resize_upload_buffer(initial_upload_buffer_size, false);
-        resize_vertex_buffer(initial_vertex_buffer_size);
-        resize_index_buffer(initial_index_buffer_size);
+        resize_dynamic_buffer(upload_buffer_, initial_upload_buffer_size, false);
+        resize_dynamic_buffer(vertex_buffer_, initial_vertex_buffer_size, false);
+        resize_dynamic_buffer(index_buffer_, initial_index_buffer_size, false);
 
         // Describe the vertex format
         std::vector<RT64::RenderInputElement> vertex_elements{};
@@ -182,17 +183,17 @@ public:
         samplerDesc.addressU = RT64::RenderTextureAddressMode::CLAMP;
         samplerDesc.addressV = RT64::RenderTextureAddressMode::CLAMP;
         samplerDesc.addressW = RT64::RenderTextureAddressMode::CLAMP;
-        nearestSampler_ = render_context->device->createSampler(samplerDesc);
+        nearestSampler_ = device_->createSampler(samplerDesc);
 
         samplerDesc.minFilter = RT64::RenderFilter::LINEAR;
         samplerDesc.magFilter = RT64::RenderFilter::LINEAR;
-        linearSampler_ = render_context->device->createSampler(samplerDesc);
+        linearSampler_ = device_->createSampler(samplerDesc);
 
         // Create the shaders
-        RT64::RenderShaderFormat shaderFormat = render_context->interface->getCapabilities().shaderFormat;
+        RT64::RenderShaderFormat shaderFormat = interface_->getCapabilities().shaderFormat;
 
-        vertex_shader_ = render_context->device->createShader(GET_SHADER_BLOB(InterfaceVS, shaderFormat), GET_SHADER_SIZE(InterfaceVS, shaderFormat), "VSMain", shaderFormat);
-        pixel_shader_ = render_context->device->createShader(GET_SHADER_BLOB(InterfacePS, shaderFormat), GET_SHADER_SIZE(InterfacePS, shaderFormat), "PSMain", shaderFormat);
+        vertex_shader_ = device_->createShader(GET_SHADER_BLOB(InterfaceVS, shaderFormat), GET_SHADER_SIZE(InterfaceVS, shaderFormat), "VSMain", shaderFormat);
+        pixel_shader_ = device_->createShader(GET_SHADER_BLOB(InterfacePS, shaderFormat), GET_SHADER_SIZE(InterfacePS, shaderFormat), "PSMain", shaderFormat);
 
 
         // Create the descriptor set that contains the sampler
@@ -201,7 +202,7 @@ public:
         sampler_set_builder.addImmutableSampler(1, linearSampler_.get());
         sampler_set_builder.addConstantBuffer(3, 1); // Workaround D3D12 crash due to an empty RT64 descriptor set
         sampler_set_builder.end();
-        sampler_set_ = sampler_set_builder.create(render_context->device);
+        sampler_set_ = sampler_set_builder.create(device_);
 
         // Create a builder for the descriptor sets that will contain textures
         texture_set_builder_ = std::make_unique<RT64::RenderDescriptorSetBuilder>();
@@ -218,11 +219,23 @@ public:
         // Add the descriptor set for descriptors changed once per draw.
         layout_builder.addDescriptorSet(*texture_set_builder_);
         layout_builder.end();
-        layout_ = layout_builder.create(render_context->device);
+        layout_ = layout_builder.create(device_);
 
         // Create the pipeline description
         RT64::RenderGraphicsPipelineDesc pipeline_desc{};
-        pipeline_desc.renderTargetBlend[0] = RT64::RenderBlendDesc::AlphaBlend();
+        // Set up alpha blending for non-premultiplied alpha. RmlUi recommends using premultiplied alpha normally,
+        // but that would require preprocessing all input files, which would be difficult for user-provided content (such as mods).
+        // This blending setup produces similar results as premultipled alpha but for normal assets as it multiplies during blending and
+        // computes the output alpha value the same way that a premultipled alpha blender would.
+        pipeline_desc.renderTargetBlend[0] = RT64::RenderBlendDesc {
+            .blendEnabled = true,
+            .srcBlend = RT64::RenderBlend::SRC_ALPHA,
+            .dstBlend = RT64::RenderBlend::INV_SRC_ALPHA,
+            .blendOp = RT64::RenderBlendOperation::ADD,
+            .srcBlendAlpha = RT64::RenderBlend::ONE,
+            .dstBlendAlpha = RT64::RenderBlend::INV_SRC_ALPHA,
+            .blendOpAlpha = RT64::RenderBlendOperation::ADD,
+        };
         pipeline_desc.renderTargetFormat[0] = SwapChainFormat; // TODO: Use whatever format the swap chain was created with.
         pipeline_desc.renderTargetCount = 1;
         pipeline_desc.cullMode = RT64::RenderCullMode::NONE;
@@ -235,19 +248,19 @@ public:
         pipeline_desc.vertexShader = vertex_shader_.get();
         pipeline_desc.pixelShader = pixel_shader_.get();
 
-        pipeline_ = render_context->device->createGraphicsPipeline(pipeline_desc);
+        pipeline_ = device_->createGraphicsPipeline(pipeline_desc);
 
         if (multisampling_.sampleCount > 1) {
             pipeline_desc.multisampling = multisampling_;
-            pipeline_ms_ = render_context->device->createGraphicsPipeline(pipeline_desc);
+            pipeline_ms_ = device_->createGraphicsPipeline(pipeline_desc);
 
             // Create the descriptor set for the screen drawer.
             RT64::RenderDescriptorRange screen_descriptor_range(RT64::RenderDescriptorRangeType::TEXTURE, 2, 1);
-            screen_descriptor_set_ = render_context->device->createDescriptorSet(RT64::RenderDescriptorSetDesc(&screen_descriptor_range, 1));
+            screen_descriptor_set_ = device_->createDescriptorSet(RT64::RenderDescriptorSetDesc(&screen_descriptor_range, 1));
 
             // Create vertex buffer for the screen drawer (full-screen triangle).
             screen_vertex_buffer_size_ = sizeof(Rml::Vertex) * 3;
-            screen_vertex_buffer_ = render_context->device->createBuffer(RT64::RenderBufferDesc::VertexBuffer(screen_vertex_buffer_size_, RT64::RenderHeapType::UPLOAD));
+            screen_vertex_buffer_ = device_->createBuffer(RT64::RenderBufferDesc::VertexBuffer(screen_vertex_buffer_size_, RT64::RenderHeapType::UPLOAD));
             Rml::Vertex *vertices = (Rml::Vertex *)(screen_vertex_buffer_->map());
             const Rml::ColourbPremultiplied white(255, 255, 255, 255);
             vertices[0] = Rml::Vertex{ Rml::Vector2f(-1.0f, 1.0f), white, Rml::Vector2f(0.0f, 0.0f) };
@@ -255,134 +268,105 @@ public:
             vertices[2] = Rml::Vertex{ Rml::Vector2f(3.0f, 1.0f), white, Rml::Vector2f(2.0f, 0.0f) };
             screen_vertex_buffer_->unmap();
         }
+
+        copy_command_queue_ = device->createCommandQueue(RT64::RenderCommandListType::COPY);
+        copy_command_list_ = copy_command_queue_->createCommandList(RT64::RenderCommandListType::COPY);
+        copy_command_fence_ = device->createCommandFence();
     }
 
-    void resize_upload_buffer(uint32_t new_size, bool map = true) {
-        // Unmap the upload buffer if it's mapped
-        if (upload_buffer_mapped_data_ != nullptr) {
-            upload_buffer_->unmap();
+    void reset_dynamic_buffer(DynamicBuffer &dynamic_buffer) {
+        assert(dynamic_buffer.mapped_data_ == nullptr);
+        dynamic_buffer.bytes_used_ = 0;
+        dynamic_buffer.mapped_data_ = reinterpret_cast<uint8_t*>(dynamic_buffer.buffer_->map());
+    }
+
+    void end_dynamic_buffer(DynamicBuffer &dynamic_buffer) {
+        assert(dynamic_buffer.mapped_data_ != nullptr);
+        dynamic_buffer.buffer_->unmap();
+        dynamic_buffer.mapped_data_ = nullptr;
+    }
+
+    void resize_dynamic_buffer(DynamicBuffer &dynamic_buffer, uint32_t new_size, bool map = true) {
+        // Unmap the buffer if it's mapped
+        if (dynamic_buffer.mapped_data_ != nullptr) {
+            dynamic_buffer.buffer_->unmap();
         }
         
-        // If there's already an upload buffer, move it into the stale buffers so it persists until the start of next frame.
-        if (upload_buffer_) {
-            stale_buffers_.emplace_back(std::move(upload_buffer_));
+        // If there's already a buffer, move it into the stale buffers so it persists until the start of next frame.
+        if (dynamic_buffer.buffer_ != nullptr) {
+            stale_buffers_.emplace_back(std::move(dynamic_buffer.buffer_));
         }
 
-        // Create the new upload buffer, update the size and map it.
-        upload_buffer_ = render_context_->device->createBuffer(RT64::RenderBufferDesc::UploadBuffer(new_size));
-        upload_buffer_size_ = new_size;
-        upload_buffer_bytes_used_ = 0;
+        // Create the new buffer, update the size and map it.
+        dynamic_buffer.buffer_ = device_->createBuffer(RT64::RenderBufferDesc::UploadBuffer(new_size, dynamic_buffer.flags_));
+        dynamic_buffer.size_ = new_size;
+        dynamic_buffer.bytes_used_ = 0;
+
         if (map) {
-            upload_buffer_mapped_data_ = reinterpret_cast<uint8_t*>(upload_buffer_->map());
-        }
-        else {
-            upload_buffer_mapped_data_ = nullptr;
+            dynamic_buffer.mapped_data_ = reinterpret_cast<uint8_t*>(dynamic_buffer.buffer_->map());
         }
     }
 
-    uint32_t allocate_upload_data(uint32_t num_bytes) {
-        // Check if there's enough remaining room in the upload buffer to allocate the requested bytes.
-        uint32_t total_bytes = num_bytes + upload_buffer_bytes_used_;
+    uint32_t allocate_dynamic_data(DynamicBuffer &dynamic_buffer, uint32_t num_bytes) {
+        // Check if there's enough remaining room in the buffer to allocate the requested bytes.
+        uint32_t total_bytes = num_bytes + dynamic_buffer.bytes_used_;
 
-        if (total_bytes > upload_buffer_size_) {
-            // There isn't, so mark the current upload buffer as stale and allocate a new one with 50% more space than the required amount.
-            resize_upload_buffer(total_bytes + total_bytes / 2);
+        if (total_bytes > dynamic_buffer.size_) {
+            // There isn't, so mark the current buffer as stale and allocate a new one with 50% more space than the required amount.
+            resize_dynamic_buffer(dynamic_buffer, total_bytes + total_bytes / 2);
         }
 
-        // Record the current end of the upload buffer to return.
-        uint32_t offset = upload_buffer_bytes_used_;
+        // Record the current end of the buffer to return.
+        uint32_t offset = dynamic_buffer.bytes_used_;
 
-        // Bump the upload buffer's end forward by the number of bytes allocated.
-        upload_buffer_bytes_used_ += num_bytes;
+        // Bump the buffer's end forward by the number of bytes allocated.
+        dynamic_buffer.bytes_used_ += num_bytes;
 
         return offset;
     }
 
-    uint32_t allocate_upload_data_aligned(uint32_t num_bytes, uint32_t alignment) {
-        // Check if there's enough remaining room in the upload buffer to allocate the requested bytes.
-        uint32_t total_bytes = num_bytes + upload_buffer_bytes_used_;
+    uint32_t allocate_dynamic_data_aligned(DynamicBuffer &dynamic_buffer, uint32_t num_bytes, uint32_t alignment) {
+        // Check if there's enough remaining room in the buffer to allocate the requested bytes.
+        uint32_t total_bytes = num_bytes + dynamic_buffer.bytes_used_;
 
         // Determine the amount of padding needed to meet the target alignment.
-        uint32_t padding_bytes = ((upload_buffer_bytes_used_ + alignment - 1) / alignment) * alignment - upload_buffer_bytes_used_;
+        uint32_t padding_bytes = ((dynamic_buffer.bytes_used_ + alignment - 1) / alignment) * alignment - dynamic_buffer.bytes_used_;
 
-        // If there isn't enough room to allocate the required bytes plus the padding then resize the upload buffer and allocate from the start of the new one.
-        if (total_bytes + padding_bytes > upload_buffer_size_) {
-            resize_upload_buffer(total_bytes + total_bytes / 2);
+        // If there isn't enough room to allocate the required bytes plus the padding then resize the buffer and allocate from the start of the new one.
+        if (total_bytes + padding_bytes > dynamic_buffer.size_) {
+            resize_dynamic_buffer(dynamic_buffer, total_bytes + total_bytes / 2);
 
-            upload_buffer_bytes_used_ += num_bytes;
+            dynamic_buffer.bytes_used_ += num_bytes;
 
             return 0;
         }
 
         // Otherwise allocate the padding and required bytes and offset the allocated position by the padding size.
-        return allocate_upload_data(padding_bytes + num_bytes) + padding_bytes;
+        return allocate_dynamic_data(dynamic_buffer, padding_bytes + num_bytes) + padding_bytes;
     }
-
-    void resize_vertex_buffer(uint32_t new_size) {
-        if (vertex_buffer_) {
-            stale_buffers_.emplace_back(std::move(vertex_buffer_));
-        }
-        vertex_buffer_ = render_context_->device->createBuffer(RT64::RenderBufferDesc::VertexBuffer(new_size, RT64::RenderHeapType::DEFAULT));
-        vertex_buffer_size_ = new_size;
-    }
-
-    void resize_index_buffer(uint32_t new_size) {
-        if (index_buffer_) {
-            stale_buffers_.emplace_back(std::move(index_buffer_));
-        }
-        index_buffer_ = render_context_->device->createBuffer(RT64::RenderBufferDesc::IndexBuffer(new_size, RT64::RenderHeapType::DEFAULT));
-        index_buffer_size_ = new_size;
-    }
-
+    
     void RenderGeometry(Rml::Vertex* vertices, int num_vertices, int* indices, int num_indices, Rml::TextureHandle texture, const Rml::Vector2f& translation) override {
-        uint32_t vert_size_bytes = num_vertices * sizeof(*vertices);
-        uint32_t index_size_bytes = num_indices * sizeof(*indices);
-        uint32_t total_bytes = vert_size_bytes + index_size_bytes;
-        uint32_t index_bytes_start = vert_size_bytes;
-
-
         if (!textures_.contains(texture)) {
             if (texture == 0) {
-                // Create a 1x1 pixel white texture as the first handle
                 Rml::byte white_pixel[] = { 255, 255, 255, 255 };
-                create_texture(0, white_pixel, Rml::Vector2i{ 1,1 });
+                create_texture(0, white_pixel, Rml::Vector2i{ 1, 1 });
+            }
+            else if (texture == 1) {
+                Rml::byte transparent_pixel[] = { 0, 0, 0, 0 };
+                create_texture(1, transparent_pixel, Rml::Vector2i{ 1, 1 });
             }
             else {
                 assert(false && "Rendered without texture!");
             }
         }
 
-        uint32_t upload_buffer_offset = allocate_upload_data(total_bytes);
-
-        if (vert_size_bytes > vertex_buffer_size_) {
-            resize_vertex_buffer(vert_size_bytes + vert_size_bytes / 2);
-        }
-
-        if (index_size_bytes > index_buffer_size_) {
-            resize_index_buffer(index_size_bytes + index_size_bytes / 2);
-        }
-
-        // Copy the vertex and index data into the mapped upload buffer.
-        memcpy(upload_buffer_mapped_data_ + upload_buffer_offset, vertices, vert_size_bytes);
-        memcpy(upload_buffer_mapped_data_ + upload_buffer_offset + vert_size_bytes, indices, index_size_bytes);
-
-        // Prepare the vertex and index buffers for being copied to.
-        RT64::RenderBufferBarrier copy_barriers[] = {
-			RT64::RenderBufferBarrier(vertex_buffer_.get(), RT64::RenderBufferAccess::WRITE),
-			RT64::RenderBufferBarrier(index_buffer_.get(), RT64::RenderBufferAccess::WRITE)
-		};
-        list_->barriers(RT64::RenderBarrierStage::COPY, copy_barriers, uint32_t(std::size(copy_barriers)));
-
-        // Copy from the upload buffer to the vertex and index buffers.
-        list_->copyBufferRegion(vertex_buffer_->at(0), upload_buffer_->at(upload_buffer_offset), vert_size_bytes);
-        list_->copyBufferRegion(index_buffer_->at(0), upload_buffer_->at(upload_buffer_offset + index_bytes_start), index_size_bytes);
-
-        // Prepare the vertex and index buffers for being used for rendering.
-        RT64::RenderBufferBarrier usage_barriers[] = {
-			RT64::RenderBufferBarrier(vertex_buffer_.get(), RT64::RenderBufferAccess::READ),
-			RT64::RenderBufferBarrier(index_buffer_.get(), RT64::RenderBufferAccess::READ)
-		};
-        list_->barriers(RT64::RenderBarrierStage::GRAPHICS, usage_barriers, uint32_t(std::size(usage_barriers)));
+        // Copy the vertex and index data into the mapped buffers.
+        uint32_t vert_size_bytes = num_vertices * sizeof(*vertices);
+        uint32_t index_size_bytes = num_indices * sizeof(*indices);
+        uint32_t vertex_buffer_offset = allocate_dynamic_data(vertex_buffer_, vert_size_bytes);
+        uint32_t index_buffer_offset = allocate_dynamic_data(index_buffer_, index_size_bytes);
+        memcpy(vertex_buffer_.mapped_data_ + vertex_buffer_offset, vertices, vert_size_bytes);
+        memcpy(index_buffer_.mapped_data_ + index_buffer_offset, indices, index_size_bytes);
 
         list_->setViewports(RT64::RenderViewport{ 0, 0, float(window_width_), float(window_height_) });
         if (scissor_enabled_) {
@@ -396,11 +380,19 @@ public:
             list_->setScissors(RT64::RenderRect{ 0, 0, window_width_, window_height_ });
         }
 
-        RT64::RenderIndexBufferView index_view{index_buffer_->at(0), index_size_bytes, RT64::RenderFormat::R32_UINT};
+        RT64::RenderIndexBufferView index_view{index_buffer_.buffer_->at(index_buffer_offset), index_size_bytes, RT64::RenderFormat::R32_UINT};
         list_->setIndexBuffer(&index_view);
-        RT64::RenderVertexBufferView vertex_view{vertex_buffer_->at(0), vert_size_bytes};
+        RT64::RenderVertexBufferView vertex_view{vertex_buffer_.buffer_->at(vertex_buffer_offset), vert_size_bytes};
         list_->setVertexBuffers(0, &vertex_view, 1, &vertex_slot_);
-        list_->setGraphicsDescriptorSet(textures_.at(texture).set.get(), 1);
+
+        TextureHandle &texture_handle = textures_.at(texture);
+        if (!texture_handle.transitioned) {
+            // Prepare the texture for being read from a pixel shader.
+            list_->barriers(RT64::RenderBarrierStage::GRAPHICS, RT64::RenderTextureBarrier(texture_handle.texture.get(), RT64::RenderTextureLayout::SHADER_READ));
+            texture_handle.transitioned = true;
+        }
+
+        list_->setGraphicsDescriptorSet(texture_handle.set.get(), 1);
 
         RmlPushConstants constants{
             .transform = mvp_,
@@ -424,72 +416,59 @@ public:
     }
 
     bool LoadTexture(Rml::TextureHandle& texture_handle, Rml::Vector2i& texture_dimensions, const Rml::String& source) override {
-        std::filesystem::path image_path{ source.c_str() };
+        flush_image_from_bytes_queue();
 
-        if (image_path.extension() == ".tga") {
-            std::vector<char> file_data = read_file(image_path);
-
-            if (file_data.empty()) {
-                printf("  File not found or empty\n");
-                return false;
-            }
-
-            // Make sure ID length is zero
-            if (file_data[0] != 0) {
-                printf("  Nonzero ID length not supported\n");
-                return false;
-            }
-
-            // Make sure no color map is used
-            if (file_data[1] != 0) {
-                printf("  Color maps not supported\n");
-                return false;
-            }
-
-            // Make sure the image is uncompressed
-            if (file_data[2] != 2) {
-                printf("  Only uncompressed tga files supported\n");
-                return false;
-            }
-
-            uint16_t origin_x = from_bytes_le<uint16_t>(file_data.data() + 8);
-            uint16_t origin_y = from_bytes_le<uint16_t>(file_data.data() + 10);
-            uint16_t size_x = from_bytes_le<uint16_t>(file_data.data() + 12);
-            uint16_t size_y = from_bytes_le<uint16_t>(file_data.data() + 14);
-
-            // Nonzero origin not supported
-            if (origin_x != 0 || origin_y != 0) {
-                printf("  Nonzero origin not supported\n");
-                return false;
-            }
-
-            uint8_t pixel_depth = file_data[16];
-
-            if (pixel_depth != 32) {
-                printf("  Only 32bpp images supported\n");
-                return false;
-            }
-
-            uint8_t image_descriptor = file_data[17];
-
-            if ((image_descriptor & 0b1111) != 8) {
-                printf("  Only 8bpp alpha supported\n");
-            }
-
-            if (image_descriptor & 0b110000) {
-                printf("  Only bottom-to-top, left-to-right pixel order supported\n");
-            }
-
-            texture_dimensions.x = size_x;
-            texture_dimensions.y = size_y;
-
-            texture_handle = texture_count_++;
-            create_texture(texture_handle, reinterpret_cast<const Rml::byte*>(file_data.data() + 18), texture_dimensions, true, true);
-
+        auto it = image_from_bytes_map.find(source);
+        if (it == image_from_bytes_map.end()) {
+            // Return a transparent texture if the image can't be found.
+            texture_handle = 1;
+            texture_dimensions.x = 1;
+            texture_dimensions.y = 1;
             return true;
         }
+        
+        RT64::Texture* texture = nullptr;
+        std::unique_ptr<RT64::RenderBuffer> texture_buffer;
+        ImageFromBytes& img = it->second;
+        copy_command_list_->begin();
 
-        return false;
+        switch (img.type) {
+            case ImageType::RGBA32:
+                {
+                    // Read the image header (two 32-bit values for width and height respectively).
+                    uint32_t rowPitch = img.width * 4;
+                    size_t byteCount = img.height * rowPitch;
+                    texture = new RT64::Texture();
+                    RT64::TextureCache::setRGBA32(texture, device_, copy_command_list_.get(), reinterpret_cast<const uint8_t*>(img.bytes.data()), byteCount, img.width, img.height, rowPitch, texture_buffer, nullptr);
+                }
+                break;
+            case ImageType::File:
+                {
+                    // TODO: This data copy can be avoided when RT64::TextureCache::loadTextureFromBytes's function is updated to only take a pointer and size as the input.
+                    std::vector<uint8_t> data_copy(img.bytes.data(), img.bytes.data() + img.bytes.size());
+                    texture = RT64::TextureCache::loadTextureFromBytes(device_, copy_command_list_.get(), data_copy, texture_buffer);
+                }
+                break;
+        }
+        
+        copy_command_list_->end();
+        copy_command_queue_->executeCommandLists(copy_command_list_.get(), copy_command_fence_.get());
+        copy_command_queue_->waitForCommandFence(copy_command_fence_.get());
+
+        if (texture == nullptr) {
+            return false;
+        }
+
+        texture_handle = texture_count_++;
+        texture_dimensions.x = texture->width;
+        texture_dimensions.y = texture->height;
+
+        std::unique_ptr<RT64::RenderDescriptorSet> set = texture_set_builder_->create(device_);
+        set->setTexture(gTexture_descriptor_index, texture->texture.get(), RT64::RenderTextureLayout::SHADER_READ);
+        textures_.emplace(texture_handle, TextureHandle{ std::move(texture->texture), std::move(set), false });
+        delete texture;
+
+        return true;
     }
 
     bool GenerateTexture(Rml::TextureHandle& texture_handle, const Rml::byte* source, const Rml::Vector2i& source_dimensions) override {
@@ -504,7 +483,7 @@ public:
 
     bool create_texture(Rml::TextureHandle texture_handle, const Rml::byte* source, const Rml::Vector2i& source_dimensions, bool flip_y = false, bool bgra = false) {
         std::unique_ptr<RT64::RenderTexture> texture =
-            render_context_->device->createTexture(RT64::RenderTextureDesc::Texture2D(source_dimensions.x, source_dimensions.y, 1, bgra ? RmlTextureFormatBgra : RmlTextureFormat));
+            device_->createTexture(RT64::RenderTextureDesc::Texture2D(source_dimensions.x, source_dimensions.y, 1, bgra ? RmlTextureFormatBgra : RmlTextureFormat));
 
         if (texture != nullptr) {
             uint32_t image_size_bytes = source_dimensions.x * source_dimensions.y * RmlTextureFormatBytesPerPixel;
@@ -519,11 +498,13 @@ public:
             uint32_t uploaded_size_bytes = row_byte_width * source_dimensions.y;
 
             // Allocate room in the upload buffer for the uploaded data.
-            uint32_t upload_buffer_offset = allocate_upload_data_aligned(uploaded_size_bytes, 512);
+            if (uploaded_size_bytes > copy_buffer_size_) {
+                copy_buffer_size_ = (uploaded_size_bytes * 3) / 2;
+                copy_buffer_ = device_->createBuffer(RT64::RenderBufferDesc::UploadBuffer(copy_buffer_size_));
+            }
 
             // Copy the source data into the upload buffer.
-            uint8_t* dst_data = upload_buffer_mapped_data_ + upload_buffer_offset;
-                
+            uint8_t* dst_data = (uint8_t *)(copy_buffer_->map());
             if (row_byte_padding == 0) {
                 // Copy row-by-row if the image is flipped.
                 if (flip_y) {
@@ -540,33 +521,38 @@ public:
             else {
                 const Rml::byte *src_data = flip_y ? source + row_pitch * (source_dimensions.y - 1) : source;
                 uint32_t src_stride = flip_y ? -row_pitch : row_pitch;
-                size_t offset = 0;
 
-                for (int row = 0; row < source_dimensions.y; row++) { //(offset + increment) <= image_size_bytes) {
+                for (int row = 0; row < source_dimensions.y; row++) {
                     memcpy(dst_data, src_data, row_pitch);
                     src_data += src_stride;
-                    offset += row_pitch;
                     dst_data += row_byte_width;
                 }
             }
 
+            copy_buffer_->unmap();
+
+            // Reset the command list.
+            copy_command_list_->begin();
+
             // Prepare the texture to be a destination for copying.
-            list_->barriers(RT64::RenderBarrierStage::COPY, RT64::RenderTextureBarrier(texture.get(), RT64::RenderTextureLayout::COPY_DEST));
+            copy_command_list_->barriers(RT64::RenderBarrierStage::COPY, RT64::RenderTextureBarrier(texture.get(), RT64::RenderTextureLayout::COPY_DEST));
             
             // Copy the upload buffer into the texture.
-            list_->copyTextureRegion(
+            copy_command_list_->copyTextureRegion(
                 RT64::RenderTextureCopyLocation::Subresource(texture.get()),
-                RT64::RenderTextureCopyLocation::PlacedFootprint(upload_buffer_.get(), RmlTextureFormat, source_dimensions.x, source_dimensions.y, 1, row_width, upload_buffer_offset));
+                RT64::RenderTextureCopyLocation::PlacedFootprint(copy_buffer_.get(), RmlTextureFormat, source_dimensions.x, source_dimensions.y, 1, row_width));
             
-            // Prepare the texture for being read from a pixel shader.
-            list_->barriers(RT64::RenderBarrierStage::GRAPHICS, RT64::RenderTextureBarrier(texture.get(), RT64::RenderTextureLayout::SHADER_READ));
+            // End the command list, execute it and wait.
+            copy_command_list_->end();
+            copy_command_queue_->executeCommandLists(copy_command_list_.get(), copy_command_fence_.get());
+            copy_command_queue_->waitForCommandFence(copy_command_fence_.get());
 
             // Create a descriptor set with this texture in it.
-            std::unique_ptr<RT64::RenderDescriptorSet> set = texture_set_builder_->create(render_context_->device);
+            std::unique_ptr<RT64::RenderDescriptorSet> set = texture_set_builder_->create(device_);
 
             set->setTexture(gTexture_descriptor_index, texture.get(), RT64::RenderTextureLayout::SHADER_READ);
 
-            textures_.emplace(texture_handle, TextureHandle{ std::move(texture), std::move(set) });
+            textures_.emplace(texture_handle, TextureHandle{ std::move(texture), std::move(set), false });
 
             return true;
         }
@@ -575,7 +561,10 @@ public:
     }
 
 	void ReleaseTexture(Rml::TextureHandle texture) override {
-        textures_.erase(texture);
+        if (texture > 1) {
+            // Textures #0 and #1 are reserved and should never be released.
+            textures_.erase(texture);
+        }
     }
 
     void SetTransform(const Rml::Matrix4f* transform) override {
@@ -593,10 +582,10 @@ public:
         if (multisampling_.sampleCount > 1) {
             if (window_width_ != image_width || window_height_ != image_height) {
                 screen_framebuffer_.reset();
-                screen_texture_ = render_context_->device->createTexture(RT64::RenderTextureDesc::ColorTarget(image_width, image_height, SwapChainFormat));
-                screen_texture_ms_ = render_context_->device->createTexture(RT64::RenderTextureDesc::ColorTarget(image_width, image_height, SwapChainFormat, multisampling_));
+                screen_texture_ = device_->createTexture(RT64::RenderTextureDesc::ColorTarget(image_width, image_height, SwapChainFormat));
+                screen_texture_ms_ = device_->createTexture(RT64::RenderTextureDesc::ColorTarget(image_width, image_height, SwapChainFormat, multisampling_));
                 const RT64::RenderTexture *color_attachment = screen_texture_ms_.get();
-                screen_framebuffer_ = render_context_->device->createFramebuffer(RT64::RenderFramebufferDesc(&color_attachment, 1));
+                screen_framebuffer_ = device_->createFramebuffer(RT64::RenderFramebufferDesc(&color_attachment, 1));
                 screen_descriptor_set_->setTexture(0, screen_texture_.get(), RT64::RenderTextureLayout::SHADER_READ);
             }
 
@@ -620,9 +609,10 @@ public:
         // Clear out any stale buffers from the last command list.
         stale_buffers_.clear();
 
-        // Reset and map the upload buffer.
-        upload_buffer_bytes_used_ = 0;
-        upload_buffer_mapped_data_ = reinterpret_cast<uint8_t*>(upload_buffer_->map());
+        // Reset buffers.
+        reset_dynamic_buffer(upload_buffer_);
+        reset_dynamic_buffer(vertex_buffer_);
+        reset_dynamic_buffer(index_buffer_);
 
         // Set an internal texture as the render target if MSAA is enabled.
         if (multisampling_.sampleCount > 1) {
@@ -648,6 +638,7 @@ public:
             list->setGraphicsPipelineLayout(layout_.get());
             list->setGraphicsDescriptorSet(sampler_set_.get(), 0);
             list->setGraphicsDescriptorSet(screen_descriptor_set_.get(), 1);
+            list->setScissors(RT64::RenderRect{ 0, 0, window_width_, window_height_ });
             RT64::RenderVertexBufferView vertex_view(screen_vertex_buffer_.get(), screen_vertex_buffer_size_);
             list->setVertexBuffers(0, &vertex_view, 1, &vertex_slot_);
 
@@ -660,846 +651,71 @@ public:
             list->drawInstanced(3, 1, 0, 0);
         }
 
+        end_dynamic_buffer(upload_buffer_);
+        end_dynamic_buffer(vertex_buffer_);
+        end_dynamic_buffer(index_buffer_);
+
         list_ = nullptr;
+    }
 
-        // Unmap the upload buffer if it's mapped.
-        if (upload_buffer_mapped_data_) {
-            upload_buffer_->unmap();
-            upload_buffer_mapped_data_ = nullptr;
+    void queue_image_from_bytes_file(const std::string &src, const std::vector<char> &bytes) {
+        // Width and height aren't used for file images, so set them to 0.
+        image_from_bytes_queue.enqueue(ImageFromBytes{ .type = ImageType::File, .width = 0, .height = 0, .name = src, .bytes = bytes });
+    }
+
+    void queue_image_from_bytes_rgba32(const std::string &src, const std::vector<char> &bytes, uint32_t width, uint32_t height) {
+        image_from_bytes_queue.enqueue(ImageFromBytes{ .type = ImageType::RGBA32, .width = width, .height = height, .name = src, .bytes = bytes });
+    }
+
+    void flush_image_from_bytes_queue() {
+        ImageFromBytes image_from_bytes;
+        while (image_from_bytes_queue.try_dequeue(image_from_bytes)) {
+            // We can move the name into the map since the name in the actual entry is no longer needed.
+            // After that, move the entry itself into the map.
+            image_from_bytes_map.emplace(std::move(image_from_bytes.name), std::move(image_from_bytes));
         }
     }
 };
+} // namespace recompui
 
-bool can_focus(Rml::Element* element) {
-    return element->GetOwnerDocument() != nullptr && element->GetProperty(Rml::PropertyId::TabIndex)->Get<Rml::Style::TabIndex>() != Rml::Style::TabIndex::None;
+recompui::RmlRenderInterface_RT64::RmlRenderInterface_RT64() = default;
+recompui::RmlRenderInterface_RT64::~RmlRenderInterface_RT64() = default;
+
+void recompui::RmlRenderInterface_RT64::reset() {
+    impl.reset();
 }
 
-//! Copied from lib\RmlUi\Source\Core\Elements\ElementLabel.cpp
-// Get the first descending element whose tag name matches one of tags.
-static Rml::Element* TagMatchRecursive(const Rml::StringList& tags, Rml::Element* element)
-{
-	const int num_children = element->GetNumChildren();
-
-	for (int i = 0; i < num_children; i++)
-	{
-		Rml::Element* child = element->GetChild(i);
-
-		for (const Rml::String& tag : tags)
-		{
-			if (child->GetTagName() == tag)
-				return child;
-		}
-
-		Rml::Element* matching_element = TagMatchRecursive(tags, child);
-		if (matching_element)
-			return matching_element;
-	}
-
-	return nullptr;
+void recompui::RmlRenderInterface_RT64::init(RT64::RenderInterface* interface, RT64::RenderDevice* device) {
+    impl = std::make_unique<RmlRenderInterface_RT64_impl>(interface, device);
 }
 
-Rml::Element* get_target(Rml::ElementDocument* document, Rml::Element* element) {
-    // Labels can have targets, so check if this element is a label.
-    if (element->GetTagName() == "label") {
-        Rml::ElementLabel* labelElement = (Rml::ElementLabel*)element;
-        const Rml::String target_id = labelElement->GetAttribute<Rml::String>("for", "");
-
-        if (target_id.empty())
-        {
-            const Rml::StringList matching_tags = {"button", "input", "textarea", "progress", "progressbar", "select"};
-
-            return TagMatchRecursive(matching_tags, element);
-        }
-        else
-        {
-            Rml::Element* target = labelElement->GetElementById(target_id);
-            if (target != element)
-                return target;
-        }
-
-        return nullptr;
+Rml::RenderInterface* recompui::RmlRenderInterface_RT64::get_rml_interface() {
+    if (impl) {
+        return impl->GetAdaptedInterface();
     }
-    // Return the element directly if no target exists.
-    return element;
+    return nullptr;
 }
 
-namespace recompui {
-    class UiEventListener : public Rml::EventListener {
-        event_handler_t* handler_;
-        Rml::String param_;
-    public:
-        UiEventListener(event_handler_t* handler, Rml::String&& param) : handler_(handler), param_(std::move(param)) {}
-        void ProcessEvent(Rml::Event& event) override {
-            handler_(param_, event);
-        }
-    };
+void recompui::RmlRenderInterface_RT64::start(RT64::RenderCommandList* list, int image_width, int image_height) {
+    assert(static_cast<bool>(impl));
 
-    class UiEventListenerInstancer : public Rml::EventListenerInstancer {
-        std::unordered_map<Rml::String, event_handler_t*> handler_map_;
-        std::unordered_map<Rml::String, UiEventListener> listener_map_;
-    public:
-        Rml::EventListener* InstanceEventListener(const Rml::String& value, Rml::Element* element) override {
-            // Check if a listener has already been made for the full event string and return it if so.
-            auto find_listener_it = listener_map_.find(value);
-            if (find_listener_it != listener_map_.end()) {
-                return &find_listener_it->second;
-            }
-
-            // No existing listener, so check if a handler has been registered for this event type and create a listener for it if so.
-            size_t delimiter_pos = value.find(':');
-            Rml::String event_type = value.substr(0, delimiter_pos);
-            auto find_handler_it = handler_map_.find(event_type);
-            if (find_handler_it != handler_map_.end()) {
-                // A handler was found, create a listener and return it.
-                Rml::String event_param = value.substr(std::min(delimiter_pos, value.size()));
-                return &listener_map_.emplace(value, UiEventListener{ find_handler_it->second, std::move(event_param) }).first->second;
-            }
-
-            return nullptr;
-        }
-
-        void register_event(const Rml::String& value, event_handler_t* handler) {
-            handler_map_.emplace(value, handler);
-        }
-    };
+    impl->start(list, image_width, image_height);
 }
 
-void recompui::register_event(UiEventListenerInstancer& listener, const std::string& name, event_handler_t* handler) {
-    listener.register_event(name, handler);
+void recompui::RmlRenderInterface_RT64::end(RT64::RenderCommandList* list, RT64::RenderFramebuffer* framebuffer) {
+    assert(static_cast<bool>(impl));
+
+    impl->end(list, framebuffer);
 }
 
-Rml::Element* find_autofocus_element(Rml::Element* start) {
-    Rml::Element* cur_element = start;
+void recompui::RmlRenderInterface_RT64::queue_image_from_bytes_file(const std::string &src, const std::vector<char> &bytes) {
+    assert(static_cast<bool>(impl));
 
-    while (cur_element) {
-        if (cur_element->HasAttribute("autofocus")) {
-            break;
-        }
-        cur_element = RecompRml::FindNextTabElement(cur_element, true);
-    }
-
-    return cur_element;
+    impl->queue_image_from_bytes_file(src, bytes);
 }
 
-struct UIContext {
-    struct UIRenderContext render;
-    class {
-        std::unordered_map<recompui::Menu, std::unique_ptr<recompui::MenuController>> menus;
-        std::unordered_map<recompui::Menu, Rml::ElementDocument*> documents;
-        Rml::ElementDocument* current_document;
-        Rml::Element* prev_focused;
-        bool mouse_is_active_changed = false;
-    public:
-        bool mouse_is_active_initialized = false;
-        bool mouse_is_active = false;
-        bool cont_is_active = false;
-        bool await_stick_return_x = false;
-        bool await_stick_return_y = false;
-        int last_active_mouse_position[2] = {0, 0};
-        std::unique_ptr<SystemInterface_SDL> system_interface;
-        std::unique_ptr<RmlRenderInterface_RT64> render_interface;
-        Rml::Context* context;
-        recompui::UiEventListenerInstancer event_listener_instancer;
+void recompui::RmlRenderInterface_RT64::queue_image_from_bytes_rgba32(const std::string &src, const std::vector<char> &bytes, uint32_t width, uint32_t height) {
+    assert(static_cast<bool>(impl));
 
-        void unload() {
-            render_interface.reset();
-        }
-
-        void swap_document(recompui::Menu menu) {
-            if (current_document != nullptr) {
-                Rml::Element* window_el = current_document->GetElementById("window");
-                if (window_el != nullptr) {
-                    window_el->SetClassNames("rmlui-window rmlui-window--hidden");
-                }
-                current_document->Hide();
-            }
-
-            auto find_it = documents.find(menu);
-            if (find_it != documents.end()) {
-                assert(find_it->second && "Document for menu not loaded!");
-                current_document = find_it->second;
-                Rml::Element* window_el = current_document->GetElementById("window");
-                if (window_el != nullptr) {
-                    window_el->SetClassNames("rmlui-window rmlui-window--hidden");
-                }
-                current_document->Show();
-                if (window_el != nullptr) {
-                    window_el->SetClassNames("rmlui-window");
-                }
-            }
-            else {
-                current_document = nullptr;
-            }
-            prev_focused = nullptr;
-            mouse_is_active = false;
-            mouse_is_active_changed = false;
-            mouse_is_active_initialized = false;
-        }
-
-        void swap_config_menu(recompui::ConfigSubmenu submenu) {
-            if (current_document != nullptr) {
-                Rml::Element* config_tabset_base = current_document->GetElementById("config_tabset");
-                if (config_tabset_base != nullptr) {
-                    Rml::ElementTabSet* config_tabset = rmlui_dynamic_cast<Rml::ElementTabSet*>(config_tabset_base);
-                    if (config_tabset != nullptr) {
-                        config_tabset->SetActiveTab(static_cast<int>(submenu));
-                        prev_focused = nullptr;
-                        mouse_is_active = false;
-                        mouse_is_active_changed = false;
-                        mouse_is_active_initialized = false;
-                    }
-                }
-            }
-        }
-
-        void load_documents() {
-            if (!documents.empty()) {
-                Rml::Factory::RegisterEventListenerInstancer(nullptr);
-                for (auto doc : documents) {
-                    doc.second->ReloadStyleSheet();
-                }
-
-                Rml::ReleaseTextures();
-                Rml::ReleaseMemoryPools();
-
-                if (current_document != nullptr) {
-                    current_document->Close();
-                }
-
-                current_document = nullptr;
-
-                documents.clear();
-                Rml::Factory::RegisterEventListenerInstancer(&event_listener_instancer);
-            }
-
-            for (auto& [menu, controller]: menus) {
-                documents.emplace(menu, controller->load_document(context));
-            }
-
-            prev_focused = nullptr;
-            mouse_is_active = false;
-            mouse_is_active_changed = false;
-            mouse_is_active_initialized = false;
-        }
-
-        void make_event_listeners() {
-            for (auto& [menu, controller]: menus) {
-                controller->register_events(event_listener_instancer);
-            }
-        }
-
-        void make_bindings() {
-            for (auto& [menu, controller]: menus) {
-                controller->make_bindings(context);
-            }
-        }
-
-        void update_primary_input(bool mouse_moved, bool non_mouse_interacted) {
-            mouse_is_active_changed = false;
-            if (non_mouse_interacted) {
-                // controller newly interacted with
-                if (mouse_is_active) {
-                    mouse_is_active = false;
-                    mouse_is_active_changed = true;
-                }
-            }
-            else if (mouse_moved) {
-                // mouse newly interacted with
-                if (!mouse_is_active) {
-                    mouse_is_active = true;
-                    mouse_is_active_changed = true;
-                }
-            }
-
-            if (mouse_moved || non_mouse_interacted) {
-                mouse_is_active_initialized = true;
-            }
-
-            if (mouse_is_active_initialized) {
-                recompui::set_cursor_visible(mouse_is_active);
-            }
-
-            if (current_document == nullptr) {
-                return;
-            }
-
-            Rml::Element* window_el = current_document->GetElementById("window");
-            if (window_el != nullptr) {
-                if (mouse_is_active) {
-                    if (!window_el->HasAttribute("mouse-active")) {
-                        window_el->SetAttribute("mouse-active", true);
-                    }
-                }
-                else if (window_el->HasAttribute("mouse-active")) {
-                    window_el->RemoveAttribute("mouse-active");
-                }
-            }
-        }
-
-        void update_focus(bool mouse_moved, bool non_mouse_interacted) {
-            if (current_document == nullptr) {
-                return;
-            }
-
-            if (cont_is_active || non_mouse_interacted) {
-                if (non_mouse_interacted) {
-                    auto focusedEl = current_document->GetFocusLeafNode();
-                    if (focusedEl == nullptr || RecompRml::CanFocusElement(focusedEl) != RecompRml::CanFocus::Yes) {
-                        Rml::Element* element = find_autofocus_element(current_document);
-                        if (element != nullptr) {
-                            element->Focus();
-                        }
-                    }
-                }
-                return;
-            }
-
-            // If there was mouse motion, get the current hovered element (or its target if it points to one) and focus that if applicable.
-            if (mouse_is_active) {
-                if (mouse_is_active_changed) {
-                    Rml::Element* focused = current_document->GetFocusLeafNode();
-                    if (focused) focused->Blur();
-                } else if (mouse_moved) {
-                    Rml::Element* hovered = context->GetHoverElement();
-                    if (hovered) {
-                        Rml::Element* hover_target = get_target(current_document, hovered);
-                        if (hover_target && can_focus(hover_target)) {
-                            prev_focused = hover_target;
-                        }
-                    }
-                }
-            }
-
-            if (!mouse_is_active) {
-                if (!prev_focused || !can_focus(prev_focused)) {
-                    // Find the autofocus element in the tab chain
-                    Rml::Element* element = find_autofocus_element(current_document);
-                    if (element && can_focus(element)) {
-                        prev_focused = element;
-                    }
-                }
-
-                if (mouse_is_active_changed && prev_focused && can_focus(prev_focused)) {
-                    prev_focused->Focus();
-                }
-            }
-        }
-
-        void add_menu(recompui::Menu menu, std::unique_ptr<recompui::MenuController>&& controller) {
-            menus.emplace(menu, std::move(controller));
-        }
-        
-        void update_config_menu_loop(bool menu_changed) {
-            static int prevTab = -1;
-            if (menu_changed) prevTab = -1;
-            recompui::update_rml_display_refresh_rate();
-
-            Rml::ElementTabSet *tabset = (Rml::ElementTabSet *)current_document->GetElementById("config_tabset");
-            if (tabset == nullptr) return;
-
-            int curTab = tabset->GetActiveTab();
-            if (curTab == prevTab) return;
-            prevTab = curTab;
-
-            Rml::ElementList panels;
-            current_document->GetElementsByTagName(panels, "panel");
-            
-            Rml::Element *firstFocus = nullptr;
-            for (const auto& panel : panels) {
-                if (panel->IsVisible()) {
-                    firstFocus = RecompRml::FindNextTabElement(panel, true);
-                    break;
-                }
-            }
-
-            if (!firstFocus) return;
-            Rml::String id = firstFocus->GetId();
-            if (id.empty()) return;
-
-            Rml::ElementList tabs;
-            current_document->GetElementsByTagName(tabs, "tab");
-            for (const auto& tab : tabs) {
-                tab->SetProperty("nav-down", "#" + id);
-            }
-        }
-        
-        void update_prompt_loop(void) {
-            static bool wasShowingPrompt = false;
-
-            recompui::PromptContext *ctx = recompui::get_prompt_context();
-            if (!ctx->open && wasShowingPrompt) {
-                Rml::Element* focused = current_document->GetFocusLeafNode();
-                if (focused) focused->Blur();
-
-                bool didFocus = false;
-
-                if (ctx->returnElementId.size() > 0) {
-                    Rml::Element *retEl = current_document->GetElementById(ctx->returnElementId);
-                    if (retEl != nullptr && retEl->IsVisible()) {
-                        retEl->Focus(true);
-                        didFocus = true;
-                    }
-                }
-
-                if (!didFocus) {
-                    Rml::ElementList tabs;
-                    current_document->GetElementsByTagName(tabs, "tab");
-                    for (const auto& tab : tabs) {
-                        if (tab->IsVisible()) {
-                            tab->Focus(true);
-                            break;
-                        }
-                    }
-                }
-            }
-            wasShowingPrompt = ctx->open;
-
-            if (!ctx->open) {
-                return;
-            }
-
-            Rml::Element* focused = current_document->GetFocusLeafNode();
-            // Check if unfocused or current focus isn't either prompt button
-            if (mouse_is_active == false) {
-                if (
-                    focused == nullptr || (
-                        focused != current_document->GetElementById("prompt__cancel-button") &&
-                        focused != current_document->GetElementById("prompt__confirm-button")
-                    )
-                ) {
-                    ctx->shouldFocus = true;
-                }
-            }
-
-            if (!ctx->shouldFocus) {
-                return;
-            }
-
-            if (focused != nullptr) {
-                focused->Blur();
-            }
-
-            Rml::Element *targetButton = current_document->GetElementById(
-                ctx->focusOnCancel ? "prompt__cancel-button" :  "prompt__confirm-button");
-
-            if (targetButton == nullptr) {
-                return;
-            }
-
-            targetButton->Focus(true);
-
-            ctx->shouldFocus = false;
-
-            Rml::Element *confirmButton = current_document->GetElementById("prompt__confirm-button");
-            Rml::Element *cancelButton  = current_document->GetElementById("prompt__cancel-button");
-            if (confirmButton != nullptr) confirmButton->SetClassNames("button button--" + recompui::button_variants.at(ctx->confirmVariant));
-            if (cancelButton  != nullptr) cancelButton->SetClassNames( "button button--" + recompui::button_variants.at(ctx->cancelVariant));
-        }
-    } rml;
-};
-
-std::unique_ptr<UIContext> ui_context;
-std::mutex ui_context_mutex{};
-
-// TODO make this not be global
-extern SDL_Window* window;
-
-void recompui::get_window_size(int& width, int& height) {
-    SDL_GetWindowSizeInPixels(window, &width, &height);
-}
-
-void init_hook(RT64::RenderInterface* interface, RT64::RenderDevice* device) {
-#if defined(__linux__)
-    std::locale::global(std::locale::classic());
-#endif
-    ui_context = std::make_unique<UIContext>();
-
-    ui_context->rml.add_menu(recompui::Menu::Config, recompui::create_config_menu());
-    ui_context->rml.add_menu(recompui::Menu::Launcher, recompui::create_launcher_menu());
-
-    ui_context->render.interface = interface;
-    ui_context->render.device = device;
-
-    // Setup RML
-    ui_context->rml.system_interface = std::make_unique<SystemInterface_SDL>();
-    ui_context->rml.system_interface->SetWindow(window);
-    ui_context->rml.render_interface = std::make_unique<RmlRenderInterface_RT64>(&ui_context->render);
-    ui_context->rml.make_event_listeners();
-
-    Rml::SetSystemInterface(ui_context->rml.system_interface.get());
-    Rml::SetRenderInterface(ui_context->rml.render_interface.get()->GetAdaptedInterface());
-    Rml::Factory::RegisterEventListenerInstancer(&ui_context->rml.event_listener_instancer);
-
-    Rml::Initialise();
-
-    // Apply the hack to replace RmlUi's default color parser with one that conforms to HTML5 alpha parsing for SASS compatibility
-    recompui::apply_color_hack();
-
-    int width, height;
-    SDL_GetWindowSizeInPixels(window, &width, &height);
-    
-    ui_context->rml.context = Rml::CreateContext("main", Rml::Vector2i(width, height));
-    ui_context->rml.make_bindings();
-
-    Rml::Debugger::Initialise(ui_context->rml.context);
-
-    {
-        const Rml::String directory = "assets/";
-
-        struct FontFace {
-            const char* filename;
-            bool fallback_face;
-        };
-        FontFace font_faces[] = {
-            {"LatoLatin-Regular.ttf", false},
-            {"ChiaroNormal.otf", false},
-            {"ChiaroBold.otf", false},
-            {"LatoLatin-Italic.ttf", false},
-            {"LatoLatin-Bold.ttf", false},
-            {"LatoLatin-BoldItalic.ttf", false},
-            {"NotoEmoji-Regular.ttf", true},
-            {"promptfont/promptfont.ttf", false},
-        };
-
-        for (const FontFace& face : font_faces) {
-            Rml::LoadFontFace(directory + face.filename, face.fallback_face);
-        }
-    }
-
-    ui_context->rml.load_documents();
-}
-
-moodycamel::ConcurrentQueue<SDL_Event> ui_event_queue{};
-
-void recompui::queue_event(const SDL_Event& event) {
-    ui_event_queue.enqueue(event);
-}
-
-bool recompui::try_deque_event(SDL_Event& out) {
-    return ui_event_queue.try_dequeue(out);
-}
-
-std::atomic<recompui::Menu> open_menu = recompui::Menu::Launcher;
-std::atomic<recompui::ConfigSubmenu> open_config_submenu = recompui::ConfigSubmenu::Count;
-
-int cont_button_to_key(SDL_ControllerButtonEvent& button) {
-    // Configurable accept button in menu
-    auto menuAcceptBinding0 = recomp::get_input_binding(recomp::GameInput::ACCEPT_MENU, 0, recomp::InputDevice::Controller);
-    auto menuAcceptBinding1 = recomp::get_input_binding(recomp::GameInput::ACCEPT_MENU, 1, recomp::InputDevice::Controller);
-    // note - magic number: 0 is InputType::None
-    if ((menuAcceptBinding0.input_type != 0 && button.button == menuAcceptBinding0.input_id) ||
-        (menuAcceptBinding1.input_type != 0 && button.button == menuAcceptBinding1.input_id)) {
-        return SDLK_RETURN;
-    }
-
-    // Configurable apply button in menu
-    auto menuApplyBinding0 = recomp::get_input_binding(recomp::GameInput::APPLY_MENU, 0, recomp::InputDevice::Controller);
-    auto menuApplyBinding1 = recomp::get_input_binding(recomp::GameInput::APPLY_MENU, 1, recomp::InputDevice::Controller);
-    // note - magic number: 0 is InputType::None
-    if ((menuApplyBinding0.input_type != 0 && button.button == menuApplyBinding0.input_id) ||
-        (menuApplyBinding1.input_type != 0 && button.button == menuApplyBinding1.input_id)) {
-        return SDLK_f;
-    } 
-
-    // Allows closing the menu
-    auto menuToggleBinding0 = recomp::get_input_binding(recomp::GameInput::TOGGLE_MENU, 0, recomp::InputDevice::Controller);
-    auto menuToggleBinding1 = recomp::get_input_binding(recomp::GameInput::TOGGLE_MENU, 1, recomp::InputDevice::Controller);
-    // note - magic number: 0 is InputType::None
-    if ((menuToggleBinding0.input_type != 0 && button.button == menuToggleBinding0.input_id) ||
-        (menuToggleBinding1.input_type != 0 && button.button == menuToggleBinding1.input_id)) {
-        return SDLK_ESCAPE;
-    }
-
-    switch (button.button) {
-        case SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_DPAD_UP:
-            return SDLK_UP;
-        case SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_DPAD_DOWN:
-            return SDLK_DOWN;
-        case SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_DPAD_LEFT:
-            return SDLK_LEFT;
-        case SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_DPAD_RIGHT:
-            return SDLK_RIGHT;
-    }
-
-    return 0;
-}
-
-
-int cont_axis_to_key(SDL_ControllerAxisEvent& axis, float value) {
-    switch (axis.axis) {
-    case SDL_GameControllerAxis::SDL_CONTROLLER_AXIS_LEFTY:
-        if (value < 0) return SDLK_UP;
-        return SDLK_DOWN;
-    case SDL_GameControllerAxis::SDL_CONTROLLER_AXIS_LEFTX:
-        if (value >= 0) return SDLK_RIGHT;
-        return SDLK_LEFT;
-    }
-    return 0;
-}
-
-void apply_background_input_mode() {
-    static recomp::BackgroundInputMode last_input_mode = recomp::BackgroundInputMode::OptionCount;
-
-    recomp::BackgroundInputMode cur_input_mode = recomp::get_background_input_mode();
-
-    if (last_input_mode != cur_input_mode) {
-        SDL_SetHint(
-            SDL_HINT_JOYSTICK_ALLOW_BACKGROUND_EVENTS,
-            cur_input_mode == recomp::BackgroundInputMode::On
-                ? "1"
-                : "0"
-        );
-    }
-    last_input_mode = cur_input_mode;
-}
-
-bool recompui::get_cont_active() {
-    return ui_context->rml.cont_is_active;
-}
-
-void recompui::set_cont_active(bool active) {
-    ui_context->rml.cont_is_active = active;
-}
-
-void recompui::activate_mouse() {
-    ui_context->rml.update_primary_input(true, false);
-    ui_context->rml.update_focus(true, false);
-}
-
-void draw_hook(RT64::RenderCommandList* command_list, RT64::RenderFramebuffer* swap_chain_framebuffer) {
-    std::lock_guard lock {ui_context_mutex};
-
-    apply_background_input_mode();
-
-    // Return early if the ui context has been destroyed already.
-    if (!ui_context) {
-        return;
-    }
-
-    int num_keys;
-    const Uint8* key_state = SDL_GetKeyboardState(&num_keys);
-
-    static bool was_reload_held = false;
-    bool is_reload_held = key_state[SDL_SCANCODE_F10] != 0;
-    bool reload_sheets = is_reload_held && !was_reload_held;
-    was_reload_held = is_reload_held;
-
-    static recompui::Menu prev_menu = recompui::Menu::None;
-    recompui::Menu cur_menu = open_menu.load();
-
-    if (reload_sheets) {
-        ui_context->rml.load_documents();
-        prev_menu = recompui::Menu::None;
-    }
-
-    bool menu_changed = cur_menu != prev_menu;
-    if (menu_changed) {
-        ui_context->rml.swap_document(cur_menu);
-    }
-
-    recompui::ConfigSubmenu config_submenu = open_config_submenu.load();
-    if (config_submenu != recompui::ConfigSubmenu::Count) {
-        ui_context->rml.swap_config_menu(config_submenu);
-        open_config_submenu.store(recompui::ConfigSubmenu::Count);
-    }
-
-    prev_menu = cur_menu;
-
-    SDL_Event cur_event{};
-
-    bool mouse_moved = false;
-    bool mouse_clicked = false;
-    bool non_mouse_interacted = false;
-    bool cont_interacted = false;
-    bool kb_interacted = false;
-
-    if (cur_menu == recompui::Menu::Config) {
-        ui_context->rml.update_config_menu_loop(menu_changed);
-    }
-    if (cur_menu != recompui::Menu::None) {
-        ui_context->rml.update_prompt_loop();
-    }
-
-    while (recompui::try_deque_event(cur_event)) {
-        bool menu_is_open = cur_menu != recompui::Menu::None;
-
-        if (!recomp::all_input_disabled()) {
-            // Implement some additional behavior for specific events on top of what RmlUi normally does with them.
-            switch (cur_event.type) {
-            case SDL_EventType::SDL_MOUSEMOTION: {
-                int *last_mouse_pos = ui_context->rml.last_active_mouse_position;
-
-                if (!ui_context->rml.mouse_is_active) {
-                    float xD = cur_event.motion.x - last_mouse_pos[0];
-                    float yD = cur_event.motion.y - last_mouse_pos[1];
-                    if (sqrt(xD * xD + yD * yD) < 100) {
-                        break;
-                    }
-                }
-                last_mouse_pos[0] = cur_event.motion.x;
-                last_mouse_pos[1] = cur_event.motion.y;
-
-                // if controller is the primary input, don't use mouse movement to allow cursor to reactivate
-                if (recompui::get_cont_active()) {
-                    break;
-                }
-            }
-            // fallthrough
-            case SDL_EventType::SDL_MOUSEBUTTONDOWN:
-                mouse_moved = true;
-                mouse_clicked = true;
-                break;
-                
-            case SDL_EventType::SDL_CONTROLLERBUTTONDOWN: {
-                int rml_key = cont_button_to_key(cur_event.cbutton);
-                if (menu_is_open && rml_key) {
-                    ui_context->rml.context->ProcessKeyDown(RmlSDL::ConvertKey(rml_key), 0);
-                }
-                non_mouse_interacted = true;
-                cont_interacted = true;
-                break;
-            }
-            case SDL_EventType::SDL_KEYDOWN:
-                non_mouse_interacted = true;
-                kb_interacted = true;
-                break;
-            case SDL_EventType::SDL_USEREVENT:
-                if (cur_event.user.code == SDL_GameControllerAxis::SDL_CONTROLLER_AXIS_LEFTY) {
-                    ui_context->rml.await_stick_return_y = true;
-                } else if (cur_event.user.code == SDL_GameControllerAxis::SDL_CONTROLLER_AXIS_LEFTX) {
-                    ui_context->rml.await_stick_return_x = true;
-                }
-                break;
-            case SDL_EventType::SDL_CONTROLLERAXISMOTION:
-                SDL_ControllerAxisEvent* axis_event = &cur_event.caxis;
-                if (axis_event->axis != SDL_GameControllerAxis::SDL_CONTROLLER_AXIS_LEFTY && axis_event->axis != SDL_GameControllerAxis::SDL_CONTROLLER_AXIS_LEFTX) {
-                    break;
-                }
-
-                float axis_value = axis_event->value * (1 / 32768.0f);
-                bool* await_stick_return = axis_event->axis == SDL_GameControllerAxis::SDL_CONTROLLER_AXIS_LEFTY
-                        ? &ui_context->rml.await_stick_return_y
-                        : &ui_context->rml.await_stick_return_x;
-                if (fabsf(axis_value) > 0.5f) {
-                    if (!*await_stick_return) {
-                        *await_stick_return = true;
-                        non_mouse_interacted = true;
-                        int rml_key = cont_axis_to_key(cur_event.caxis, axis_value);
-                        if (menu_is_open && rml_key) {
-                            ui_context->rml.context->ProcessKeyDown(RmlSDL::ConvertKey(rml_key), 0);
-                        }
-                    }
-                    non_mouse_interacted = true;
-                    cont_interacted = true;
-                }
-                else if (*await_stick_return && fabsf(axis_value) < 0.15f) {
-                    *await_stick_return = false;
-                }
-                break;
-            }
-
-            if (menu_is_open) {
-                RmlSDL::InputEventHandler(ui_context->rml.context, cur_event);
-            }
-        }
-
-        // If no menu is open and the game has been started and either the escape key or select button are pressed, open the config menu.
-        if (!menu_is_open && ultramodern::is_game_started()) {
-            bool open_config = false;
-
-            switch (cur_event.type) {
-            case SDL_EventType::SDL_KEYDOWN:
-                if (cur_event.key.keysym.scancode == SDL_Scancode::SDL_SCANCODE_ESCAPE) {
-                    open_config = true;
-                }
-                break;
-            case SDL_EventType::SDL_CONTROLLERBUTTONDOWN:
-                auto menuToggleBinding0 = recomp::get_input_binding(recomp::GameInput::TOGGLE_MENU, 0, recomp::InputDevice::Controller);
-                auto menuToggleBinding1 = recomp::get_input_binding(recomp::GameInput::TOGGLE_MENU, 1, recomp::InputDevice::Controller);
-                // note - magic number: 0 is InputType::None
-                if ((menuToggleBinding0.input_type != 0 && cur_event.cbutton.button == menuToggleBinding0.input_id) ||
-                    (menuToggleBinding1.input_type != 0 && cur_event.cbutton.button == menuToggleBinding1.input_id)) {
-                    open_config = true;
-                }
-                break;
-            }
-
-            if (open_config) {
-                cur_menu = recompui::Menu::Config;
-                open_menu.store(recompui::Menu::Config);
-                ui_context->rml.swap_document(cur_menu);
-            }
-        }
-    } // end dequeue event loop
-
-    if (cont_interacted || kb_interacted || mouse_clicked) {
-        recompui::set_cont_active(cont_interacted);
-    }
-    recomp::config_menu_set_cont_or_kb(ui_context->rml.cont_is_active);
-
-    recomp::InputField scanned_field = recomp::get_scanned_input();
-    if (scanned_field != recomp::InputField{}) {
-        recomp::finish_scanning_input(scanned_field);
-    }
-
-    ui_context->rml.update_primary_input(mouse_moved, non_mouse_interacted);
-    ui_context->rml.update_focus(mouse_moved, non_mouse_interacted);
-
-    if (cur_menu != recompui::Menu::None) {
-        int width = swap_chain_framebuffer->getWidth();
-        int height = swap_chain_framebuffer->getHeight();
-
-        // Scale the UI based on the window size with 1080 vertical resolution as the reference point.
-        ui_context->rml.context->SetDensityIndependentPixelRatio((height) / 1080.0f);
-
-        ui_context->rml.render_interface->start(command_list, width, height);
-
-        static int prev_width = 0;
-        static int prev_height = 0;
-
-        if (prev_width != width || prev_height != height) {
-            ui_context->rml.context->SetDimensions({ width, height });
-        }
-        prev_width = width;
-        prev_height = height;
-
-        ui_context->rml.context->Update();
-        ui_context->rml.context->Render();
-        ui_context->rml.render_interface->end(command_list, swap_chain_framebuffer);
-    }
-}
-
-void deinit_hook() {
-    std::lock_guard lock {ui_context_mutex};
-    Rml::Debugger::Shutdown();
-    Rml::Shutdown();
-    ui_context->rml.unload();
-    ui_context.reset();
-}
-
-void recompui::set_render_hooks() {
-    RT64::SetRenderHooks(init_hook, draw_hook, deinit_hook);
-}
-
-void recompui::set_current_menu(Menu menu) {
-    open_menu.store(menu);
-    if (menu == recompui::Menu::None) {
-        ui_context->rml.system_interface->SetMouseCursor("arrow");
-    }
-}
-
-void recompui::set_config_submenu(recompui::ConfigSubmenu submenu) {
-	open_config_submenu.store(submenu);
-}
-
-void recompui::destroy_ui() {
-}
-
-recompui::Menu recompui::get_current_menu() {
-    return open_menu.load();
-}
-
-void recompui::message_box(const char* msg) {
-    SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, zelda64::program_name.data(), msg, nullptr);
-    printf("[ERROR] %s\n", msg);
+    impl->queue_image_from_bytes_rgba32(src, bytes, width, height);
 }
