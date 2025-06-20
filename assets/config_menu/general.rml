@@ -6,25 +6,6 @@
             <div class="config__hz-wrapper" id="conf-general__hz-wrapper">
                 <!-- Options -->
                 <div class="config__wrapper" data-event-mouseout="set_cur_config_index(-1)" id="conf-general__wrapper">
-                    <!-- rumble strength -->
-                    <div class="config-option" data-event-mouseover="set_cur_config_index(1)">
-                        <label class="config-option__title">Rumble Strength</label>
-                        <div class="config-option__range-wrapper config-option__list">
-                            <label class="config-option__range-label">{{rumble_strength}}%</label>
-                            <input
-                                class="nav-vert"
-                                data-event-blur="set_cur_config_index(-1)"
-                                data-event-focus="set_cur_config_index(1)"
-                                id="rumble_strength_input"
-                                type="range"
-                                min="0"
-                                max="100"
-                                style="flex: 1; margin: 0dp;"
-                                data-value="rumble_strength"
-                            />
-                        </div>
-                    </div>
-                    
                     <!-- joystick deadzone -->
                     <div class="config-option" data-event-mouseover="set_cur_config_index(4)">
                         <label class="config-option__title">Joystick Deadzone</label>

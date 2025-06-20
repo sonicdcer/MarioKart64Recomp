@@ -228,45 +228,6 @@
                             <div class="config-option__details" data-if="!sample_positions_supported">Not available (missing sample positions support)</div>
                         </div>
                     </div>
-
-                    <div class="config-option" data-event-mouseover="set_cur_config_index(6)">
-                        <label class="config-option__title">HUD Placement</label>
-                        <div class="config-option__list">
-                            <input type="radio"
-                                data-event-blur="set_cur_config_index(-1)"
-                                data-event-focus="set_cur_config_index(6)"
-                                name="hr-option"
-                                data-checked="hr_option"
-                                value="Original"
-                                id="hr_original"
-                                style="nav-up: #msaa_none; nav-down: #apply_button"
-                            />
-                            <label class="config-option__tab-label" for="hr_original">Original</label>
-                            <input type="radio"
-                                data-event-blur="set_cur_config_index(-1)"
-                                data-event-focus="set_cur_config_index(6)"
-                                name="hr-option"
-                                data-checked="hr_option"
-                                value="Clamp16x9"
-                                id="hr_16_9"
-                                style="nav-up: #msaa_2x; nav-down: #apply_button"
-                                data-style-nav-up="msaa2x_supported ? '#msaa_2x' : '#msaa_none'"
-                            />
-                            <label class="config-option__tab-label" for="hr_16_9">16:9</label>
-                            <input type="radio"
-                                data-event-blur="set_cur_config_index(-1)"
-                                data-event-focus="set_cur_config_index(6)"
-                                name="hr-option"
-                                data-checked="hr_option"
-                                value="Full"
-                                id="hr_full"
-                                style="nav-up: #msaa_4x; nav-down: #apply_button"
-                                data-style-nav-up="msaa4x_supported ? '#msaa_4x' : (msaa2x_supported ? '#msaa_2x' : '#msaa_none')"
-                            />
-                            <label class="config-option__tab-label" for="hr_full">Expand</label>
-                        </div>
-                    </div>
-
                 </div>
                 <div class="config__wrapper">
                     <p data-if="cur_config_index == 0">
