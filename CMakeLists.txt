@@ -230,6 +230,9 @@ target_include_directories(MarioKart64Recompiled PRIVATE
 if(CMAKE_SIZEOF_VOID_P EQUAL 8 AND CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64|amd64|AMD64")
     target_compile_options(MarioKart64Recompiled PRIVATE
         -march=nehalem
+        # Legacy CPU SUPPORT
+        # -march=core2
+        # -msse4.1
         -fno-strict-aliasing
         -fms-extensions
     )
