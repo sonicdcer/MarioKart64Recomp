@@ -39,7 +39,7 @@ If you have issues with crashes on startup, make sure your graphics drivers are 
 ## Features
 
 #### Plug and Play
-Simply provide your copy of the 1.1 North American version of the game in the main menu and start playing! This project will automatically load assets from the provided copy, so there is no need to go through a separate extraction step or build the game yourself. Other versions of the game may be supported in the future.
+Simply provide your copy of the North American version of the game in the main menu and start playing! This project will automatically load assets from the provided copy, so there is no need to go through a separate extraction step or build the game yourself.
 
 #### Fully Intact N64 Effects
 A lot of care was put into RT64 to make sure all graphical effects were rendered exactly as they did originally on the N64. No workarounds or "hacks" were made to replicate these effects, with the only modifications to them being made for enhancement purposes such as widescreen support.
@@ -83,7 +83,7 @@ Unlike N64 ports in the past, this project is not based on the source code provi
 - Linux: `~/.config/MarioKart64Recompiled/saves`
 
 #### How do I choose a different ROM?
-**You don't.** This project is **only** a port of MarioKart 64, and it will only accept one specific ROM: the US version 1.1 of the N64 release of MarioKart 64. ROMs in formats other than .z64 will be automatically converted, as long as it is the correct ROM. **It is not an emulator and it cannot run any arbitrary ROM.** 
+**You don't.** This project is **only** a port of MarioKart 64, and it will only accept one specific ROM: the US version of the N64 release of MarioKart 64. ROMs in formats other than .z64 will be automatically converted, as long as it is the correct ROM. **It is not an emulator and it cannot run any arbitrary ROM.** 
 
 If you want to play a modded ROM or in another language, note that support for modding and other languages will be added to the project itself in the future and will not rely on you supplying a different ROM. 
 
