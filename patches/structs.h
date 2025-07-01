@@ -95,6 +95,91 @@ typedef struct {
     /* 0x1E */ s8 unk1E; // gCharacterSelections
 } struct_D_802874D8;
 
+#define CHANNELS_MAX 16
+#define SEQUENCE_PLAYERS 4
+#define SEQ_PLAYER_LEVEL 0 // Level background music
+#define SEQ_PLAYER_ENV 1   // Misc music like the puzzle jingle
+#define SEQ_PLAYER_SFX 2   // Sound effects
+
+struct NotePool;
+
+struct AudioListItem {
+    // A node in a circularly linked list. Each node is either a head or an item:
+    // - Items can be either detached (prev = NULL), or attached to a list.
+    //   'value' points to something of interest.
+    // - List heads are always attached; if a list is empty, its head points
+    //   to itself. 'count' contains the size of the list.
+    // If the list holds notes, 'pool' points back to the pool where it lives.
+    // Otherwise, that member is NULL.
+    struct AudioListItem* prev;
+    struct AudioListItem* next;
+    union {
+        void* value; // either Note* or SequenceChannelLayer*
+        s32 count;
+    } u;
+    struct NotePool* pool;
+}; // size = 0x10
+
+struct NotePool {
+    struct AudioListItem disabled;
+    struct AudioListItem decaying;
+    struct AudioListItem releasing;
+    struct AudioListItem active;
+};
+
+struct M64ScriptState {
+    u8* pc;
+    u8* stack[4];
+    u8 remLoopIters[4];
+    u8 depth;
+}; // size = 0x1C
+
+// Also known as a Group, according to debug strings.
+struct SequencePlayer {
+    /*US/JP, EU,    SH   */
+    /*0x000, 0x000, 0x000*/ u8 enabled : 1;
+    /*0x000, 0x000*/ u8 finished : 1; // never read
+    /*0x000, 0x000*/ u8 muted : 1;
+    /*0x000, 0x000*/ u8 seqDmaInProgress : 1;
+    /*0x000, 0x000*/ u8 bankDmaInProgress : 1;
+    /*       0x000*/ u8 recalculateVolume : 1;
+    /*0x002, 0x001, 0x001*/ u8 state;
+    /*0x003, 0x002*/ u8 noteAllocPolicy;
+    /*0x004, 0x003*/ u8 muteBehavior;
+    /*0x005, 0x004*/ u8 seqId;
+    /*0x006, 0x005*/ u8 defaultBank[1]; // must be an array to get a comparison
+                                        // to match; other u8's might also be part of that array
+    /*0x007, 0x006*/ u8 loadingBankId;
+    /*     , 0x007, 0x007*/ s8 seqVariationEu[1];
+    /*0x00A, 0x008*/ u16 tempo; // beats per minute in JP, tatums per minute in US/EU
+    /*0x00C, 0x00A*/ u16 tempoAcc;
+    /*0x010, 0x00C, 0x00E*/ s16 transposition;
+    /*0x012, 0x00E, 0x010*/ u16 delay;
+    /*0x00E, 0x010, 0x012*/ u16 fadeRemainingFrames;
+    /*     , 0x012, 0x014*/ u16 fadeTimerUnkEu;
+    /*0x014, 0x014*/ u8* seqData;          // buffer of some sort
+    /*0x018, 0x018, 0x1C*/ f32 fadeVolume; // set to 1.0f
+    /*0x01C, 0x01C*/ f32 fadeVelocity;     // set to 0.0f
+    /*0x020, 0x020, 0x024*/ f32 volume;    // set to 0.0f
+    /*0x024, 0x024*/ f32 muteVolumeScale;  // set to 0.5f
+    /*     , 0x028, 0x02C*/ f32 fadeVolumeScale;
+    /*     , 0x02C*/ f32 appliedFadeVolume;
+    /*0x02C, 0x030, 0x034*/ struct SequenceChannel* channels[CHANNELS_MAX];
+    /*0x06C, 0x070*/ struct M64ScriptState scriptState;
+    /*0x088, 0x08C*/ u8* shortNoteVelocityTable;
+    /*0x08C, 0x090*/ u8* shortNoteDurationTable;
+    /*0x090, 0x094*/ struct NotePool notePool;
+    /*0x0D0, 0x0D4*/ OSMesgQueue seqDmaMesgQueue;
+    /*0x0E8, 0x0EC*/ OSMesg seqDmaMesg;
+    /*0x0EC, 0x0F0*/ OSIoMesg seqDmaIoMesg;
+    /*0x100, 0x108*/ OSMesgQueue bankDmaMesgQueue;
+    /*0x118, 0x120*/ OSMesg bankDmaMesg;
+    /*0x11C, 0x124*/ OSIoMesg bankDmaIoMesg;
+    /*0x130, 0x13C*/ u8* bankDmaCurrMemAddr;
+    /*0x138, 0x140*/ uintptr_t bankDmaCurrDevAddr;
+    /*0x13C, 0x144*/ ssize_t bankDmaRemaining;
+}; // size = 0x140, 0x148 on EU, 0x14C on SH
+
 #define RENDER_SCREEN_MODE_1P_PLAYER_ONE PLAYER_ONE + SCREEN_MODE_1P
 #define RENDER_SCREEN_MODE_2P_HORIZONTAL_PLAYER_ONE PLAYER_ONE + SCREEN_MODE_2P_SPLITSCREEN_HORIZONTAL
 #define RENDER_SCREEN_MODE_2P_HORIZONTAL_PLAYER_TWO PLAYER_TWO + SCREEN_MODE_2P_SPLITSCREEN_HORIZONTAL

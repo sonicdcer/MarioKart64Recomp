@@ -124,12 +124,24 @@ extern "C" void recomp_get_bgm_volume(uint8_t* rdram, recomp_context* ctx) {
     _return(ctx, zelda64::get_bgm_volume() / 100.0f);
 }
 
+extern "C" void recomp_set_bgm_volume_100(uint8_t* rdram, recomp_context* ctx) {
+    zelda64::set_bgm_volume(100);
+}
+
+extern "C" void recomp_set_bgm_volume_59(uint8_t* rdram, recomp_context* ctx) {
+    zelda64::set_bgm_volume(59);
+}
+
+extern "C" void recomp_set_bgm_volume_0(uint8_t* rdram, recomp_context* ctx) {
+    zelda64::set_bgm_volume(0);
+}
+
 extern "C" void recomp_get_sfx_volume(uint8_t* rdram, recomp_context* ctx) {
     _return(ctx, zelda64::get_sfx_volume() / 100.0f);
 }
 
-extern "C" void recomp_get_voice_volume(uint8_t* rdram, recomp_context* ctx) {
-    _return(ctx, zelda64::get_voice_volume() / 100.0f);
+extern "C" void recomp_get_env_volume(uint8_t* rdram, recomp_context* ctx) {
+    _return(ctx, zelda64::get_env_volume() / 100.0f);
 }
 
 extern "C" void recomp_get_low_health_beeps_enabled(uint8_t* rdram, recomp_context* ctx) {

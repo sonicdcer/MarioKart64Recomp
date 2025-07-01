@@ -692,4 +692,6 @@ extern s16 D_8018D210;
 extern s16 D_8018D208;
 extern s16 D_8018D218;
 extern f32 D_8018D1E8;
+extern struct SequencePlayer gSequencePlayers[SEQUENCE_PLAYERS];
+
 #endif
