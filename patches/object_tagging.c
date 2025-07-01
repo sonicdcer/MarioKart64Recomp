@@ -237,7 +237,7 @@ RECOMP_PATCH void func_8006D474(Player* player, s8 playerId, s8 screenId) {
         for (i = 0; i < 10; i++) {
             // @recomp Tag the transform.
             gEXMatrixGroupDecomposedNormal(
-                gDisplayListHead++, TAG_SMOKE_DUST(((u32) player->unk_258[i].unk_012 << 8) + (playerId << 16) + i),
+                gDisplayListHead++, TAG_SMOKE_DUST((playerId << 8) + i),
                 G_EX_PUSH, G_MTX_MODELVIEW, G_EX_EDIT_ALLOW);
             switch (player->unk_258[i].unk_012) {
                 case 1:
@@ -260,6 +260,14 @@ RECOMP_PATCH void func_8006D474(Player* player, s8 playerId, s8 screenId) {
                     }
                     break;
             }
+            // @recomp Pop the transform id.
+            gEXPopMatrixGroup(gDisplayListHead++, G_MTX_MODELVIEW);
+
+            // @recomp Tag the transform.
+            gEXMatrixGroupDecomposedNormal(
+                gDisplayListHead++, TAG_SMOKE_DUST((playerId << 8) + i+30),
+                G_EX_PUSH, G_MTX_MODELVIEW, G_EX_EDIT_ALLOW);
+
             switch (player->unk_258[i + 30].unk_012) {
                 case 1:
                 case 9:
@@ -319,6 +327,13 @@ RECOMP_PATCH void func_8006D474(Player* player, s8 playerId, s8 screenId) {
                     }
                     break;
             }
+            // @recomp Pop the transform id.
+            gEXPopMatrixGroup(gDisplayListHead++, G_MTX_MODELVIEW);
+            
+            // @recomp Tag the transform.
+            gEXMatrixGroupDecomposedNormal(
+                gDisplayListHead++, TAG_SMOKE_DUST((playerId << 8) + i+10),
+                G_EX_PUSH, G_MTX_MODELVIEW, G_EX_EDIT_ALLOW);
             switch (player->unk_258[i + 10].unk_012) {
                 case 1:
                     if (gActiveScreenMode == SCREEN_MODE_3P_4P_SPLITSCREEN) {
