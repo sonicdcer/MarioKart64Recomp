@@ -78,7 +78,7 @@ extern u8 gTextureDksJungleParkwayKiwanoFruit3[];
 u8* dma_textures(u8*, u32, u32);
 void spawn_course_vehicles(void);
 
-#if 0
+#if 1
 /**
  * @brief Loads actor textures, course specific actor textures.
  * Calls to spawn_course_vehicles and place_course_actors
@@ -197,7 +197,7 @@ RECOMP_PATCH void init_actors_and_load_textures(void) {
 }
 #endif
 
-#if 0
+#if 1
 RECOMP_PATCH Gfx* func_80095E10(Gfx* displayListHead, s8 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6,
                                 s32 arg7, s32 arg8, s32 arg9, u8* argA, u32 argB, u32 argC) {
     u32 var_a1_2 = arg4;
@@ -295,7 +295,7 @@ RECOMP_PATCH Gfx* func_80095E10(Gfx* displayListHead, s8 arg1, s32 arg2, s32 arg
 }
 #endif
 
-#if 0
+#if 1
 RECOMP_PATCH Gfx* func_800963F0(Gfx* displayListHead, s8 arg1, s32 arg2, s32 arg3, f32 arg4, f32 arg5, s32 arg6,
                                 s32 arg7, s32 arg8, s32 arg9, s32 argA, s32 argB, u8* argC, u32 argD, u32 argE) {
     u32 var_a1_2 = arg6;
@@ -400,7 +400,7 @@ RECOMP_PATCH Gfx* func_800963F0(Gfx* displayListHead, s8 arg1, s32 arg2, s32 arg
 }
 #endif
 
-#if 0
+#if 1
 RECOMP_PATCH Gfx* func_80097274(Gfx* displayListHead, s8 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6,
                                 s32 arg7, s32 arg8, s32 arg9, UNUSED u16* argA, u32 argB, u32 argC, UNUSED s32 argD) {
     u32 var_a1_2 = arg4;
@@ -505,7 +505,7 @@ RECOMP_PATCH Gfx* func_80097274(Gfx* displayListHead, s8 arg1, s32 arg2, s32 arg
 }
 #endif
 
-#if 0
+#if 1
 RECOMP_PATCH Gfx* func_80097E58(Gfx* displayListHead, s8 fmt, UNUSED u32 arg2, u32 arg3, UNUSED u32 arg4, u32 arg5,
                                 s32 arg6, s32 arg7, u8* someTexture, u32 arg9, UNUSED u32 argA, s32 width) {
     u32 ult;

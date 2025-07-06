@@ -104,16 +104,16 @@ RECOMP_PATCH void handle_menus_with_pri_arg(s32 priSpecial) {
                         if (gControllers[0].button & L_TRIG) {
                             gDebugMenuSelection = 3;
                         }
-                        #if DEBUG_ENDING == 1
+#if DEBUG_ENDING == 1
                         if (gControllers[0].button & U_CBUTTONS) {
                             gGamestateNext = CREDITS_SEQUENCE;
                         }
-                        #endif
-                        #if DEBUG_CEREMONY == 1
+#endif
+#if DEBUG_CEREMONY == 1
                         if (gControllers[0].button & R_CBUTTONS) {
                             gGamestateNext = ENDING;
                         }
-                        #endif
+#endif
                         // @recomp: Change gControllerFive to gControllers[0] to avoid bug where something
                         // is pressing other controllers in memory.
                         if (gControllers[0].button & R_TRIG) {
@@ -1209,6 +1209,8 @@ Gfx* RenderBackground(Gfx* displayListHead, s8 arg1, s32 arg2, s32 arg3, s32 arg
             gDPLoadTextureTile(displayListHead++, argA, arg1, G_IM_SIZ_16b, argB, 0, var_a1_2, var_s3,
                                // var_a1_2 + var_s2, var_s3 + var_s4, 0, G_TX_NOMIRROR | G_TX_WRAP,
                                // G_TX_NOMIRROR | G_TX_WRAP, sp68, sp64, G_TX_NOLOD, G_TX_NOLOD);
+                               // @recomp Fix textures loading more pixels than they should by adjusting the
+                               // tile size and the mask.
                                var_a1_2 + var_s2 - 1, var_s3 + var_s4 - 1, 0, G_TX_NOMIRROR | G_TX_WRAP,
                                G_TX_NOMIRROR | G_TX_WRAP, 0, 0, G_TX_NOLOD, G_TX_NOLOD);
             gEXTextureRectangle(displayListHead++, G_EX_ORIGIN_LEFT, G_EX_ORIGIN_RIGHT, arg8 * 4, arg9 * 4,
