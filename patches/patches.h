@@ -51,6 +51,7 @@
 #include "menus.h"
 #include "sounds.h"
 #include "objects.h"
+#include "debug.h"
 
 #define MAKE_RGB(r, g, b) (((r) << 0x10) | ((g) << 0x08) | (b << 0x00))
 

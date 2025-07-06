@@ -104,12 +104,16 @@ RECOMP_PATCH void handle_menus_with_pri_arg(s32 priSpecial) {
                         if (gControllers[0].button & L_TRIG) {
                             gDebugMenuSelection = 3;
                         }
+                        #if DEBUG_ENDING == 1
                         if (gControllers[0].button & U_CBUTTONS) {
                             gGamestateNext = CREDITS_SEQUENCE;
                         }
+                        #endif
+                        #if DEBUG_CEREMONY == 1
                         if (gControllers[0].button & R_CBUTTONS) {
                             gGamestateNext = ENDING;
                         }
+                        #endif
                         // @recomp: Change gControllerFive to gControllers[0] to avoid bug where something
                         // is pressing other controllers in memory.
                         if (gControllers[0].button & R_TRIG) {
