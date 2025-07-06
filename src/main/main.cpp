@@ -345,6 +345,7 @@ std::vector<recomp::GameEntry> supported_games = {
         .rom_hash = 0x54572403569b87c1, // retail
         .internal_name = "MARIOKART64",
         .game_id = u8"mk64.us",
+        .mod_game_id = "mk64",
         .save_type = recomp::SaveType::Eep4k,
         .is_enabled = true,
         .entrypoint_address = get_entrypoint_address(),
