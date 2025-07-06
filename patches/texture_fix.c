@@ -3,6 +3,7 @@
 extern u8* D_802BA050;
 extern u8* D_802BA054;
 extern u8* D_802BA058;
+extern u8 D_0B002A00[];
 
 extern u8 gTextureGreenShell0[];
 extern u8 gTextureGreenShell1[];
@@ -197,8 +198,316 @@ RECOMP_PATCH void init_actors_and_load_textures(void) {
 #endif
 
 #if 0
-RECOMP_PATCH Gfx* func_80097E58(Gfx* displayListHead, s8 fmt, UNUSED u32 arg2, u32 arg3, UNUSED u32 arg4, u32 arg5, s32 arg6,
-                   s32 arg7, u8* someTexture, u32 arg9, UNUSED u32 argA, s32 width) {
+RECOMP_PATCH Gfx* func_80095E10(Gfx* displayListHead, s8 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6,
+                                s32 arg7, s32 arg8, s32 arg9, u8* argA, u32 argB, u32 argC) {
+    u32 var_a1_2 = arg4;
+    u32 var_s3 = arg5;
+    s32 sp7C;
+    u32 var_s2;
+    u32 var_s4;
+    s32 var_t0 = 1;
+    s32 temp_lo;
+    s32 sp68 = 0;
+    s32 sp64 = 0;
+    s32 var_v0_2;
+
+    while ((u32) var_t0 < argB) {
+        var_t0 *= 2;
+    }
+
+    temp_lo = 0x400 / var_t0;
+
+    while ((u32) (temp_lo / 2) > argC) {
+        temp_lo /= 2;
+    }
+
+    var_v0_2 = var_t0;
+    while (var_v0_2 > 1) {
+        var_v0_2 /= 2;
+        sp68 += 1;
+    }
+    var_v0_2 = temp_lo;
+
+    while (var_v0_2 > 1) {
+        var_v0_2 /= 2;
+        sp64 += 1;
+    }
+
+    if (arg8 < 0) {
+        arg4 -= arg8;
+        arg8 = 0;
+    } else if (((arg6 - arg4) + arg8) > SCREEN_WIDTH) {
+        arg6 = (arg4 - arg8) + SCREEN_WIDTH;
+    }
+
+    if (arg9 < 0) {
+        arg5 -= arg9;
+        arg9 = 0;
+    } else if (((arg7 - arg5) + arg9) > SCREEN_HEIGHT) {
+        arg7 = (arg5 - arg9) + SCREEN_HEIGHT;
+    }
+
+    if (arg6 < arg4) {
+        return displayListHead;
+    }
+    if (arg7 < arg5) {
+        return displayListHead;
+    }
+    sp7C = arg8;
+    for (var_s3 = arg5; var_s3 < (u32) arg7; var_s3 += temp_lo) {
+
+        if ((u32) arg7 < temp_lo + var_s3) {
+            var_s4 = arg7 - var_s3;
+            if (!var_s4) {
+                break;
+            }
+        } else {
+            var_s4 = temp_lo;
+        }
+
+        for (var_a1_2 = arg4; var_a1_2 < (u32) arg6; var_a1_2 += var_t0) {
+
+            if ((u32) arg6 < var_t0 + var_a1_2) {
+                var_s2 = arg6 - var_a1_2;
+                if (!var_s2) {
+                    break;
+                }
+            } else {
+                var_s2 = var_t0;
+            }
+            gDPLoadTextureTile(displayListHead++, argA, arg1, G_IM_SIZ_16b, argB, 0, var_a1_2, var_s3,
+                               // var_a1_2 + var_s2, var_s3 + var_s4, 0, G_TX_NOMIRROR | G_TX_WRAP,
+                               // G_TX_NOMIRROR | G_TX_WRAP, sp68, sp64, G_TX_NOLOD, G_TX_NOLOD);
+                               // @recomp Fix textures loading more pixels than they should by adjusting the
+                               // tile size and the mask.
+                               var_a1_2 + var_s2 - 1, var_s3 + var_s4 - 1, 0, G_TX_NOMIRROR | G_TX_WRAP,
+                               G_TX_NOMIRROR | G_TX_WRAP, 0, 0, G_TX_NOLOD, G_TX_NOLOD);
+            gSPTextureRectangle(displayListHead++, arg8 * 4, arg9 * 4, (arg8 + var_s2) * 4, (arg9 + var_s4) * 4, 0,
+                                (var_a1_2 * 32) & 0xFFFF, (var_s3 * 32) & 0xFFFF, arg2, arg3);
+
+            arg8 += var_t0;
+        }
+
+        arg8 = sp7C;
+        arg9 += temp_lo;
+    }
+    return displayListHead;
+}
+#endif
+
+#if 0
+RECOMP_PATCH Gfx* func_800963F0(Gfx* displayListHead, s8 arg1, s32 arg2, s32 arg3, f32 arg4, f32 arg5, s32 arg6,
+                                s32 arg7, s32 arg8, s32 arg9, s32 argA, s32 argB, u8* argC, u32 argD, u32 argE) {
+    u32 var_a1_2 = arg6;
+    u32 var_s3 = arg7;
+    s32 sp7C;
+    u32 var_s2;
+    u32 var_s4;
+    u32 a;
+    u32 b;
+    s32 var_t0 = 1;
+    s32 temp_lo;
+    s32 sp68 = 0;
+    s32 sp64 = 0;
+    s32 var_v0_2;
+
+    while ((u32) var_t0 < argD) {
+        var_t0 *= 2;
+    }
+
+    temp_lo = 0x400 / var_t0;
+
+    while ((u32) (temp_lo / 2) > argE) {
+        temp_lo /= 2;
+    }
+
+    var_v0_2 = var_t0;
+    while (var_v0_2 > 1) {
+        var_v0_2 /= 2;
+        sp68 += 1;
+    }
+    var_v0_2 = temp_lo;
+
+    while (var_v0_2 > 1) {
+        var_v0_2 /= 2;
+        sp64 += 1;
+    }
+
+    if (argA < 0) {
+        arg6 -= argA;
+        argA = 0;
+    } else if ((argA + (arg8 - arg6) * arg4) > SCREEN_WIDTH) {
+        arg8 -= argA + (arg8 - arg6) * arg4 - SCREEN_WIDTH;
+    }
+
+    if (argB < 0) {
+        arg7 -= argB;
+        argB = 0;
+    } else if ((argB + (arg9 - arg7) * arg5) > SCREEN_HEIGHT) {
+        arg9 -= argB + (arg9 - arg7) * arg5 - SCREEN_HEIGHT;
+    }
+
+    if (arg8 < arg6) {
+        return displayListHead;
+    }
+    if (arg9 < arg7) {
+        return displayListHead;
+    }
+    arg2 /= arg4;
+    arg3 /= arg5;
+
+    sp7C = argA;
+    for (var_s3 = arg7; var_s3 < (u32) arg9; var_s3 += temp_lo) {
+
+        if ((u32) arg9 < temp_lo + var_s3) {
+            var_s4 = arg9 - var_s3;
+            if (!var_s4) {
+                break;
+            }
+        } else {
+            var_s4 = temp_lo;
+        }
+        b = var_s4 * arg5;
+        for (var_a1_2 = arg6; var_a1_2 < (u32) arg8; var_a1_2 += var_t0) {
+
+            if ((u32) arg8 < (var_t0 + var_a1_2)) {
+                var_s2 = arg8 - var_a1_2;
+                if (!var_s2) {
+                    break;
+                }
+            } else {
+                var_s2 = var_t0;
+            }
+            a = var_s2 * arg4;
+
+            gDPLoadTextureTile(displayListHead++, argC, arg1, G_IM_SIZ_16b, argD, argE, var_a1_2, var_s3,
+                               // var_a1_2 + var_s2, var_s3 + var_s4, 0, G_TX_NOMIRROR | G_TX_WRAP,
+                               // G_TX_NOMIRROR | G_TX_WRAP, sp68, sp64, G_TX_NOLOD, G_TX_NOLOD);
+                               // @recomp Fix textures loading more pixels than they should by adjusting the
+                               // tile size and the mask.
+                               var_a1_2 + var_s2 - 1, var_s3 + var_s4 - 1, 0, G_TX_NOMIRROR | G_TX_WRAP,
+                               G_TX_NOMIRROR | G_TX_WRAP, 0, 0, G_TX_NOLOD, G_TX_NOLOD);
+            gSPTextureRectangle(displayListHead++, argA * 4, argB * 4, (argA + a) * 4, (argB + b) * 4, 0,
+                                (var_a1_2 * 32) & 0xFFFF, (var_s3 * 32) & 0xFFFF, arg2, arg3);
+
+            argA += var_t0 * arg4;
+        }
+
+        argA = sp7C;
+        argB += temp_lo * arg5;
+    }
+    return displayListHead;
+}
+#endif
+
+#if 0
+RECOMP_PATCH Gfx* func_80097274(Gfx* displayListHead, s8 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6,
+                                s32 arg7, s32 arg8, s32 arg9, UNUSED u16* argA, u32 argB, u32 argC, UNUSED s32 argD) {
+    u32 var_a1_2 = arg4;
+    u32 var_s3 = arg5;
+    s32 sp7C;
+    u32 var_s2;
+    u32 var_s4;
+    s32 var_t0 = 1;
+    s32 temp_lo;
+    s32 sp68 = 0;
+    s32 sp64 = 0;
+    s32 var_v0_2;
+
+    gDPPipeSync(displayListHead++);
+    gDPSetCycleType(displayListHead++, G_CYC_2CYCLE);
+    gDPSetTextureLOD(displayListHead++, G_TL_TILE);
+    gDPSetPrimColor(displayListHead++, 0, 0, 0, 0, 0, gGlobalTimer % 256);
+    gDPSetCombineLERP(displayListHead++, TEXEL1, TEXEL0, PRIMITIVE_ALPHA, TEXEL0, TEXEL1, TEXEL0, PRIMITIVE, TEXEL0, 0,
+                      0, 0, COMBINED, 0, 0, 0, COMBINED);
+
+    while ((u32) var_t0 < argB) {
+        var_t0 *= 2;
+    }
+    temp_lo = 0x400 / var_t0;
+    while ((u32) (temp_lo / 2) > argC) {
+        temp_lo /= 2;
+    }
+    var_v0_2 = var_t0;
+    while (var_v0_2 > 1) {
+        var_v0_2 /= 2;
+        sp68 += 1;
+    }
+    var_v0_2 = temp_lo;
+    while (var_v0_2 > 1) {
+        var_v0_2 /= 2;
+        sp64 += 1;
+    }
+    if (arg8 < 0) {
+        arg4 -= arg8;
+        arg8 = 0;
+    } else if (((arg6 - arg4) + arg8) > 320) {
+        arg6 = (arg4 - arg8) + 320;
+    }
+    if (arg9 < 0) {
+        arg5 -= arg9;
+        arg9 = 0;
+    } else if (((arg7 - arg5) + arg9) > 240) {
+        arg7 = (arg5 - arg9) + 240;
+    }
+    if (arg6 < arg4) {
+        return displayListHead;
+    }
+    if (arg7 < arg5) {
+        return displayListHead;
+    }
+    sp7C = arg8;
+    for (var_s3 = arg5; var_s3 < (u32) arg7; var_s3 += temp_lo) {
+        if ((u32) arg7 < temp_lo + var_s3) {
+            var_s4 = arg7 - var_s3;
+            if (!var_s4) {
+                break;
+            }
+        } else {
+            var_s4 = temp_lo;
+        }
+        for (var_a1_2 = arg4; var_a1_2 < (u32) arg6; var_a1_2 += var_t0) {
+            if ((u32) arg6 < var_t0 + var_a1_2) {
+                var_s2 = arg6 - var_a1_2;
+                if (!var_s2) {
+                    break;
+                }
+            } else {
+                var_s2 = var_t0;
+            }
+
+            u8* D_0B002A00_MissingSym = (u8*) 0x0B002A00;
+
+            gDPLoadMultiTile(displayListHead++, argA, 0, G_TX_RENDERTILE, arg1, G_IM_SIZ_16b, argB, argC, var_a1_2,
+                             // var_s3, var_a1_2 + var_s2, var_s3 + var_s4, 0, G_TX_WRAP, G_TX_WRAP, sp68, sp64,
+                             // @recomp Fix textures loading more pixels than they should by adjusting the
+                             // tile size and the mask.
+                             var_s3, var_a1_2 + var_s2 - 1, var_s3 + var_s4 - 1, 0, G_TX_WRAP, G_TX_WRAP, 0, 0,
+                             G_TX_NOLOD, G_TX_NOLOD);
+            gDPLoadMultiTile(displayListHead++, *D_0B002A00_MissingSym + random_int(128) * 2, 256, G_TX_RENDERTILE + 1,
+                             arg1,
+                             // G_IM_SIZ_16b, argB, argC, var_a1_2, var_s3, var_a1_2 + var_s2, var_s3 + var_s4, 0,
+                             // G_TX_WRAP, G_TX_WRAP, sp68, sp64, G_TX_NOLOD, G_TX_NOLOD);
+                             // @recomp Fix textures loading more pixels than they should by adjusting the
+                             // tile size and the mask.
+                             G_IM_SIZ_16b, argB, argC, var_a1_2, var_s3, var_a1_2 + var_s2 - 1, var_s3 + var_s4 - 1, 0,
+                             G_TX_WRAP, G_TX_WRAP, 0, 0, G_TX_NOLOD, G_TX_NOLOD);
+            gSPTextureRectangle(displayListHead++, arg8 * 4, arg9 * 4, (arg8 + var_s2) * 4, (arg9 + var_s4) * 4, 0,
+                                (var_a1_2 * 32) & 0xFFFF, (var_s3 * 32) & 0xFFFF, arg2, arg3);
+            arg8 += var_t0;
+        }
+        arg8 = sp7C;
+        arg9 += temp_lo;
+    }
+    gDPPipeSync(displayListHead++);
+    gDPSetCycleType(displayListHead++, G_CYC_1CYCLE);
+    return displayListHead;
+}
+#endif
+
+#if 0
+RECOMP_PATCH Gfx* func_80097E58(Gfx* displayListHead, s8 fmt, UNUSED u32 arg2, u32 arg3, UNUSED u32 arg4, u32 arg5,
+                                s32 arg6, s32 arg7, u8* someTexture, u32 arg9, UNUSED u32 argA, s32 width) {
     u32 ult;
     u32 temp;
     s32 arg6Copy;
@@ -228,8 +537,8 @@ RECOMP_PATCH Gfx* func_80097E58(Gfx* displayListHead, s8 fmt, UNUSED u32 arg2, u
         }
         temp_v1 = ((32 * lrs) << 10) / (lrs * (32 - width));
 
-        //gDPLoadTextureTile(displayListHead++, someTexture, fmt, G_IM_SIZ_16b, arg9, argA, temp, ult, temp + lrs,
-        //                   ult + var_s2, 0, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP, 5, 5, G_TX_NOLOD,
+        // gDPLoadTextureTile(displayListHead++, someTexture, fmt, G_IM_SIZ_16b, arg9, argA, temp, ult, temp + lrs,
+        //                    ult + var_s2, 0, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP, 5, 5, G_TX_NOLOD,
         // @recomp Fix textures loading more pixels than they should by adjusting the
         // tile size and the mask.
         gDPLoadTextureTile(displayListHead++, someTexture, fmt, G_IM_SIZ_16b, arg9, argA, temp, ult, temp + lrs - 1,
@@ -239,13 +548,14 @@ RECOMP_PATCH Gfx* func_80097E58(Gfx* displayListHead, s8 fmt, UNUSED u32 arg2, u
                             (arg7 + var_s2) << 2, 0, 0, (ult << 5) & 0xFFFF, temp_v1, 1024);
         arg6 += lrs;
         temp_v1 = ((32 * spDC) << 10) / (spDC * (32 - width));
-        //gDPLoadTextureTile(displayListHead++, someTexture, fmt, G_IM_SIZ_16b, arg9, argA, temp + lrs, ult, temp + arg9,
-        //                   ult + var_s2, 0, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP, 5, 5, G_TX_NOLOD,
+        // gDPLoadTextureTile(displayListHead++, someTexture, fmt, G_IM_SIZ_16b, arg9, argA, temp + lrs, ult, temp +
+        // arg9,
+        //                    ult + var_s2, 0, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP, 5, 5, G_TX_NOLOD,
         // @recomp Fix textures loading more pixels than they should by adjusting the
         // tile size and the mask.
-        gDPLoadTextureTile(displayListHead++, someTexture, fmt, G_IM_SIZ_16b, arg9, argA, temp + lrs, ult, temp + arg9 - 1,
-                           ult + var_s2 - 1, 0, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP, 0, 0, G_TX_NOLOD,
-                           G_TX_NOLOD);
+        gDPLoadTextureTile(displayListHead++, someTexture, fmt, G_IM_SIZ_16b, arg9, argA, temp + lrs, ult,
+                           temp + arg9 - 1, ult + var_s2 - 1, 0, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP,
+                           0, 0, G_TX_NOLOD, G_TX_NOLOD);
         gSPTextureRectangle(displayListHead++, arg6 << 2, arg7 << 2, (arg6 + spDC * (32 - width) / 32) << 2,
                             (arg7 + var_s2) << 2, 0, (lrs << 5) & 0xFFFF, (ult << 5) & 0xFFFF, temp_v1, 1024);
         arg6 = arg6Copy;
