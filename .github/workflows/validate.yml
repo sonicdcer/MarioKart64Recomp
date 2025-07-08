@@ -278,7 +278,7 @@ jobs:
           token: ${{ secrets.MK64_TOKEN }}
           path: mk64recomp-secret
       - name: Prepare Build
-        run: cp -r mk64recomp-secret/mk64.z64 ./
+        run: copy .\mk64recomp-secret\mk64.us.z64 .\
 
       - name: Build N64Recomp & RSPRecomp
         run: |
