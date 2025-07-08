@@ -208,7 +208,7 @@ jobs:
   build-linux-flatpak:
     runs-on: ubuntu-latest
     env:
-      FLATPAK_ID: io.github.zelda64recomp.zelda64recomp
+      FLATPAK_ID: io.github.mariokart64recomp.mariokart64recomp
       FREEDESKTOP_VERSION: 23.08
       LLVM_VERSION: 18
     strategy:
