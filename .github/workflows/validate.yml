@@ -49,7 +49,7 @@ jobs:
         uses: hendrikmuhs/ccache-action@v1.2
         with:
           key: ${{ matrix.os }}-z64re-ccache-${{ matrix.type }}-x64-${{ inputs.N64RECOMP_COMMIT }}
-          
+
       - name: Get extra dependencies
         uses: actions/checkout@v4
         with:
@@ -57,7 +57,7 @@ jobs:
           token: ${{ secrets.MK64_TOKEN }}
           path: mk64recomp-secret
       - name: Prepare Build
-        run: cp -r mk64recomp-secret\mk64.us.z64 ./
+        run: cp -r mk64recomp-secret/mk64.us.z64 ./
 
       - name: Build N64Recomp & RSPRecomp
         run: |
@@ -157,7 +157,7 @@ jobs:
           token: ${{ secrets.MK64_TOKEN }}
           path: mk64recomp-secret
       - name: Prepare Build
-        run: cp -r mk64recomp-secret\mk64.us.z64 ./
+        run: cp -r mk64recomp-secret/mk64.us.z64 ./
 
       - name: Build N64Recomp & RSPRecomp
         run: |
@@ -238,7 +238,7 @@ jobs:
           token: ${{ secrets.MK64_TOKEN }}
           path: mk64recomp-secret
       - name: Prepare Build
-        run: cp -r mk64recomp-secret\mk64.us.z64 ./
+        run: cp -r mk64recomp-secret/mk64.us.z64 ./
 
       - name: Prepare Flatpak
         run: |
@@ -390,7 +390,7 @@ jobs:
           token: ${{ secrets.MK64_TOKEN }}
           path: mk64recomp-secret
       - name: Prepare Build
-        run: cp -r mk64recomp-secret\mk64.us.z64 ./
+        run: cp -r mk64recomp-secret/mk64.us.z64 ./
 
       - name: Build N64Recomp & RSPRecomp
         run: |
