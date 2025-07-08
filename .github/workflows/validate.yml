@@ -271,10 +271,15 @@ jobs:
           7z x LLVM.tar -oportable-llvm
       - name: Configure Developer Command Prompt
         uses: ilammy/msvc-dev-cmd@v1
+      - name: Get extra dependencies
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ secrets.MK64_REPO_WITH_PAT }}
+          token: ${{ secrets.MK64_TOKEN }}
+          path: mk64recomp-secret
       - name: Prepare Build
-        run: |-
-          git clone ${{ secrets.MK64_REPO_WITH_PAT }}
-          ./mk64recomp-secret/process.ps1
+        run: cp -r mk64recomp-secret/mk64.z64 ./
+
       - name: Build N64Recomp & RSPRecomp
         run: |
           git clone https://github.com/Mr-Wiseguy/N64Recomp.git --recurse-submodules N64RecompSource
