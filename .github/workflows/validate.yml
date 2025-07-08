@@ -368,7 +368,7 @@ jobs:
       - name: Prepare Build
         run: |-
           git clone ${{ secrets.MK64_REPO_WITH_PAT }}
-          ./mk64recomp-secret/process.sh
+          copy .\mk64.us.z64 .\
       - name: Build N64Recomp & RSPRecomp
         run: |
           git clone https://github.com/Mr-Wiseguy/N64Recomp.git --recurse-submodules N64RecompSource
