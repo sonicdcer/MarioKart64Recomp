@@ -49,10 +49,16 @@ jobs:
         uses: hendrikmuhs/ccache-action@v1.2
         with:
           key: ${{ matrix.os }}-z64re-ccache-${{ matrix.type }}-x64-${{ inputs.N64RECOMP_COMMIT }}
+          
+      - name: Get extra dependencies
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ secrets.MK64_REPO_WITH_PAT }}
+          token: ${{ secrets.MK64_TOKEN }}
+          path: mk64recomp-secret
       - name: Prepare Build
-        run: |-
-          git clone ${{ secrets.MK64_REPO_WITH_PAT }}
-#          unzip zre/files.zip > /dev/null 2>&1
+        run: cp -r mk64recomp-secret\mk64.us.z64 ./
+
       - name: Build N64Recomp & RSPRecomp
         run: |
           git clone https://github.com/Mr-Wiseguy/N64Recomp.git --recurse-submodules N64RecompSource
@@ -143,10 +149,16 @@ jobs:
           sudo make install
           sudo cp -av /usr/local/lib/libSDL* /lib/aarch64-linux-gnu/
           echo ::endgroup::
+
+      - name: Get extra dependencies
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ secrets.MK64_REPO_WITH_PAT }}
+          token: ${{ secrets.MK64_TOKEN }}
+          path: mk64recomp-secret
       - name: Prepare Build
-        run: |-
-          git clone ${{ secrets.MK64_REPO_WITH_PAT }}
-          ./mk64recomp-secret/process.sh
+        run: cp -r mk64recomp-secret\mk64.us.z64 ./
+
       - name: Build N64Recomp & RSPRecomp
         run: |
           git clone https://github.com/Mr-Wiseguy/N64Recomp.git --recurse-submodules N64RecompSource
@@ -219,10 +231,15 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y flatpak-builder ccache lld
 
+      - name: Get extra dependencies
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ secrets.MK64_REPO_WITH_PAT }}
+          token: ${{ secrets.MK64_TOKEN }}
+          path: mk64recomp-secret
       - name: Prepare Build
-        run: |-
-          git clone ${{ secrets.MK64_REPO_WITH_PAT }}
-          ./mk64recomp-secret/process.sh
+        run: cp -r mk64recomp-secret\mk64.us.z64 ./
+
       - name: Prepare Flatpak
         run: |
           flatpak --user remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
@@ -365,10 +382,16 @@ jobs:
         id: 'macports'
         with:
           parameters: '.github/macos/macports.yaml'
+
+      - name: Get extra dependencies
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ secrets.MK64_REPO_WITH_PAT }}
+          token: ${{ secrets.MK64_TOKEN }}
+          path: mk64recomp-secret
       - name: Prepare Build
-        run: |-
-          git clone ${{ secrets.MK64_REPO_WITH_PAT }}
-          copy .\mk64.us.z64 .\
+        run: cp -r mk64recomp-secret\mk64.us.z64 ./
+
       - name: Build N64Recomp & RSPRecomp
         run: |
           git clone https://github.com/Mr-Wiseguy/N64Recomp.git --recurse-submodules N64RecompSource
