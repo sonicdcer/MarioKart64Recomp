@@ -24,7 +24,7 @@ jobs:
   build-linux:
     runs-on: ubuntu-22.04
     container:
-      # image: dcvz/n64recomp:ubuntu-18.04
+      image: ubuntu-22.04
       volumes:
         # create a volume that we'll use as the new source for the node binary
         # https://github.com/actions/checkout/issues/1809
@@ -34,7 +34,7 @@ jobs:
       matrix:
         type: [ Debug, Release ]
         os: [ ubuntu-22.04 ]
-    name: ubuntu-18.04 (x64, ${{ matrix.type }}, Native, AppImage)
+    name: ubuntu-22.04 (x64, ${{ matrix.type }}, Native, AppImage)
     steps:
       - name: Copy the Node20 binary
         run: |
