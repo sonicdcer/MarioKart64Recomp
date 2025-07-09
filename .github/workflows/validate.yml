@@ -10,10 +10,6 @@ on:
         type: string
         required: false
         default: '989a86b36912403cd323de884bf834f2605ea770'
-      DXC_CHECKSUM:
-        type: string
-        required: false
-        default: '4e6f4e52989aca69739880b40b9f988357f15d10ca03284377b81f1502463ff5'
     secrets:
       MK64_REPO_WITH_PAT:
         required: true
