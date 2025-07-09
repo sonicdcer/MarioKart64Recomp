@@ -70,13 +70,7 @@ jobs:
         run: |
           ./N64Recomp us.toml
           ./RSPRecomp aspMain.us.toml
-      - name: Hotpatch DXC into RT64's contrib
-        run: |
-          # check if dxc was updated before we replace it, to detect changes
-          echo ${{ inputs.DXC_CHECKSUM }} ./lib/rt64/src/contrib/dxc/bin/x64/dxc-linux | sha256sum --status -c -
 
-          cp -v /usr/local/lib/libdxcompiler.so ./lib/rt64/src/contrib/dxc/lib/x64/libdxcompiler.so
-          cp -v /usr/local/bin/dxc ./lib/rt64/src/contrib/dxc/bin/x64/dxc-linux
       - name: Build MarioKart64Recomp
         run: |-
           # enable ccache
