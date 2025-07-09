@@ -29,9 +29,6 @@ jobs:
         os: [ ubuntu-22.04 ]
     name: ubuntu-22.04 (x64, ${{ matrix.type }}, Native, AppImage)
     steps:
-      - name: Copy the Node20 binary
-        run: |
-          cp -r /node20217/* /nodeoverride/
       - name: Checkout
         uses: actions/checkout@v4
         with:
