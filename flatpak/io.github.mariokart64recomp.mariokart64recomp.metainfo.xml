@@ -17,7 +17,7 @@
   
   <description>
     <p>
-      MarioKart 64: Recompiled is a project that uses N64: Recompiled to statically recompile Majora's Mask (and soon Ocarina of Time) into a native port with many new features and enhancements. This project uses RT64 as the rendering engine to provide some of these enhancements.
+      MarioKart 64: Recompiled is a project that uses N64: Recompiled to statically recompile MarioKart 64 into a native port with many new features and enhancements. This project uses RT64 as the rendering engine to provide some of these enhancements.
 
       The original game is required to run this project.
 
