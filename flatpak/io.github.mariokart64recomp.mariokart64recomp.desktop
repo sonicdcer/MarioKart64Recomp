@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=MarioKart 64: Recompiled
+Exec=/app/bin/MarioKart64Recompiled
+Type=Application
+Icon=io.github.mariokart64recomp.mariokart64recomp
+Categories=Game;
+Comment=Static recompilation of Mario Kart 64 for PC.
+MimeType=x-scheme-handler/mariokart64recomp
