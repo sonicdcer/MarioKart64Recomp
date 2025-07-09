@@ -23,13 +23,6 @@ concurrency:
 jobs:
   build-linux:
     runs-on: ubuntu-22.04
-    container:
-      image: ubuntu-22.04
-      volumes:
-        # create a volume that we'll use as the new source for the node binary
-        # https://github.com/actions/checkout/issues/1809
-        - /nodeoverride:/nodeoverride:rw,rshared
-        - /nodeoverride:/__e/node20:ro,rshared
     strategy:
       matrix:
         type: [ Debug, Release ]
