@@ -23,12 +23,13 @@ MarioKart 64: Recompiled is a project that uses [N64: Recompiled](https://github
 * [Libraries Used and Projects Referenced](#libraries-used-and-projects-referenced)
 
 ## System Requirements
-A GPU supporting Direct3D 12.0 (Shader Model 6) or Vulkan 1.2 is required to run this project. The oldest GPUs that should be supported for each vendor are:
+A GPU supporting Direct3D 12.0 (Shader Model 6), Vulkan 1.2, or Metal Argument Buffers Tier 2 support is required to run this project. The oldest GPUs that should be supported for each vendor are:
 * GeForce GT 630
 * Radeon HD 7750 (the one from 2012, not to be confused with the RX 7000 series) and newer
 * Intel HD 510 (Skylake)
+* A Mac with Apple Silicon or an Intel 7th Gen CPU with MacOS 13.0+
 
-A CPU supporting the AVX instruction set is also required (Intel Core 2000 series or AMD Bulldozer and newer).
+On x86-64 PCs, a CPU supporting the AVX instruction set is also required (Intel Core 2000 series or AMD Bulldozer and newer). ARM64 builds will work on any ARM64 CPU.
 
 If you have issues with crashes on startup, make sure your graphics drivers are fully up to date. 
 
