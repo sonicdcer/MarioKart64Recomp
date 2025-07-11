@@ -14,7 +14,6 @@ MarioKart 64: Recompiled is a project that uses [N64: Recompiled](https://github
   * [High Framerate Support](#high-framerate-support)
   * [Widescreen and Ultrawide Support](#widescreen-and-ultrawide-support)
   * [Low Input Lag](#low-input-lag)
-  * [Instant Load Times](#instant-load-times)
   * [Linux and Steam Deck Support](#linux-and-steam-deck-support)
 * [Planned Features](#planned-features)
 * [FAQ](#faq)
@@ -65,6 +64,11 @@ Customize your experience by setting your stick deadzone to your liking, as well
 #### Low Input Lag
 This project has been optimized to have as little input lag as possible, making the game feel more responsive than ever!
 
+#### Linux and Steam Deck Support
+A Linux binary as well as a Flatpak is available for playing on most up-to-date distros, including on the Steam Deck.
+
+To play on Steam Deck, extract the Linux build onto your deck. Then, in desktop mode, right click the Zelda64Recompiled executable file and select "Add to Steam". From there, you can return to Gaming mode and configure the controls as needed.
+
 ## Planned Features
 * Model Replacements
 * Ray Tracing (via RT64)
@@ -81,9 +85,15 @@ Unlike N64 ports in the past, this project is not based on the source code provi
 #### Where is the savefile stored?
 - Windows: `%LOCALAPPDATA%\MarioKart64Recompiled\saves`
 - Linux: `~/.config/MarioKart64Recompiled/saves`
+- macOS: `~/Library/Application Support/Zelda64Recompiled/saves`
 
 #### How do I choose a different ROM?
 **You don't.** This project is **only** a port of MarioKart 64, and it will only accept one specific ROM: the US version of the N64 release of MarioKart 64. ROMs in formats other than .z64 will be automatically converted, as long as it is the correct ROM. **It is not an emulator and it cannot run any arbitrary ROM.** 
+
+Instead, you can change the game by installing mods. See the [mod support](#mod-support) section for details.
+
+#### Can you run this project as a portable application?
+Yes, if you place a file named `portable.txt` in the same folder as the executable then this project will run in portable mode. In portable mode, the save files, config files, and mods are placed in the same folder as the executable.
 
 If you want to play a modded ROM or in another language, note that support for modding and other languages will be added to the project itself in the future and will not rely on you supplying a different ROM. 
 
