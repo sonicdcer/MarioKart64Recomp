@@ -564,3 +564,255 @@ RECOMP_PATCH Gfx* func_80097E58(Gfx* displayListHead, s8 fmt, UNUSED u32 arg2, u
     return displayListHead;
 }
 #endif
+
+Gfx* drawBackground(Gfx* displayListHead, s8 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7, u8* arg8,
+                    u32 arg9, u32 argA) {
+    gDPPipeSync(displayListHead++);
+    gDPSetCycleType(displayListHead++, G_CYC_COPY);
+    displayListHead = drawBackground2(displayListHead, arg1, 0x00001000, 0x00000400, arg2, arg3, arg4, arg5, arg6, arg7,
+                                      arg8, arg9, argA);
+    gDPPipeSync(displayListHead++);
+    gDPSetCycleType(displayListHead++, G_CYC_1CYCLE);
+    return displayListHead;
+}
+
+Gfx* RenderMenuTextures(Gfx* arg0, MenuTexture* arg1, s32 column, s32 row) {
+    MenuTexture* temp_v0;
+    u8* temp_v0_3;
+    s8 var_s4;
+
+    temp_v0 = segmented_to_virtual_dupe(arg1);
+    while (temp_v0->textureData != NULL) {
+        var_s4 = 0;
+        switch (temp_v0->type) {
+            case 0:
+                gSPDisplayList(arg0++, 0x02007708);
+                break;
+            case 1:
+                gSPDisplayList(arg0++, 0x02007728);
+                break;
+            case 2:
+                gSPDisplayList(arg0++, 0x02007748);
+                break;
+            case 3:
+                gSPDisplayList(arg0++, 0x02007768);
+                var_s4 = 3;
+                break;
+            case 4:
+                gSPDisplayList(arg0++, 0x02007788);
+                break;
+            default:
+                gSPDisplayList(arg0++, 0x02007728);
+                break;
+        }
+        temp_v0_3 = (u8*) func_8009B8C4(temp_v0->textureData);
+        if (temp_v0_3 != 0) {
+            if (D_8018E7AC[4] != 4) {
+                arg0 = RenderBackground(arg0, var_s4, 0x00000400, 0x00000400, 0, 0, temp_v0->width, temp_v0->height,
+                                        temp_v0->dX + column, temp_v0->dY + row, temp_v0_3, temp_v0->width,
+                                        temp_v0->height);
+            } else {
+                arg0 = func_800987D0(arg0, 0U, 0U, temp_v0->width, temp_v0->height, temp_v0->dX + column,
+                                     temp_v0->dY + row, temp_v0_3, temp_v0->width, temp_v0->height);
+            }
+        }
+        temp_v0++;
+    }
+    return arg0;
+}
+
+Gfx* RenderBackground(Gfx* displayListHead, s8 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7,
+                      s32 arg8, s32 arg9, u8* argA, u32 argB, u32 argC) {
+    u32 var_a1_2 = arg4;
+    u32 var_s3 = arg5;
+    s32 sp7C;
+    u32 var_s2;
+    u32 var_s4;
+    s32 var_t0 = 1;
+    s32 temp_lo;
+    s32 sp68 = 0;
+    s32 sp64 = 0;
+    s32 var_v0_2;
+
+    while ((u32) var_t0 < argB) {
+        var_t0 *= 2;
+    }
+
+    temp_lo = 0x400 / var_t0;
+
+    while ((u32) (temp_lo / 2) > argC) {
+        temp_lo /= 2;
+    }
+
+    var_v0_2 = var_t0;
+    while (var_v0_2 > 1) {
+        var_v0_2 /= 2;
+        sp68 += 1;
+    }
+    var_v0_2 = temp_lo;
+
+    while (var_v0_2 > 1) {
+        var_v0_2 /= 2;
+        sp64 += 1;
+    }
+
+    if (arg8 < 0) {
+        arg4 -= arg8;
+        arg8 = 0;
+    } else if (((arg6 - arg4) + arg8) > SCREEN_WIDTH) {
+        arg6 = (arg4 - arg8) + SCREEN_WIDTH;
+    }
+
+    if (arg9 < 0) {
+        arg5 -= arg9;
+        arg9 = 0;
+    } else if (((arg7 - arg5) + arg9) > SCREEN_HEIGHT) {
+        arg7 = (arg5 - arg9) + SCREEN_HEIGHT;
+    }
+
+    if (arg6 < arg4) {
+        return displayListHead;
+    }
+    if (arg7 < arg5) {
+        return displayListHead;
+    }
+    sp7C = arg8;
+    for (var_s3 = arg5; var_s3 < (u32) arg7; var_s3 += temp_lo) {
+
+        if ((u32) arg7 < temp_lo + var_s3) {
+            var_s4 = arg7 - var_s3;
+            if (!var_s4) {
+                break;
+            }
+        } else {
+            var_s4 = temp_lo;
+        }
+
+        for (var_a1_2 = arg4; var_a1_2 < (u32) arg6; var_a1_2 += var_t0) {
+
+            if ((u32) arg6 < var_t0 + var_a1_2) {
+                var_s2 = arg6 - var_a1_2;
+                if (!var_s2) {
+                    break;
+                }
+            } else {
+                var_s2 = var_t0;
+            }
+            gDPLoadTextureTile(displayListHead++, argA, arg1, G_IM_SIZ_16b, argB, 0, var_a1_2, var_s3,
+                               // var_a1_2 + var_s2, var_s3 + var_s4, 0, G_TX_NOMIRROR | G_TX_WRAP,
+                               // G_TX_NOMIRROR | G_TX_WRAP, sp68, sp64, G_TX_NOLOD, G_TX_NOLOD);
+                               // @recomp Fix textures loading more pixels than they should by adjusting the
+                               // tile size and the mask.
+                               var_a1_2 + var_s2 - 1, var_s3 + var_s4 - 1, 0, G_TX_NOMIRROR | G_TX_WRAP,
+                               G_TX_NOMIRROR | G_TX_WRAP, 0, 0, G_TX_NOLOD, G_TX_NOLOD);
+            gEXTextureRectangle(displayListHead++, G_EX_ORIGIN_LEFT, G_EX_ORIGIN_RIGHT, arg8 * 4, arg9 * 4,
+                                (arg8 + var_s2) * 4, (arg9 + var_s4) * 4, 0, (var_a1_2 * 32) & 0xFFFF,
+                                (var_s3 * 32) & 0xFFFF, arg2, arg3);
+
+            arg8 += var_t0;
+        }
+
+        arg8 = sp7C;
+        arg9 += temp_lo;
+    }
+    return displayListHead;
+}
+
+#if 1
+Gfx* drawBackground2(Gfx* displayListHead, s8 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7,
+                     s32 arg8, s32 arg9, u8* argA, u32 argB, u32 argC) {
+    u32 var_a1_2 = arg4;
+    u32 var_s3 = arg5;
+    s32 sp7C;
+    u32 var_s2;
+    u32 var_s4;
+    s32 var_t0 = 1;
+    s32 temp_lo;
+    s32 sp68 = 0;
+    s32 sp64 = 0;
+    s32 var_v0_2;
+
+    while ((u32) var_t0 < argB) {
+        var_t0 *= 2;
+    }
+
+    temp_lo = 0x400 / var_t0;
+
+    while ((u32) (temp_lo / 2) > argC) {
+        temp_lo /= 2;
+    }
+
+    var_v0_2 = var_t0;
+    while (var_v0_2 > 1) {
+        var_v0_2 /= 2;
+        sp68 += 1;
+    }
+    var_v0_2 = temp_lo;
+
+    while (var_v0_2 > 1) {
+        var_v0_2 /= 2;
+        sp64 += 1;
+    }
+
+    if (arg8 < 0) {
+        arg4 -= arg8;
+        arg8 = 0;
+    } else if (((arg6 - arg4) + arg8) > SCREEN_WIDTH) {
+        arg6 = (arg4 - arg8) + SCREEN_WIDTH;
+    }
+
+    if (arg9 < 0) {
+        arg5 -= arg9;
+        arg9 = 0;
+    } else if (((arg7 - arg5) + arg9) > SCREEN_HEIGHT) {
+        arg7 = (arg5 - arg9) + SCREEN_HEIGHT;
+    }
+
+    if (arg6 < arg4) {
+        return displayListHead;
+    }
+    if (arg7 < arg5) {
+        return displayListHead;
+    }
+    sp7C = arg8;
+    for (var_s3 = arg5; var_s3 < (u32) arg7; var_s3 += temp_lo) {
+
+        if ((u32) arg7 < temp_lo + var_s3) {
+            var_s4 = arg7 - var_s3;
+            if (!var_s4) {
+                break;
+            }
+        } else {
+            var_s4 = temp_lo;
+        }
+
+        for (var_a1_2 = arg4; var_a1_2 < (u32) arg6; var_a1_2 += var_t0) {
+
+            if ((u32) arg6 < var_t0 + var_a1_2) {
+                var_s2 = arg6 - var_a1_2;
+                if (!var_s2) {
+                    break;
+                }
+            } else {
+                var_s2 = var_t0;
+            }
+            gDPLoadTextureTile(displayListHead++, argA, arg1, G_IM_SIZ_16b, argB, 0, var_a1_2, var_s3,
+                               // var_a1_2 + var_s2, var_s3 + var_s4, 0, G_TX_NOMIRROR | G_TX_WRAP,
+                               // G_TX_NOMIRROR | G_TX_WRAP, sp68, sp64, G_TX_NOLOD, G_TX_NOLOD);
+                               // @recomp Fix textures loading more pixels than they should by adjusting the
+                               // tile size and the mask.
+                               var_a1_2 + var_s2 - 1, var_s3 + var_s4 - 1, 0, G_TX_NOMIRROR | G_TX_WRAP,
+                               G_TX_NOMIRROR | G_TX_WRAP, 0, 0, G_TX_NOLOD, G_TX_NOLOD);
+            gEXTextureRectangle(displayListHead++, G_EX_ORIGIN_LEFT, G_EX_ORIGIN_RIGHT, arg8 * 4, arg9 * 4,
+                                (arg8 + var_s2) * 4, (arg9 + var_s4) * 4, 0, (var_a1_2 * 32) & 0xFFFF,
+                                (var_s3 * 32) & 0xFFFF, arg2, arg3);
+
+            arg8 += var_t0;
+        }
+
+        arg8 = sp7C;
+        arg9 += temp_lo;
+    }
+    return displayListHead;
+}
+#endif
