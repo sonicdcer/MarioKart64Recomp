@@ -53,6 +53,11 @@ Any aspect ratio is supported, with most effects modded to work correctly in wid
 
 **Note**: Some animation quirks can be seen at the edges of the screen in certain cutscenes when using very wide aspect ratios.
 
+#### Mod Support
+Install community made mods and texture packs! Mods can change any part of the game, including adding completely new features and content. You can install mods by simply dragging the mod files onto the game window before starting the game or by clicking the **Install Mods** button in the mod menu. Mods can be toggled in the mod menu, and some mods can be configured there as well.
+
+If you're interested in making mods for this project, check out [the mod template](https://github.com/sonicdcer/MK64RecompModTemplate) and [the modding documentation](https://hackmd.io/fMDiGEJ9TBSjomuZZOgzNg). If you're interested in making texture packs, check out [the RT64 documentation](https://github.com/rt64/rt64/blob/main/TEXTURE-PACKS.md).
+
 #### Additional Control Options
 Customize your experience by setting your stick deadzone to your liking, as well as adjusting the X and Y axis inversion for aiming.
 
