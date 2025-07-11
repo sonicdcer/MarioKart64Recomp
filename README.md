@@ -65,8 +65,6 @@ Customize your experience by setting your stick deadzone to your liking, as well
 This project has been optimized to have as little input lag as possible, making the game feel more responsive than ever!
 
 ## Planned Features
-* Mod support and Randomizer
-* Texture Packs
 * Model Replacements
 * Ray Tracing (via RT64)
 * Multi-language support with support for loading custom translations
