@@ -67,7 +67,7 @@ This project has been optimized to have as little input lag as possible, making 
 #### Linux and Steam Deck Support
 A Linux binary as well as a Flatpak is available for playing on most up-to-date distros, including on the Steam Deck.
 
-To play on Steam Deck, extract the Linux build onto your deck. Then, in desktop mode, right click the Zelda64Recompiled executable file and select "Add to Steam". From there, you can return to Gaming mode and configure the controls as needed.
+To play on Steam Deck, extract the Linux build onto your deck. Then, in desktop mode, right click the MarioKart64Recompiled executable file and select "Add to Steam". From there, you can return to Gaming mode and configure the controls as needed.
 
 ## Planned Features
 * Model Replacements
