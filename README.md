@@ -67,7 +67,7 @@ This project has been optimized to have as little input lag as possible, making 
 #### Linux and Steam Deck Support
 A Linux binary as well as a Flatpak is available for playing on most up-to-date distros, including on the Steam Deck.
 
-To play on Steam Deck, extract the Linux build onto your deck. Then, in desktop mode, right click the Zelda64Recompiled executable file and select "Add to Steam". From there, you can return to Gaming mode and configure the controls as needed.
+To play on Steam Deck, extract the Linux build onto your deck. Then, in desktop mode, right click the MarioKart64Recompiled executable file and select "Add to Steam". From there, you can return to Gaming mode and configure the controls as needed.
 
 ## Planned Features
 * Model Replacements
@@ -85,7 +85,7 @@ Unlike N64 ports in the past, this project is not based on the source code provi
 #### Where is the savefile stored?
 - Windows: `%LOCALAPPDATA%\MarioKart64Recompiled\saves`
 - Linux: `~/.config/MarioKart64Recompiled/saves`
-- macOS: `~/Library/Application Support/Zelda64Recompiled/saves`
+- macOS: `~/Library/Application Support/MarioKart64Recompiled/saves`
 
 #### How do I choose a different ROM?
 **You don't.** This project is **only** a port of MarioKart 64, and it will only accept one specific ROM: the US version of the N64 release of MarioKart 64. ROMs in formats other than .z64 will be automatically converted, as long as it is the correct ROM. **It is not an emulator and it cannot run any arbitrary ROM.** 
