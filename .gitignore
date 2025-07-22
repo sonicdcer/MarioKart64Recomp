@@ -75,3 +75,6 @@ gamecontrollerdb.txt
 *.zip
 *.7z
 *.rar
+
+# Controller pak saves
+*.sav
