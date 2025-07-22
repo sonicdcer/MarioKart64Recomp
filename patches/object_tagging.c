@@ -17,7 +17,7 @@ RECOMP_PATCH void render_player(Player* player, s8 playerId, s8 screenId) {
     gEXMatrixGroupDecomposed(gDisplayListHead++, (TAG_OBJECT(player) << 16) | screenId, G_EX_PUSH, G_MTX_MODELVIEW,
                              G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_INTERPOLATE,
                              G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE,
-                             G_EX_ORDER_LINEAR, G_EX_EDIT_ALLOW);
+                             G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
 
     update_wheel_palette(player, playerId, screenId, D_801651D0[screenId][playerId]);
     if (!(player->unk_002 & (4 << (screenId * 4)))) {
@@ -32,7 +32,7 @@ RECOMP_PATCH void render_player(Player* player, s8 playerId, s8 screenId) {
         gEXMatrixGroupDecomposed(gDisplayListHead++, (TAG_OBJECT(player) << 16) & 0xFFFF0000 | playerId, G_EX_PUSH,
                                  G_MTX_MODELVIEW, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO,
                                  G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP,
-                                 G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_LINEAR, G_EX_EDIT_ALLOW);
+                                 G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
 
         if ((player->effects & BOO_EFFECT) == BOO_EFFECT) {
             if (playerId == screenId) {
@@ -48,7 +48,7 @@ RECOMP_PATCH void render_player(Player* player, s8 playerId, s8 screenId) {
         gEXMatrixGroupDecomposed(gDisplayListHead++, (TAG_OBJECT(player) << 16) & 0xFFFF0000 | playerId, G_EX_PUSH,
                                  G_MTX_MODELVIEW, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO,
                                  G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP,
-                                 G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_LINEAR, G_EX_EDIT_ALLOW);
+                                 G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
 
         render_kart(player, playerId, screenId, var_v1);
 
@@ -58,7 +58,7 @@ RECOMP_PATCH void render_player(Player* player, s8 playerId, s8 screenId) {
         gEXMatrixGroupDecomposed(gDisplayListHead++, (TAG_OBJECT(player) << 16) & 0xFFFF0000 | playerId, G_EX_PUSH,
                                  G_MTX_MODELVIEW, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO,
                                  G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP,
-                                 G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_LINEAR, G_EX_EDIT_ALLOW);
+                                 G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
 
         render_ghost(player, playerId, screenId, var_v1);
 
@@ -71,7 +71,7 @@ RECOMP_PATCH void render_player(Player* player, s8 playerId, s8 screenId) {
         gEXMatrixGroupDecomposed(gDisplayListHead++, (TAG_OBJECT(player) << 16) & 0xFFFF0000 | playerId, G_EX_PUSH,
                                  G_MTX_MODELVIEW, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO,
                                  G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP,
-                                 G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_LINEAR, G_EX_EDIT_ALLOW);
+                                 G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
 
         render_player_ice_reflection(player, playerId, screenId, var_v1);
 
@@ -82,7 +82,7 @@ RECOMP_PATCH void render_player(Player* player, s8 playerId, s8 screenId) {
         gEXMatrixGroupDecomposed(gDisplayListHead++, (TAG_OBJECT(player) << 16) & 0xFFFF0000 | playerId, G_EX_PUSH,
                                  G_MTX_MODELVIEW, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO,
                                  G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP,
-                                 G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_LINEAR, G_EX_EDIT_ALLOW);
+                                 G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
 
         func_80025DE8(player, playerId, screenId, var_v1);
 
