@@ -69,3 +69,6 @@ recomp_sleep_miliseconds = 0x8F0000E4;
 recomp_set_bgm_volume_100 = 0x8F0000E8;
 recomp_set_bgm_volume_59 = 0x8F0000EC;
 recomp_set_bgm_volume_0 = 0x8F0000F0;
+osPfsFindFile_recomp = 0x8F0000F4;
+osPfsReadWriteFile_recomp = 0x8F0000F8;
+osPfsDeleteFile_recomp = 0x8F0000FC;
