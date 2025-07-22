@@ -4,6 +4,7 @@
 #include "patches.h"
 #include "main.h" // decomp
 #include "actor_types.h"
+#include "vehicles.h"
 
 void func_8005C674(s8, s16*, s16*, s16*);
 void func_80057C60(void);
@@ -29,7 +30,14 @@ void render_hud(u32);
 void func_80058F48(void);
 void func_80058F78(void);
 void func_80059AC8(void);
-
+signed int is_particle_on_screen(f32 *, Camera *, u16);
+void update_wheel_palette(Player *player, s8 playerId, s8 screenId, s8 arg3);
+void func_80023BF0(Player *player, s8 playerId, s8 screenId, s8 arg3);
+void render_player_shadow(Player *player, s8 playerId, s8 screenId);
+void render_kart(Player *player, s8 playerId, s8 arg2, s8 arg3);
+void render_ghost(Player *player, s8 playerId, s8 screenId, s8 arg3);
+void render_player_ice_reflection(Player *player, s8 playerId, s8 screenId, s8 arg3);
+void func_80025DE8(Player *player, s8 playerId, s8 screenId, s8 arg3);
 void func_80059024(void);
 void func_8005902C(void);
 void func_800590D4(void);
@@ -292,6 +300,8 @@ f32 sins(u16);
 f32 coss(u16);
 s32 is_visible_between_angle(u16, u16, u16);
 f32 is_within_render_distance(Vec3f, Vec3f, u16, f32, f32, f32);
+f32 distance_if_visible(Vec3f, Vec3f, u16, f32, f32, f32);
+void mtxf_rotate_zxy_translate(Mat4, Vec3f, Vec3s);
 void render_course_segments(uintptr_t addr, struct UnkStruct_800DC5EC* arg1);
 void copy_framebuffer(s32, s32, s32, s32, u16*, u16*);
 s32 func_80290C20(Camera* camera);
@@ -693,5 +703,6 @@ extern s16 D_8018D208;
 extern s16 D_8018D218;
 extern f32 D_8018D1E8;
 extern struct SequencePlayer gSequencePlayers[SEQUENCE_PLAYERS];
-
+extern TrainStuff gTrainList[];
+extern u16 isCrossingTriggeredByIndex[];
 #endif
