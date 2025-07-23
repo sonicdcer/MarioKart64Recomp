@@ -9,14 +9,12 @@ RECOMP_PATCH f32 is_within_render_distance(Vec3f cameraPos, Vec3f objectPos, u16
     f32 distance;
     f32 distanceY;
     f32 scaleFov;
-    f32 maxDistance2;
     s32 plus_fov_angle;
     s32 minus_fov_angle;
     u16 temp;
     s32 count = 0;
 
     maxDistance *= 6.5f;
-    maxDistance2 = 1.0f;
     scaleFov = 1.25;
 
     f32 extended_fov = ((f32) fov * 0xB6 * scaleFov); // Sets the Culling for objects on the left and right
@@ -49,7 +47,7 @@ RECOMP_PATCH f32 is_within_render_distance(Vec3f cameraPos, Vec3f objectPos, u16
 
     if (minDistance == 0.0f) {
         if (is_visible_between_angle((orientationY + extended_fov), (orientationY - extended_fov), angleObject) == 1) {
-            if (gCurrentCourseId == COURSE_KALAMARI_DESERT) {
+            if (0){//if (gCurrentCourseId == COURSE_KALAMARI_DESERT) {
                 return distance / 6.5f; // set for better DD settings in Desert
             } else {
                 return distance / 10.0f; // Items
@@ -59,7 +57,7 @@ RECOMP_PATCH f32 is_within_render_distance(Vec3f cameraPos, Vec3f objectPos, u16
     }
 
     if (is_visible_between_angle((u16) plus_fov_angle, (u16) minus_fov_angle, angleObject) == 1) {
-        if (gCurrentCourseId == COURSE_KALAMARI_DESERT) {
+        if (0){//if (gCurrentCourseId == COURSE_KALAMARI_DESERT) {
             return distance / 2.0f;
         } else {
             return distance / 10.0f; // DD Vhicles

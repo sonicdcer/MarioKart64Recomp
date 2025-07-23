@@ -594,16 +594,15 @@ RECOMP_PATCH void func_80054F04(s32 cameraId) {
 #endif
 
 #if 1
-RECOMP_PATCH /**
-              * @brief Renders the train engine actor.
-              * Actor used in Kalimari Desert.
-              * His update position are made in vehicle.
-              *
-              * @param camera
-              * @param actor
-              */
-    void
-    render_actor_train_engine(Camera* camera, struct TrainCar* actor) {
+/**
+ * @brief Renders the train engine actor.
+ * Actor used in Kalimari Desert.
+ * His update position are made in vehicle.
+ *
+ * @param camera
+ * @param actor
+ */
+RECOMP_PATCH void render_actor_train_engine(Camera* camera, struct TrainCar* actor) {
     UNUSED s32 pad[2];
     s32 maxObjectsReached;
     Vec3f sp160;
@@ -628,7 +627,7 @@ RECOMP_PATCH /**
     gEXMatrixGroupDecomposed(gDisplayListHead++, TAG_OBJECT(sLocomotive) & 0xFFFFFFF0 | 1, G_EX_PUSH, G_MTX_MODELVIEW,
                              G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_INTERPOLATE,
                              G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE,
-                             G_EX_ORDER_LINEAR, G_EX_EDIT_ALLOW);
+                             G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
 
     if (maxObjectsReached) {
         return;
@@ -664,7 +663,7 @@ RECOMP_PATCH /**
     gEXMatrixGroupDecomposed(gDisplayListHead++, TAG_OBJECT(sLocomotive) & 0xFFFFFFF0 | 2, G_EX_PUSH, G_MTX_MODELVIEW,
                              G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_INTERPOLATE,
                              G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE,
-                             G_EX_ORDER_LINEAR, G_EX_EDIT_ALLOW);
+                             G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
 
     maxObjectsReached = render_set_position(spA0, 3) == 0;
     if (maxObjectsReached) {
@@ -685,7 +684,7 @@ RECOMP_PATCH /**
     gEXMatrixGroupDecomposed(gDisplayListHead++, TAG_OBJECT(sLocomotive) & 0xFFFFFFF0 | 3, G_EX_PUSH, G_MTX_MODELVIEW,
                              G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_INTERPOLATE,
                              G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE,
-                             G_EX_ORDER_LINEAR, G_EX_EDIT_ALLOW);
+                             G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
 
     maxObjectsReached = render_set_position(spA0, 3) == 0;
     if (maxObjectsReached) {
@@ -706,7 +705,7 @@ RECOMP_PATCH /**
     gEXMatrixGroupDecomposed(gDisplayListHead++, TAG_OBJECT(sLocomotive) & 0xFFFFFFF0 | 4, G_EX_PUSH, G_MTX_MODELVIEW,
                              G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_INTERPOLATE,
                              G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE,
-                             G_EX_ORDER_LINEAR, G_EX_EDIT_ALLOW);
+                             G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
 
     maxObjectsReached = render_set_position(spA0, 3) == 0;
     if (maxObjectsReached) {
@@ -727,7 +726,7 @@ RECOMP_PATCH /**
     gEXMatrixGroupDecomposed(gDisplayListHead++, TAG_OBJECT(sLocomotive) & 0xFFFFFFF0 | 5, G_EX_PUSH, G_MTX_MODELVIEW,
                              G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_INTERPOLATE,
                              G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE,
-                             G_EX_ORDER_LINEAR, G_EX_EDIT_ALLOW);
+                             G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
 
     maxObjectsReached = render_set_position(spA0, 3) == 0;
     if (maxObjectsReached) {
@@ -748,7 +747,7 @@ RECOMP_PATCH /**
     gEXMatrixGroupDecomposed(gDisplayListHead++, TAG_OBJECT(sLocomotive) & 0xFFFFFFF0 | 6, G_EX_PUSH, G_MTX_MODELVIEW,
                              G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_INTERPOLATE,
                              G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE,
-                             G_EX_ORDER_LINEAR, G_EX_EDIT_ALLOW);
+                             G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
 
     maxObjectsReached = render_set_position(spA0, 3) == 0;
     if (maxObjectsReached) {
@@ -769,7 +768,7 @@ RECOMP_PATCH /**
     gEXMatrixGroupDecomposed(gDisplayListHead++, TAG_OBJECT(sLocomotive) & 0xFFFFFFF0 | 7, G_EX_PUSH, G_MTX_MODELVIEW,
                              G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_INTERPOLATE,
                              G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE,
-                             G_EX_ORDER_LINEAR, G_EX_EDIT_ALLOW);
+                             G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
 
     maxObjectsReached = render_set_position(spA0, 3) == 0;
     if (maxObjectsReached) {
@@ -790,7 +789,7 @@ RECOMP_PATCH /**
     gEXMatrixGroupDecomposed(gDisplayListHead++, TAG_OBJECT(sLocomotive) & 0xFFFFFFF0 | 8, G_EX_PUSH, G_MTX_MODELVIEW,
                              G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_INTERPOLATE,
                              G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE,
-                             G_EX_ORDER_LINEAR, G_EX_EDIT_ALLOW);
+                             G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
 
     maxObjectsReached = render_set_position(spA0, 3) == 0;
     if (maxObjectsReached) {
@@ -811,7 +810,7 @@ RECOMP_PATCH /**
     gEXMatrixGroupDecomposed(gDisplayListHead++, TAG_OBJECT(sLocomotive) & 0xFFFFFFF0 | 9, G_EX_PUSH, G_MTX_MODELVIEW,
                              G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_INTERPOLATE,
                              G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE,
-                             G_EX_ORDER_LINEAR, G_EX_EDIT_ALLOW);
+                             G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
 
     maxObjectsReached = render_set_position(spA0, 3) == 0;
     if (maxObjectsReached) {
@@ -849,7 +848,7 @@ RECOMP_PATCH void render_actor_train_tender(Camera* camera, struct TrainCar* act
     gEXMatrixGroupDecomposed(gDisplayListHead++, TAG_OBJECT(sTender) & 0xFFFFFFF0 | 0, G_EX_PUSH, G_MTX_MODELVIEW,
                              G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_INTERPOLATE,
                              G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE,
-                             G_EX_ORDER_LINEAR, G_EX_EDIT_ALLOW);
+                             G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
 
     mtxf_pos_rotation_xyz(sp120, actor->pos, actor->rot);
     if (render_set_position(sp120, 0) == 0) {
@@ -865,9 +864,9 @@ RECOMP_PATCH void render_actor_train_tender(Camera* camera, struct TrainCar* act
     } else {
         // gSPDisplayList(gDisplayListHead++, d_course_kalimari_desert_dl_1FAF8);
     }
-    if (1440000.0f < temp_f0) {
-        return;
-    }
+    // if (1440000.0f < temp_f0) {
+    //     return;
+    // }
 
     gSPClearGeometryMode(gDisplayListHead++, G_CULL_BACK);
     gSPDisplayList(gDisplayListHead++, (Gfx*) 0x06022d28 /* d_course_kalimari_desert_dl_22D28 */);
@@ -884,7 +883,7 @@ RECOMP_PATCH void render_actor_train_tender(Camera* camera, struct TrainCar* act
     gEXMatrixGroupDecomposed(gDisplayListHead++, TAG_OBJECT(sTender) & 0xFFFFFFF0 | 1, G_EX_PUSH, G_MTX_MODELVIEW,
                              G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_INTERPOLATE,
                              G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE,
-                             G_EX_ORDER_LINEAR, G_EX_EDIT_ALLOW);
+                             G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
 
     if (render_set_position(spA0, 3) == 0) {
         return;
@@ -905,7 +904,7 @@ RECOMP_PATCH void render_actor_train_tender(Camera* camera, struct TrainCar* act
     gEXMatrixGroupDecomposed(gDisplayListHead++, TAG_OBJECT(sTender) & 0xFFFFFFF0 | 2, G_EX_PUSH, G_MTX_MODELVIEW,
                              G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_INTERPOLATE,
                              G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE,
-                             G_EX_ORDER_LINEAR, G_EX_EDIT_ALLOW);
+                             G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
 
     if (render_set_position(spA0, 3) == 0) {
         return;
@@ -920,7 +919,7 @@ RECOMP_PATCH void render_actor_train_tender(Camera* camera, struct TrainCar* act
     gEXMatrixGroupDecomposed(gDisplayListHead++, TAG_OBJECT(sTender) & 0xFFFFFFF0 | 3, G_EX_PUSH, G_MTX_MODELVIEW,
                              G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_INTERPOLATE,
                              G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE,
-                             G_EX_ORDER_LINEAR, G_EX_EDIT_ALLOW);
+                             G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
 
     gSPDisplayList(gDisplayListHead++, (Gfx*) 0x06022db8 /* d_course_kalimari_desert_dl_22DB8 */);
 
@@ -936,7 +935,7 @@ RECOMP_PATCH void render_actor_train_tender(Camera* camera, struct TrainCar* act
     gEXMatrixGroupDecomposed(gDisplayListHead++, TAG_OBJECT(sTender) & 0xFFFFFFF0 | 4, G_EX_PUSH, G_MTX_MODELVIEW,
                              G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_INTERPOLATE,
                              G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE,
-                             G_EX_ORDER_LINEAR, G_EX_EDIT_ALLOW);
+                             G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
 
     if (render_set_position(spA0, 3) == 0) {
         return;
@@ -957,7 +956,7 @@ RECOMP_PATCH void render_actor_train_tender(Camera* camera, struct TrainCar* act
     gEXMatrixGroupDecomposed(gDisplayListHead++, TAG_OBJECT(sTender) & 0xFFFFFFF0 | 5, G_EX_PUSH, G_MTX_MODELVIEW,
                              G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_INTERPOLATE,
                              G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE,
-                             G_EX_ORDER_LINEAR, G_EX_EDIT_ALLOW);
+                             G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
 
     if (render_set_position(spA0, 3) == 0) {
         return;
@@ -996,7 +995,7 @@ RECOMP_PATCH void render_actor_train_passenger_car(Camera* camera, struct TrainC
     gEXMatrixGroupDecomposed(gDisplayListHead++, (TAG_OBJECT(actor) << 16) & 0xFFFF0000 | 0, G_EX_PUSH, G_MTX_MODELVIEW,
                              G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_INTERPOLATE,
                              G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE,
-                             G_EX_ORDER_LINEAR, G_EX_EDIT_ALLOW);
+                             G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
 
     if (render_set_position(sp120, 0) == 0) {
         return;
@@ -1016,9 +1015,9 @@ RECOMP_PATCH void render_actor_train_passenger_car(Camera* camera, struct TrainC
         // gSPDisplayList(gDisplayListHead++, d_course_kalimari_desert_dl_21A80);
     }
 
-    if (1440000.0f < temp_f0) {
-        return;
-    }
+    // if (1440000.0f < temp_f0) {
+    //     return;
+    // }
 
     gSPClearGeometryMode(gDisplayListHead++, G_CULL_BACK);
     gSPDisplayList(gDisplayListHead++, (Gfx*) 0x06022d28 /* d_course_kalimari_desert_dl_22D28 */);
@@ -1035,7 +1034,7 @@ RECOMP_PATCH void render_actor_train_passenger_car(Camera* camera, struct TrainC
     gEXMatrixGroupDecomposed(gDisplayListHead++, (TAG_OBJECT(actor) << 16) & 0xFFFF0000 | 1, G_EX_PUSH, G_MTX_MODELVIEW,
                              G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_INTERPOLATE,
                              G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE,
-                             G_EX_ORDER_LINEAR, G_EX_EDIT_ALLOW);
+                             G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
 
     if (render_set_position(spA0, 3) == 0) {
         return;
@@ -1056,7 +1055,7 @@ RECOMP_PATCH void render_actor_train_passenger_car(Camera* camera, struct TrainC
     gEXMatrixGroupDecomposed(gDisplayListHead++, (TAG_OBJECT(actor) << 16) & 0xFFFF0000 | 2, G_EX_PUSH, G_MTX_MODELVIEW,
                              G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_INTERPOLATE,
                              G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE,
-                             G_EX_ORDER_LINEAR, G_EX_EDIT_ALLOW);
+                             G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
 
     if (render_set_position(spA0, 3) == 0) {
         return;
@@ -1077,7 +1076,7 @@ RECOMP_PATCH void render_actor_train_passenger_car(Camera* camera, struct TrainC
     gEXMatrixGroupDecomposed(gDisplayListHead++, (TAG_OBJECT(actor) << 16) & 0xFFFF0000 | 3, G_EX_PUSH, G_MTX_MODELVIEW,
                              G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_INTERPOLATE,
                              G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE,
-                             G_EX_ORDER_LINEAR, G_EX_EDIT_ALLOW);
+                             G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
 
     if (render_set_position(spA0, 3) == 0) {
         return;
@@ -1098,7 +1097,7 @@ RECOMP_PATCH void render_actor_train_passenger_car(Camera* camera, struct TrainC
     gEXMatrixGroupDecomposed(gDisplayListHead++, (TAG_OBJECT(actor) << 16) & 0xFFFF0000 | 4, G_EX_PUSH, G_MTX_MODELVIEW,
                              G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_INTERPOLATE,
                              G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE,
-                             G_EX_ORDER_LINEAR, G_EX_EDIT_ALLOW);
+                             G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
 
     if (render_set_position(spA0, 3) == 0) {
         return;
@@ -1119,7 +1118,7 @@ RECOMP_PATCH void render_actor_train_passenger_car(Camera* camera, struct TrainC
     gEXMatrixGroupDecomposed(gDisplayListHead++, (TAG_OBJECT(actor) << 16) & 0xFFFF0000 | 5, G_EX_PUSH, G_MTX_MODELVIEW,
                              G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_INTERPOLATE,
                              G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE,
-                             G_EX_ORDER_LINEAR, G_EX_EDIT_ALLOW);
+                             G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
 
     if (render_set_position(spA0, 3) == 0) {
         return;
@@ -1140,7 +1139,7 @@ RECOMP_PATCH void render_actor_train_passenger_car(Camera* camera, struct TrainC
     gEXMatrixGroupDecomposed(gDisplayListHead++, (TAG_OBJECT(actor) << 16) & 0xFFFF0000 | 6, G_EX_PUSH, G_MTX_MODELVIEW,
                              G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_INTERPOLATE,
                              G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE,
-                             G_EX_ORDER_LINEAR, G_EX_EDIT_ALLOW);
+                             G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
 
     if (render_set_position(spA0, 3) == 0) {
         return;
@@ -1161,7 +1160,7 @@ RECOMP_PATCH void render_actor_train_passenger_car(Camera* camera, struct TrainC
     gEXMatrixGroupDecomposed(gDisplayListHead++, (TAG_OBJECT(actor) << 16) & 0xFFFF0000 | 7, G_EX_PUSH, G_MTX_MODELVIEW,
                              G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_INTERPOLATE,
                              G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE,
-                             G_EX_ORDER_LINEAR, G_EX_EDIT_ALLOW);
+                             G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
 
     if (render_set_position(spA0, 3) == 0) {
         return;
@@ -1182,7 +1181,7 @@ RECOMP_PATCH void render_actor_train_passenger_car(Camera* camera, struct TrainC
     gEXMatrixGroupDecomposed(gDisplayListHead++, (TAG_OBJECT(actor) << 16) & 0xFFFF0000 | 8, G_EX_PUSH, G_MTX_MODELVIEW,
                              G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_INTERPOLATE,
                              G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE,
-                             G_EX_ORDER_LINEAR, G_EX_EDIT_ALLOW);
+                             G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
 
     if (render_set_position(spA0, 3) == 0) {
         return;
@@ -1236,7 +1235,7 @@ RECOMP_PATCH // Trains smoke particles.
             gEXMatrixGroupDecomposed(gDisplayListHead++, (TAG_OBJECT(&gTrainList[0]) << 16) & 0xFFFF0000 | i, G_EX_PUSH,
                                      G_MTX_MODELVIEW, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO,
                                      G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP,
-                                     G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_LINEAR, G_EX_EDIT_ALLOW);
+                                     G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
 
             render_object_train_smoke_particle(gObjectParticle2[i], cameraId);
 
@@ -1252,7 +1251,7 @@ RECOMP_PATCH // Trains smoke particles.
             gEXMatrixGroupDecomposed(gDisplayListHead++, (TAG_OBJECT(&gTrainList[1]) << 16) & 0xFFFF0000 | i, G_EX_PUSH,
                                      G_MTX_MODELVIEW, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO,
                                      G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP,
-                                     G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_LINEAR, G_EX_EDIT_ALLOW);
+                                     G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
 
             render_object_train_smoke_particle(gObjectParticle3[i], cameraId);
 
@@ -1298,7 +1297,7 @@ RECOMP_PATCH void render_actor_tree_cactus1_kalimari_desert(Camera* camera, Mat4
     gEXMatrixGroupDecomposed(gDisplayListHead++, TAG_OBJECT(arg2), G_EX_PUSH, G_MTX_MODELVIEW, G_EX_COMPONENT_AUTO,
                              G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_INTERPOLATE,
                              G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE,
-                             G_EX_ORDER_LINEAR, G_EX_EDIT_ALLOW);
+                             G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
 
     if (render_set_position(arg1, 0) != 0) {
         gSPDisplayList(gDisplayListHead++, (Gfx*) 0x06008528 /* d_course_kalimari_desert_dl_cactus1 */);
@@ -1343,7 +1342,7 @@ RECOMP_PATCH void render_actor_tree_cactus2_kalimari_desert(Camera* camera, Mat4
     gEXMatrixGroupDecomposed(gDisplayListHead++, TAG_OBJECT(arg2), G_EX_PUSH, G_MTX_MODELVIEW, G_EX_COMPONENT_AUTO,
                              G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_INTERPOLATE,
                              G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE,
-                             G_EX_ORDER_LINEAR, G_EX_EDIT_ALLOW);
+                             G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
 
     if (render_set_position(arg1, 0) != 0) {
         gSPDisplayList(gDisplayListHead++, (Gfx*) 0x06008628 /* d_course_kalimari_desert_dl_cactus2 */);
@@ -1388,7 +1387,7 @@ RECOMP_PATCH void render_actor_tree_cactus3_kalimari_desert(Camera* camera, Mat4
     gEXMatrixGroupDecomposed(gDisplayListHead++, TAG_OBJECT(arg2), G_EX_PUSH, G_MTX_MODELVIEW, G_EX_COMPONENT_AUTO,
                              G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_INTERPOLATE,
                              G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE,
-                             G_EX_ORDER_LINEAR, G_EX_EDIT_ALLOW);
+                             G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
 
     if (render_set_position(arg1, 0) != 0) {
         gSPDisplayList(gDisplayListHead++, (Gfx*) 0x06008728 /* d_course_kalimari_desert_dl_cactus3 */);
@@ -1419,7 +1418,7 @@ RECOMP_PATCH void render_actor_railroad_crossing(Camera* arg0, struct RailroadCr
         gEXMatrixGroupDecomposed(gDisplayListHead++, TAG_OBJECT(rr_crossing), G_EX_PUSH, G_MTX_MODELVIEW,
                                  G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO,
                                  G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP,
-                                 G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_LINEAR, G_EX_EDIT_ALLOW);
+                                 G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
 
         mtxf_pos_rotation_xyz(sp40, rr_crossing->pos, rr_crossing->rot);
 
