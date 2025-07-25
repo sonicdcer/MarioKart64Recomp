@@ -507,6 +507,7 @@ void func_80029150(void);
 void func_8028F474(void);
 void func_80022744(void);
 void func_8028FCBC(void);
+void func_800C8EAC(u16); // play_sequence
 void resource_display(void);
 void course_update_water(void);
 void profiler_log_thread5_time(s32 eventID);

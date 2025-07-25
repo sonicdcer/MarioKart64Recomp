@@ -10,10 +10,10 @@ RECOMP_PATCH void func_8028FC34(void) {
     }
     D_802BA038--;
 
-// @recomp: Change gControllerFive to gControllers[0] to avoid bug where something
-// is pressing other controllers in memory.
+    // @recomp: Change gControllerFive to gControllers[0] to avoid bug where something
+    // is pressing other controllers in memory.
 
-// if (gControllerFive->buttonPressed != 0) {
+    // if (gControllerFive->buttonPressed != 0) {
     if (gControllers[0].buttonPressed != 0) {
         func_8028FBD4();
         gMenuSelection = START_MENU;
@@ -339,5 +339,75 @@ RECOMP_PATCH void race_logic_loop(void) {
 #endif
     gDPFullSync(gDisplayListHead++);
     gSPEndDisplayList(gDisplayListHead++);
+}
+#endif
+
+#if 1
+// play_music_for_current_track
+RECOMP_PATCH void func_8028EC98(s32 track) {
+    // @recomp: play music in 3P/4P modes
+    // if (gScreenModeSelection == SCREEN_MODE_3P_4P_SPLITSCREEN) {
+    //     return; // If 3P/4P splitscreen mode is currently on, don't play the music for the current track.
+    // }
+
+    func_800029B0();
+
+    switch (track) {
+        case COURSE_MARIO_RACEWAY: // Raceways, Wario Stadium
+        case COURSE_ROYAL_RACEWAY:
+        case COURSE_LUIGI_RACEWAY:
+        case COURSE_WARIO_STADIUM:
+            func_800C8EAC(SEQ_TRACK_RACEWAY);
+            break;
+
+        case COURSE_TOADS_TURNPIKE: // Toad's Turnpike
+            func_800C8EAC(SEQ_TRACK_TURNPIKE);
+            break;
+
+        case COURSE_YOSHI_VALLEY: // Yoshi Valley, Moo Moo Farm
+        case COURSE_MOO_MOO_FARM:
+            func_800C8EAC(SEQ_TRACK_FARM);
+            break;
+
+        case COURSE_CHOCO_MOUNTAIN: // Choco Mountain, Various Battle Stages
+        case COURSE_BLOCK_FORT:
+        case COURSE_DOUBLE_DECK:
+            func_800C8EAC(SEQ_TRACK_MOUNTAIN);
+            break;
+
+        case COURSE_KALAMARI_DESERT: // Kalimari Desert
+            func_800C8EAC(SEQ_TRACK_DESERT);
+            break;
+
+        case COURSE_KOOPA_BEACH: // Koopa Troopa Beach
+            func_800C8EAC(SEQ_TRACK_BEACH);
+            break;
+
+        case COURSE_BOWSER_CASTLE: // Bowser Castle
+            func_800C8EAC(SEQ_TRACK_CASTLE);
+            break;
+
+        case COURSE_BANSHEE_BOARDWALK: // Banshee Boardwalk
+            func_800C8EAC(SEQ_TRACK_SCARY);
+            break;
+
+        case COURSE_FRAPPE_SNOWLAND: // Frappe Snowland, Sherbet Land
+        case COURSE_SHERBET_LAND:
+            func_800C8EAC(SEQ_TRACK_SNOW);
+            break;
+
+        case COURSE_RAINBOW_ROAD: // Rainbow Road
+            func_800C8EAC(SEQ_TRACK_RAINBOW);
+            break;
+
+        case COURSE_DK_JUNGLE: // DK's Jungle Parkway
+            func_800C8EAC(SEQ_TRACK_JUNGLE);
+            break;
+
+        case COURSE_SKYSCRAPER: // Other Battle Stages
+        case COURSE_BIG_DONUT:
+            func_800C8EAC(SEQ_TRACK_BATTLE);
+            break;
+    }
 }
 #endif
