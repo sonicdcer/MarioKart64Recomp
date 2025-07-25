@@ -236,7 +236,7 @@ RECOMP_PATCH void race_logic_loop(void) {
                     case COURSE_MOO_MOO_FARM:
                     case COURSE_SKYSCRAPER:
                     case COURSE_DK_JUNGLE:
-                        gTickSpeed = 3;
+                        gTickSpeed = 2;
                         break;
                     default:
                         gTickSpeed = 2;
