@@ -1708,6 +1708,37 @@ RECOMP_PATCH void render_object_for_player(s32 cameraId) {
 #endif
 
 #if 1
+RECOMP_PATCH void render_object_neon(s32 cameraId) {
+    Camera* camera;
+    s32 i;
+    s32 objectIndex;
+    Object* object;
+
+    camera = &camera1[cameraId];
+    for (i = 0; i < 10; i++) {
+        objectIndex = indexObjectList1[i];
+
+        // @recomp Tag the transform.
+        gEXMatrixGroupDecomposedNormal(gDisplayListHead++, TAG_OBJECT(&indexObjectList1[i]) | cameraId, G_EX_PUSH,
+                                       G_MTX_MODELVIEW, G_EX_EDIT_ALLOW);
+
+        if (D_8018E838[cameraId] == 0) {
+            object = &gObjectList[objectIndex];
+            if ((object->state >= 2) && (is_obj_index_flag_status_inactive(objectIndex, 0x00080000) != 0) &&
+                (is_object_visible_on_camera(objectIndex, camera, 0x2AABU) != 0)) {
+                object->orientation[1] = angle_between_object_camera(objectIndex, camera);
+                draw_2d_texture_at(object->pos, object->orientation, object->sizeScaling, (u8*) object->activeTLUT,
+                                   object->activeTexture, (Vtx*) 0x0d0060b0 /* common_vtx_hedgehog */, 64, 64, 64, 32);
+            }
+        }
+
+        // @recomp Pop the transform id.
+        gEXPopMatrixGroup(gDisplayListHead++, G_MTX_MODELVIEW);
+    }
+}
+#endif
+
+#if 1
 RECOMP_PATCH void render_object_train_penguins(s32 cameraId) {
     s32 i;
     s32 objectIndex;

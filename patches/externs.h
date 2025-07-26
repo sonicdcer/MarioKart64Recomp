@@ -521,6 +521,8 @@ bool is_object_visible_on_camera(s32, Camera*, u16);
 void func_800722A4(s32, s32);
 u32 get_horizontal_distance_to_camera(s32, Camera*);
 signed int func_80072320(s32, s32);
+s32 is_obj_index_flag_status_inactive(s32, s32);
+s32 angle_between_object_camera(s32, Camera*);;
 
 extern Vec3f D_80183E50;
 extern Vec3f D_80183E70;
