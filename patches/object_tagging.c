@@ -1674,6 +1674,79 @@ RECOMP_PATCH void render_object_for_player(s32 cameraId) {
 #endif
 
 #if 1
+RECOMP_PATCH void render_object_snowmans_list_1(s32 cameraId) {
+    s32 i;
+    s32 objectIndex;
+    Camera* camera = &camera1[cameraId];
+
+    for (i = 0; i < NUM_SNOWMEN; i++) {
+        objectIndex = indexObjectList1[i];
+        // @recomp Tag the transform.
+        gEXMatrixGroupDecomposedNormal(gDisplayListHead++, TAG_OBJECT(&indexObjectList1[i]) | cameraId, G_EX_PUSH,
+                                       G_MTX_MODELVIEW, G_EX_EDIT_ALLOW);
+        if (gObjectList[objectIndex].state >= 2) {
+            func_8008A364(objectIndex, cameraId, 0x2AABU, 600);
+            if (is_obj_flag_status_active(objectIndex, VISIBLE) != 0) {
+                D_80183E80[0] = (s16) gObjectList[objectIndex].orientation[0];
+                D_80183E80[1] =
+                    func_800418AC(gObjectList[objectIndex].pos[0], gObjectList[objectIndex].pos[2], camera->pos);
+                D_80183E80[2] = (u16) gObjectList[objectIndex].orientation[2];
+                if (is_obj_flag_status_active(objectIndex, 16) != 0) {
+                    draw_2d_texture_at(gObjectList[objectIndex].pos, (u16*) D_80183E80,
+                                       gObjectList[objectIndex].sizeScaling, (u8*) gObjectList[objectIndex].activeTLUT,
+                                       gObjectList[objectIndex].activeTexture, gObjectList[objectIndex].vertex, 64, 64,
+                                       64, 32);
+                }
+                objectIndex = indexObjectList2[i];
+                D_80183E80[0] = (s16) gObjectList[objectIndex].orientation[0];
+                D_80183E80[2] = (u16) gObjectList[objectIndex].orientation[2];
+                draw_2d_texture_at(gObjectList[objectIndex].pos, (u16*) D_80183E80,
+                                   gObjectList[objectIndex].sizeScaling, (u8*) gObjectList[objectIndex].activeTLUT,
+                                   gObjectList[objectIndex].activeTexture, gObjectList[objectIndex].vertex, 64, 64, 64,
+                                   32);
+            }
+        }
+        // @recomp Pop the transform id.
+        gEXPopMatrixGroup(gDisplayListHead++, G_MTX_MODELVIEW);
+    }
+}
+#endif
+
+#if 1
+RECOMP_PATCH void render_object_snowmans_list_2(s32 cameraId) {
+    Camera* sp44 = &camera1[cameraId];
+    s32 i;
+    s32 objectIndex;
+    Object* object;
+    
+    load_texture_and_tlut((u8*) 0x06006d20 /* d_course_frappe_snowland_snow_tlut */,
+                          (u8*) 0x06006f20 /* d_course_frappe_snowland_snow */, 32, 32);
+    for (i = 0; i < gObjectParticle2_SIZE; i++) {
+        objectIndex = gObjectParticle2[i];
+
+        // @recomp Tag the transform.
+        gEXMatrixGroupDecomposedNormal(gDisplayListHead++, TAG_OBJECT(gObjectParticle2[i]) | cameraId, G_EX_PUSH,
+                                       G_MTX_MODELVIEW, G_EX_EDIT_ALLOW);
+
+        if (objectIndex != NULL_OBJECT_ID) {
+            object = &gObjectList[objectIndex];
+            if (object->state > 0) {
+                func_8008A364(objectIndex, cameraId, 0x2AABU, 0x000001F4);
+                if (is_obj_flag_status_active(objectIndex, VISIBLE) != 0) {
+                    object->orientation[1] = func_800418AC(object->pos[0], object->pos[2], sp44->pos);
+                    rsp_set_matrix_gObjectList(objectIndex);
+                    gSPDisplayList(gDisplayListHead++, (Gfx*) 0x0D0069E0);
+                }
+            }
+        }
+        // @recomp Pop the transform id.
+        gEXPopMatrixGroup(gDisplayListHead++, G_MTX_MODELVIEW);
+    }
+    gSPTexture(gDisplayListHead++, 1, 1, 0, G_TX_RENDERTILE, G_OFF);
+}
+#endif
+
+#if 1
 RECOMP_PATCH void func_80055228(s32 cameraId) {
     s32 i;
     s32 temp_s0;
