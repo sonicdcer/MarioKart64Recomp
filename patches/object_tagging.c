@@ -1674,6 +1674,40 @@ RECOMP_PATCH void render_object_for_player(s32 cameraId) {
 #endif
 
 #if 1
+RECOMP_PATCH void render_object_hedgehogs(s32 arg0) {
+    s32 test;
+    u32 var;
+    s32 i;
+
+    for (i = 0; i < NUM_HEDGEHOGS; i++) {
+        test = indexObjectList2[i];
+        var = func_8008A364(test, arg0, 0x4000U, 0x000003E8);
+
+        // @recomp Tag the transform.
+        gEXMatrixGroupDecomposedNormal(gDisplayListHead++, TAG_OBJECT(&indexObjectList2[i]) | arg0, G_EX_PUSH,
+                                       G_MTX_MODELVIEW, G_EX_EDIT_ALLOW);
+                                       
+        if (is_obj_flag_status_active(test, VISIBLE) != 0) {
+            set_object_flag_status_true(test, 0x00200000);
+            if (var < 0x2711U) {
+                set_object_flag_status_true(test, 0x00000020);
+            } else {
+                set_object_flag_status_false(test, 0x00000020);
+            }
+            if (var < 0x57E41U) {
+                set_object_flag_status_true(test, 0x00400000);
+            }
+            if (var < 0x52211U) {
+                func_800555BC(test, arg0);
+            }
+        }
+        // @recomp Pop the transform id.
+    gEXPopMatrixGroup(gDisplayListHead++, G_MTX_MODELVIEW);
+    }
+}
+#endif
+
+#if 1
 RECOMP_PATCH void render_object_boos(s32 arg0) {
     u32 temp_s2;
     s32 i;
