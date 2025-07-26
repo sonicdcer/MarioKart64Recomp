@@ -1769,6 +1769,33 @@ RECOMP_PATCH void render_object_thwomps(s32 cameraId) {
 }
 #endif
 
+#if 1
+RECOMP_PATCH void render_object_bowser_flame_particle(s32 objectIndex, s32 cameraId) {
+    Camera* camera;
+    Object* object;
+
+    camera = &camera1[cameraId];
+    if (gMatrixHudCount <= MTX_HUD_POOL_SIZE_MAX) {
+        object = &gObjectList[objectIndex];
+
+        // @recomp Tag the transform.
+        gEXMatrixGroupDecomposedNormal(gDisplayListHead++, TAG_OBJECT(object), G_EX_PUSH, G_MTX_MODELVIEW,
+                                       G_EX_EDIT_ALLOW);
+
+        if (object->unk_0D5 == 9) {
+            func_8004B72C(0xFF, (s32) object->type, 0, (s32) object->unk_0A2, 0, 0, (s32) object->primAlpha);
+        } else {
+            func_8004B138(0xFF, (s32) object->type, 0, (s32) object->primAlpha);
+        }
+        D_80183E80[1] = func_800418AC(object->pos[0], object->pos[2], camera->pos);
+        func_800431B0(object->pos, D_80183E80, object->sizeScaling, (Vtx*) 0x0D005AE0);
+
+        // @recomp Pop the transform id.
+        gEXPopMatrixGroup(gDisplayListHead++, G_MTX_MODELVIEW);
+    }
+}
+#endif
+
 #if 0
 RECOMP_PATCH void render_cows(Camera* camera, Mat4 arg1, UNUSED struct Actor* actor) {
     u16 temp_s1;

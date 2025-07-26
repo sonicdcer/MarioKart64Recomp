@@ -743,4 +743,5 @@ extern Gfx D_02007F60[];
 extern s8 D_80165898;
 extern s16 D_8018CF68[];
 extern u8 *D_8018D490;
+extern s32 D_80165598;
 #endif
