@@ -1708,6 +1708,48 @@ RECOMP_PATCH void render_object_for_player(s32 cameraId) {
 #endif
 
 #if 1
+RECOMP_PATCH void render_object_smoke_particles(s32 cameraId) {
+    Camera* sp54;
+    s32 i;
+    s32 objectIndex;
+    Object* object;
+
+    sp54 = &camera1[cameraId];
+    gSPDisplayList(gDisplayListHead++, (Gfx*) 0x0D007AE0);
+    u8(*common_texture_particle_smoke)[1024] = (u8*) 0x0d02bc58;
+    load_texture_block_i8_nomirror(common_texture_particle_smoke[D_80165598], 32, 32);
+    func_8004B72C(255, 255, 255, 255, 255, 255, 255);
+    D_80183E80[0] = 0;
+    D_80183E80[2] = 0x8000;
+    for (i = 0; i < gObjectParticle4_SIZE; i++) {
+        objectIndex = gObjectParticle4[i];
+        // @recomp Tag the transform
+        gEXMatrixGroupDecomposed(gDisplayListHead++, (TAG_OBJECT(gObjectParticle4[i]) << 16) & 0xFFFF0000 | i,
+                                 G_EX_PUSH, G_MTX_MODELVIEW, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO,
+                                 G_EX_COMPONENT_AUTO, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE,
+                                 G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
+                                 
+        if (objectIndex != NULL_OBJECT_ID) {
+            object = &gObjectList[objectIndex];
+            if (object->state >= 2) {
+                if (object->unk_0D8 == 3) {
+                    func_8008A364(objectIndex, cameraId, 0x4000U, 0x00000514);
+                } else {
+                    func_8008A364(objectIndex, cameraId, 0x4000U, 0x000001F4);
+                }
+                if (is_obj_flag_status_active(objectIndex, VISIBLE) != 0) {
+                    func_8005477C(objectIndex, object->unk_0D8, sp54->pos);
+                }
+            }
+        }
+        // @recomp Pop the transform id.
+        gEXPopMatrixGroup(gDisplayListHead++, G_MTX_MODELVIEW);
+    }
+}
+
+#endif
+
+#if 1
 RECOMP_PATCH void render_object_paddle_boat_smoke_particles(s32 cameraId) {
     UNUSED s32 pad[2];
     Camera* camera;
