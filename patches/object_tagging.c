@@ -1674,6 +1674,29 @@ RECOMP_PATCH void render_object_for_player(s32 cameraId) {
 #endif
 
 #if 1
+RECOMP_PATCH void func_80055228(s32 cameraId) {
+    s32 i;
+    s32 temp_s0;
+
+    for (i = 0; i < 4; i++) {
+        temp_s0 = indexObjectList1[i];
+        func_8008A364(temp_s0, cameraId, 0x4000U, 0x000005DC);
+
+        // @recomp Tag the transform.
+        gEXMatrixGroupDecomposedNormal(gDisplayListHead++, TAG_OBJECT(&indexObjectList1[i]) | cameraId, G_EX_PUSH,
+                                       G_MTX_MODELVIEW, G_EX_EDIT_ALLOW);
+
+        if (is_obj_flag_status_active(temp_s0, VISIBLE) != 0) {
+            func_80055164(temp_s0);
+        }
+
+        // @recomp Pop the transform id.
+        gEXPopMatrixGroup(gDisplayListHead++, G_MTX_MODELVIEW);
+    }
+}
+#endif
+
+#if 1
 RECOMP_PATCH void render_object_hedgehogs(s32 arg0) {
     s32 test;
     u32 var;
@@ -1686,7 +1709,7 @@ RECOMP_PATCH void render_object_hedgehogs(s32 arg0) {
         // @recomp Tag the transform.
         gEXMatrixGroupDecomposedNormal(gDisplayListHead++, TAG_OBJECT(&indexObjectList2[i]) | arg0, G_EX_PUSH,
                                        G_MTX_MODELVIEW, G_EX_EDIT_ALLOW);
-                                       
+
         if (is_obj_flag_status_active(test, VISIBLE) != 0) {
             set_object_flag_status_true(test, 0x00200000);
             if (var < 0x2711U) {
@@ -1702,7 +1725,7 @@ RECOMP_PATCH void render_object_hedgehogs(s32 arg0) {
             }
         }
         // @recomp Pop the transform id.
-    gEXPopMatrixGroup(gDisplayListHead++, G_MTX_MODELVIEW);
+        gEXPopMatrixGroup(gDisplayListHead++, G_MTX_MODELVIEW);
     }
 }
 #endif
