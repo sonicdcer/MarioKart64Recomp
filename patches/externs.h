@@ -513,6 +513,7 @@ void course_update_water(void);
 void profiler_log_thread5_time(s32 eventID);
 void func_800382DC(void);
 void func_8001EE98(Player *, Camera *, s8);
+void render_fireworks(f32 *arg0, f32 arg1, s32 rgb, s16 alpha);
 
 extern Vec3f D_80183E50;
 extern Vec3f D_80183E70;
@@ -727,4 +728,9 @@ extern struct SequencePlayer gSequencePlayers[SEQUENCE_PLAYERS];
 extern TrainStuff gTrainList[];
 extern u16 isCrossingTriggeredByIndex[];
 extern s32 gEnableResourceMeters;
+extern Vp D_802B8880[1];
+extern Vtx gBalloonVertexPlane1[];
+extern Vtx gBalloonVertexPlane2[];
+extern s16 D_802874B0[17];
+extern s32 fireworkColour[4];
 #endif

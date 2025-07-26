@@ -125,6 +125,108 @@ RECOMP_PATCH void func_80053D74(s32 objectIndex, UNUSED s32 arg1, s32 vertexInde
 }
 #endif
 
+// Ceremony balloons
+#if 1
+RECOMP_PATCH void balloon_update(CeremonyActor* actor) {
+    // @recomp Tag the transform.
+    gEXMatrixGroupDecomposedNormal(gDisplayListHead++, (u32) actor, G_EX_PUSH, G_MTX_MODELVIEW, G_EX_EDIT_ALLOW);
+
+    render_balloon(actor->pos, 1.0f, actor->unk2E, actor->unk2C);
+
+    // @recomp Pop the transform id.
+    gEXPopMatrixGroup(gDisplayListHead++, G_MTX_MODELVIEW);
+
+    actor->pos[1] += 0.8f;
+    actor->unk2E = sins(actor->unk30) * actor->unk34;
+    actor->unk30 += actor->unk32;
+    actor->timer++;
+
+    // Delete actor
+    if (actor->timer > 800) {
+        actor->isActive = 0;
+    }
+    if (D_802874B0[13] == 1) {
+        actor->isActive = 0;
+    }
+}
+#endif
+
+// Ceremony trophy star particles
+#if 1
+RECOMP_PATCH void func_80054BE8(s32 cameraId) {
+    s32 i;
+    s32 temp_a0;
+    Camera* camera;
+
+    camera = &camera1[cameraId];
+    gSPDisplayList(gDisplayListHead++, (Gfx*) 0x0D007AE0);
+    load_texture_block_ia8_nomirror(D_8018D488, 0x00000020, 0x00000020);
+    func_8004B35C(0x000000FF, 0x000000FF, 0, 0x000000FF);
+    D_80183E80[0] = 0;
+    for (i = 0; i < gObjectParticle3_SIZE; i++) {
+        temp_a0 = gObjectParticle3[i];
+        if ((temp_a0 != -1) && (gObjectList[temp_a0].state >= 2)) {
+            // @recomp Tag the transform.
+            gEXMatrixGroupDecomposedNormal(gDisplayListHead++, (u32) &gObjectList[temp_a0] << 16 | i, G_EX_PUSH,
+                                           G_MTX_MODELVIEW, G_EX_EDIT_ALLOW);
+
+            func_80054AFC(temp_a0, camera->pos);
+            // @recomp Pop the transform id.
+            gEXPopMatrixGroup(gDisplayListHead++, G_MTX_MODELVIEW);
+        }
+    }
+}
+#endif
+
+#if 1
+RECOMP_PATCH void firework_update(Firework* actor) {
+    s32 i;
+    Vec3f pos;
+    if (actor->unk44 < 30) {
+        for (i = 0; i < 10; i++) {
+            pos[0] = actor->pos[0];
+            pos[1] = actor->pos[1] - i * 2;
+            pos[2] = actor->pos[2];
+            // @recomp Tag the transform.
+            gEXMatrixGroupDecomposedNormal(gDisplayListHead++, (u32) actor + i, G_EX_PUSH, G_MTX_MODELVIEW,
+                                           G_EX_EDIT_ALLOW);
+
+            render_fireworks(pos, ((10 - i) / 10.0f) * 2, fireworkColour[actor->unk48],
+                             (((((30 - actor->unk44) * 100)) / 30.0f)));
+
+            // @recomp Pop the transform id.
+            gEXPopMatrixGroup(gDisplayListHead++, G_MTX_MODELVIEW);
+        }
+
+    } else {
+        if (actor->unk2C < 5) {
+            actor->unk3C += actor->unk40 * 2;
+            actor->unk34 += actor->unk38 * 2;
+        } else {
+            actor->unk3C += actor->unk40 / (1.0f + (((actor->unk2C * 7) - 0x23) / 10.0f));
+            actor->unk34 += actor->unk38 / (1.0f + (((actor->unk2C * 7) - 0x23) / 10.0f));
+            if (actor->unk3C < 0) {
+                actor->unk3C = 0;
+            }
+        }
+        actor->unk2C += 1;
+        if (((actor->unk3C > 0) && ((actor->unk34 > 0.0f))) || (actor->unk2C < 30)) {
+            // @recomp Tag the transform.
+            gEXMatrixGroupDecomposedNormal(gDisplayListHead++, (u32) actor << 16, G_EX_PUSH, G_MTX_MODELVIEW,
+                                           G_EX_EDIT_ALLOW);
+
+            render_fireworks(actor->pos, actor->unk34, actor->unk30, (s16) actor->unk3C);
+
+            // @recomp Pop the transform id.
+            gEXPopMatrixGroup(gDisplayListHead++, G_MTX_MODELVIEW);
+        } else {
+            actor->isActive = 0;
+        }
+    }
+    actor->unk44 += 1;
+}
+#endif
+
 // Star particles
 #if 1
 RECOMP_PATCH void func_800691B8(Player* player, s8 arg1, s16 arg2, s8 arg3) {
