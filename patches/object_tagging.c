@@ -1355,20 +1355,6 @@ RECOMP_PATCH // Trains smoke particles.
     D_80183E80[0] = 0;
     D_80183E80[2] = 0x8000;
 
-// Render smoke for any number of trains. Don't know enough about these variables yet.
-#ifdef AVOID_UB_WIP
-    for (j = 0; j < NUM_TRAINS; j++) {
-        if ((gTrainList[j].someFlags != 0) &&
-            (is_particle_on_screen(&gTrainList[j].locomotive.position, camera, 0x4000U) != 0)) {
-
-            for (i = 0; i < 128; i++) {
-                // Need to make a way to increase this array for each train.
-                render_object_train_smoke_particle(gObjectParticle2[i], cameraId);
-            }
-        }
-    }
-#else
-
     if ((gTrainList[0].someFlags != 0) &&
         (is_particle_on_screen(gTrainList[0].locomotive.position, camera, 0x4000U) != 0)) {
 
@@ -1401,362 +1387,269 @@ RECOMP_PATCH // Trains smoke particles.
             gEXPopMatrixGroup(gDisplayListHead++, G_MTX_MODELVIEW);
         }
     }
-#endif
 }
 #endif
 
 #if 1
-/**
- * @brief Renders the a first variant of cactus in Kalimari Desert.
- *
- * @param camera
- * @param arg1
- * @param arg2
- */
-RECOMP_PATCH void render_actor_tree_cactus1_kalimari_desert(Camera* camera, Mat4 arg1, struct Actor* arg2) {
-    f32 temp_f0;
-    s16 temp_v0 = arg2->flags;
+RECOMP_PATCH void render_course_actors(struct UnkStruct_800DC5EC* arg0) {
+    Camera* camera = arg0->camera;
+    u16 pathCounter = arg0->pathCounter;
+    UNUSED s32 pad[12];
+    s32 i;
 
-    if ((temp_v0 & 0x800) != 0) {
-        return;
+    struct Actor* actor;
+    UNUSED Vec3f sp4C = { 0.0f, 5.0f, 10.0f };
+    f32 sp48 = sins(camera->rot[1] - 0x8000); // unk26;
+    f32 temp_f0 = coss(camera->rot[1] - 0x8000);
+
+    D_801502C0[0][0] = temp_f0;
+    D_801502C0[0][2] = -sp48;
+    D_801502C0[2][2] = temp_f0;
+    D_801502C0[1][0] = 0.0f;
+    D_801502C0[0][1] = 0.0f;
+    D_801502C0[2][1] = 0.0f;
+    D_801502C0[1][2] = 0.0f;
+    D_801502C0[0][3] = 0.0f;
+    D_801502C0[1][3] = 0.0f;
+    D_801502C0[2][3] = 0.0f; // 2c
+    D_801502C0[2][0] = sp48;
+    D_801502C0[1][1] = 1.0f;
+    D_801502C0[3][3] = 1.0f; // unk3c
+
+    gSPClearGeometryMode(gDisplayListHead++, G_LIGHTING);
+    gSPSetLights1(gDisplayListHead++, D_800DC610[1]);
+    gSPTexture(gDisplayListHead++, 0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON);
+
+    if (gModeSelection != BATTLE) {
+        func_80297340(camera);
     }
+    D_8015F8E0 = 0;
 
-    temp_f0 =
-        is_within_render_distance(camera->pos, arg2->pos, camera->rot[1], 0, gCameraZoom[camera - camera1], 4000000.0f);
+    for (i = 0; i < ACTOR_LIST_SIZE; i++) {
+        actor = &gActorList[i];
 
-    if (temp_f0 < 0.0f) {
-        return;
-    }
-
-    if (((temp_v0 & 0x400) == 0) && (temp_f0 < 40000.0f)) {
-        func_8029794C(arg2->pos, arg2->rot, 1.0f);
-    }
-    arg1[3][0] = arg2->pos[0];
-    arg1[3][1] = arg2->pos[1];
-    arg1[3][2] = arg2->pos[2];
-
-    // @recomp Tag the transform
-    gEXMatrixGroupDecomposed(gDisplayListHead++, TAG_OBJECT(arg2), G_EX_PUSH, G_MTX_MODELVIEW, G_EX_COMPONENT_AUTO,
-                             G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_INTERPOLATE,
-                             G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE,
-                             G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
-
-    if (render_set_position(arg1, 0) != 0) {
-        gSPDisplayList(gDisplayListHead++, (Gfx*) 0x06008528 /* d_course_kalimari_desert_dl_cactus1 */);
-    }
-
-    // @recomp Pop the transform id.
-    gEXPopMatrixGroup(gDisplayListHead++, G_MTX_MODELVIEW);
-}
-#endif
-
-#if 1
-/**
- * @brief Renders the a second variant of cactus in Kalimari Desert.
- *
- * @param camera
- * @param arg1
- * @param arg2
- */
-RECOMP_PATCH void render_actor_tree_cactus2_kalimari_desert(Camera* camera, Mat4 arg1, struct Actor* arg2) {
-    f32 temp_f0;
-    s16 temp_v0 = arg2->flags;
-
-    if ((temp_v0 & 0x800) != 0) {
-        return;
-    }
-
-    temp_f0 =
-        is_within_render_distance(camera->pos, arg2->pos, camera->rot[1], 0, gCameraZoom[camera - camera1], 4000000.0f);
-
-    if (temp_f0 < 0.0f) {
-        return;
-    }
-
-    if (((temp_v0 & 0x400) == 0) && (temp_f0 < 40000.0f)) {
-        func_8029794C(arg2->pos, arg2->rot, 1.0f);
-    }
-    arg1[3][0] = arg2->pos[0];
-    arg1[3][1] = arg2->pos[1];
-    arg1[3][2] = arg2->pos[2];
-
-    // @recomp Tag the transform
-    gEXMatrixGroupDecomposed(gDisplayListHead++, TAG_OBJECT(arg2), G_EX_PUSH, G_MTX_MODELVIEW, G_EX_COMPONENT_AUTO,
-                             G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_INTERPOLATE,
-                             G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE,
-                             G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
-
-    if (render_set_position(arg1, 0) != 0) {
-        gSPDisplayList(gDisplayListHead++, (Gfx*) 0x06008628 /* d_course_kalimari_desert_dl_cactus2 */);
-    }
-
-    // @recomp Pop the transform id.
-    gEXPopMatrixGroup(gDisplayListHead++, G_MTX_MODELVIEW);
-}
-#endif
-
-#if 1
-/**
- * @brief Renders the a third variant of cactus in Kalimari Desert.
- *
- * @param camera
- * @param arg1
- * @param arg2
- */
-RECOMP_PATCH void render_actor_tree_cactus3_kalimari_desert(Camera* camera, Mat4 arg1, struct Actor* arg2) {
-    f32 temp_f0;
-    s16 temp_v0 = arg2->flags;
-
-    if ((temp_v0 & 0x800) != 0) {
-        return;
-    }
-
-    temp_f0 =
-        is_within_render_distance(camera->pos, arg2->pos, camera->rot[1], 0, gCameraZoom[camera - camera1], 4000000.0f);
-
-    if (temp_f0 < 0.0f) {
-        return;
-    }
-
-    if (((temp_v0 & 0x400) == 0) && (temp_f0 < 40000.0f)) {
-        func_8029794C(arg2->pos, arg2->rot, 0.80000001f);
-    }
-    arg1[3][0] = arg2->pos[0];
-    arg1[3][1] = arg2->pos[1];
-    arg1[3][2] = arg2->pos[2];
-
-    // @recomp Tag the transform
-    gEXMatrixGroupDecomposed(gDisplayListHead++, TAG_OBJECT(arg2), G_EX_PUSH, G_MTX_MODELVIEW, G_EX_COMPONENT_AUTO,
-                             G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_INTERPOLATE,
-                             G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE,
-                             G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
-
-    if (render_set_position(arg1, 0) != 0) {
-        gSPDisplayList(gDisplayListHead++, (Gfx*) 0x06008728 /* d_course_kalimari_desert_dl_cactus3 */);
-    }
-
-    // @recomp Pop the transform id.
-    gEXPopMatrixGroup(gDisplayListHead++, G_MTX_MODELVIEW);
-}
-#endif
-
-#if 1
-/**
- * @brief Renders the railroad crossing actor.
- * Actor used in Kalimari Desert.
- *
- * @param arg0
- * @param rr_crossing
- */
-RECOMP_PATCH void render_actor_railroad_crossing(Camera* arg0, struct RailroadCrossing* rr_crossing) {
-    UNUSED Vec3s sp80 = { 0, 0, 0 };
-    Mat4 sp40;
-    f32 unk = is_within_render_distance(arg0->pos, rr_crossing->pos, arg0->rot[1], 0.0f, gCameraZoom[arg0 - camera1],
-                                        4000000.0f);
-
-    if (!(unk < 0.0f)) {
-
-        // @recomp Tag the transform
-        gEXMatrixGroupDecomposed(gDisplayListHead++, TAG_OBJECT(rr_crossing), G_EX_PUSH, G_MTX_MODELVIEW,
-                                 G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO,
-                                 G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP,
-                                 G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
-
-        mtxf_pos_rotation_xyz(sp40, rr_crossing->pos, rr_crossing->rot);
-
-        if (render_set_position(sp40, 0) != 0) {
-            gSPSetGeometryMode(gDisplayListHead++, G_LIGHTING);
-            gSPClearGeometryMode(gDisplayListHead++, G_CULL_BACK);
-
-            if (isCrossingTriggeredByIndex[rr_crossing->crossingId]) {
-                if (rr_crossing->someTimer < 20) {
-                    gSPDisplayList(gDisplayListHead++,
-                                   (Gfx*) 0x06010ae8 /* d_course_kalimari_desert_dl_crossing_right_active */);
-                } else {
-                    gSPDisplayList(gDisplayListHead++,
-                                   (Gfx*) 0x06010c10 /* d_course_kalimari_desert_dl_crossing_left_active */);
-                }
-            } else {
-                gSPDisplayList(gDisplayListHead++,
-                               (Gfx*) 0x06010d38 /* d_course_kalimari_desert_dl_crossing_both_inactive */);
-            }
-            gSPSetGeometryMode(gDisplayListHead++, G_CULL_BACK);
+        if (actor->flags == 0) {
+            continue;
         }
 
+        // @recomp Tag the transform.
+        gEXMatrixGroupDecomposedNormal(gDisplayListHead++, TAG_OBJECT(actor), G_EX_PUSH, G_MTX_MODELVIEW,
+                                       G_EX_EDIT_ALLOW);
+
+        switch (actor->type) {
+            case ACTOR_TREE_MARIO_RACEWAY:
+                render_actor_tree_mario_raceway(camera, D_801502C0, actor);
+                break;
+            case ACTOR_TREE_YOSHI_VALLEY:
+                render_actor_tree_yoshi_valley(camera, D_801502C0, actor);
+                break;
+            case ACTOR_TREE_ROYAL_RACEWAY:
+                render_actor_tree_royal_raceway(camera, D_801502C0, actor);
+                break;
+            case ACTOR_TREE_MOO_MOO_FARM:
+                render_actor_tree_moo_moo_farm(camera, D_801502C0, actor);
+                break;
+            case ACTOR_UNKNOWN_0x1A:
+                func_80299864(camera, D_801502C0, actor);
+                break;
+            case ACTOR_TREE_BOWSERS_CASTLE:
+                render_actor_tree_bowser_castle(camera, D_801502C0, actor);
+                break;
+            case ACTOR_BUSH_BOWSERS_CASTLE:
+                render_actor_bush_bowser_castle(camera, D_801502C0, actor);
+                break;
+            case ACTOR_TREE_FRAPPE_SNOWLAND:
+                render_actor_tree_frappe_snowland(camera, D_801502C0, actor);
+                break;
+            case ACTOR_CACTUS1_KALAMARI_DESERT:
+                render_actor_tree_cactus1_kalimari_desert(camera, D_801502C0, actor);
+                break;
+            case ACTOR_CACTUS2_KALAMARI_DESERT:
+                render_actor_tree_cactus2_kalimari_desert(camera, D_801502C0, actor);
+                break;
+            case ACTOR_CACTUS3_KALAMARI_DESERT:
+                render_actor_tree_cactus3_kalimari_desert(camera, D_801502C0, actor);
+                break;
+            case ACTOR_FALLING_ROCK:
+                // @recomp Tag the transform
+                gEXMatrixGroupDecomposed(gDisplayListHead++, TAG_OBJECT((u32) actor << 16) | 0x01000000, G_EX_PUSH,
+                                         G_MTX_MODELVIEW, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO,
+                                         G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP,
+                                         G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
+
+                render_actor_falling_rock(camera, (struct FallingRock*) actor);
+
+                // @recomp Pop the transform id.
+                gEXPopMatrixGroup(gDisplayListHead++, G_MTX_MODELVIEW);
+                break;
+            case ACTOR_KIWANO_FRUIT:
+                render_actor_kiwano_fruit(camera, D_801502C0, actor);
+                break;
+            case ACTOR_BANANA:
+                render_actor_banana(camera, D_801502C0, (struct BananaActor*) actor);
+                break;
+            case ACTOR_GREEN_SHELL:
+                render_actor_green_shell(camera, D_801502C0, (struct ShellActor*) actor);
+                break;
+            case ACTOR_RED_SHELL:
+                render_actor_red_shell(camera, D_801502C0, (struct ShellActor*) actor);
+                break;
+            case ACTOR_BLUE_SPINY_SHELL:
+                render_actor_blue_shell(camera, D_801502C0, (struct ShellActor*) actor);
+                break;
+            case ACTOR_PIRANHA_PLANT:
+                render_actor_piranha_plant(camera, D_801502C0, (struct PiranhaPlant*) actor);
+                break;
+            case ACTOR_TRAIN_ENGINE:
+                render_actor_train_engine(camera, (struct TrainCar*) actor);
+                break;
+            case ACTOR_TRAIN_TENDER:
+                render_actor_train_tender(camera, (struct TrainCar*) actor);
+                break;
+            case ACTOR_TRAIN_PASSENGER_CAR:
+                render_actor_train_passenger_car(camera, (struct TrainCar*) actor);
+                break;
+            case ACTOR_COW:
+                render_actor_cow(camera, D_801502C0, actor);
+                break;
+            case ACTOR_UNKNOWN_0x14:
+                func_8029AC18(camera, D_801502C0, actor);
+                break;
+            case ACTOR_MARIO_SIGN:
+                render_actor_mario_sign(camera, D_801502C0, actor);
+                break;
+            case ACTOR_WARIO_SIGN:
+                render_actor_wario_sign(camera, actor);
+                break;
+            case ACTOR_PALM_TREE:
+                render_actor_palm_tree(camera, D_801502C0, (struct PalmTree*) actor);
+                break;
+            case ACTOR_PADDLE_BOAT:
+                render_actor_paddle_boat(camera, (struct PaddleWheelBoat*) actor, D_801502C0, pathCounter);
+                break;
+            case ACTOR_BOX_TRUCK:
+                render_actor_box_truck(camera, actor);
+                break;
+            case ACTOR_SCHOOL_BUS:
+                render_actor_school_bus(camera, actor);
+                break;
+            case ACTOR_TANKER_TRUCK:
+                render_actor_tanker_truck(camera, actor);
+                break;
+            case ACTOR_CAR:
+                render_actor_car(camera, actor);
+                break;
+            case ACTOR_RAILROAD_CROSSING:
+                render_actor_railroad_crossing(camera, (struct RailroadCrossing*) actor);
+                break;
+            case ACTOR_YOSHI_EGG:
+                render_actor_yoshi_egg(camera, D_801502C0, (struct YoshiValleyEgg*) actor, pathCounter);
+                break;
+        }
         // @recomp Pop the transform id.
         gEXPopMatrixGroup(gDisplayListHead++, G_MTX_MODELVIEW);
     }
-}
-#endif
+    // @recomp Tag the transform
+    gEXMatrixGroupDecomposed(gDisplayListHead++, TAG_OBJECT((u32) actor << 16) | 0x01000000, G_EX_PUSH, G_MTX_MODELVIEW,
+                             G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_INTERPOLATE,
+                             G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE,
+                             G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
 
-#if 1
-/**
- * @brief Renders the tree actor in Mario rawceay.
- *
- * @param camera
- * @param arg1
- * @param arg2
- */
-RECOMP_PATCH void render_actor_tree_mario_raceway(Camera* camera, Mat4 arg1, struct Actor* arg2) {
-    f32 temp_f0;
-    s16 temp_v0 = arg2->flags;
-
-    if ((temp_v0 & 0x800) != 0) {
-        return;
+    switch (gCurrentCourseId) {
+        case COURSE_MOO_MOO_FARM:
+            render_cows(camera, D_801502C0, actor);
+            break;
+        case COURSE_DK_JUNGLE:
+            render_palm_trees(camera, D_801502C0, actor);
+            break;
     }
-
-    temp_f0 = is_within_render_distance(camera->pos, arg2->pos, camera->rot[1], 0, gCameraZoom[camera - camera1],
-                                        16000000.0f);
-
-    if (temp_f0 < 0.0f) {
-        return;
-    }
-
-    if (((temp_v0 & 0x400) == 0) && (temp_f0 < 250000.0f)) {
-        func_8029794C(arg2->pos, arg2->rot, 3.0f);
-    }
-    arg1[3][0] = arg2->pos[0];
-    arg1[3][1] = arg2->pos[1];
-    arg1[3][2] = arg2->pos[2];
-
-    // @recomp Tag the transform.
-    gEXMatrixGroupDecomposedNormal(gDisplayListHead++, TAG_OBJECT(arg2), G_EX_PUSH, G_MTX_MODELVIEW, G_EX_EDIT_ALLOW);
-
-    if (render_set_position(arg1, 0) != 0) {
-        gDPLoadTLUT_pal256(gDisplayListHead++, (Gfx*) 0x0d004c68 /* common_tlut_trees_import */);
-        gSPDisplayList(gDisplayListHead++, (Gfx*) 0x06006a68 /* d_course_mario_raceway_dl_tree */);
-    }
-
     // @recomp Pop the transform id.
     gEXPopMatrixGroup(gDisplayListHead++, G_MTX_MODELVIEW);
 }
 #endif
 
-#if 1
-/**
- * @brief Renders the tree actor in Yoshi Valley.
- *
- * @param camera
- * @param arg1
- * @param arg2
- */
-RECOMP_PATCH void render_actor_tree_yoshi_valley(Camera* camera, Mat4 arg1, struct Actor* arg2) {
+#if 0
+RECOMP_PATCH void render_cows(Camera* camera, Mat4 arg1, UNUSED struct Actor* actor) {
+    u16 temp_s1;
     f32 temp_f0;
-    s16 temp_v0 = arg2->flags;
+    struct ActorSpawnData* var_t1;
+    struct ActorSpawnData* var_s1;
+    struct ActorSpawnData* var_s5;
+    Vec3f sp88;
+    u32 soundThing = SOUND_ARG_LOAD(0x19, 0x01, 0x90, 0x4D);
+    s32 segment = SEGMENT_NUMBER2(0x06014200 /* d_course_moo_moo_farm_cow_spawn */);
+    s32 offset = SEGMENT_OFFSET(0x06014200 /* d_course_moo_moo_farm_cow_spawn */);
 
-    if ((temp_v0 & 0x800) != 0) {
-        return;
+    var_t1 = (struct ActorSpawnData*) VIRTUAL_TO_PHYSICAL2(gSegmentTable[segment] + offset);
+    D_8015F704 = 6.4e7f;
+    gSPTexture(gDisplayListHead++, 0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON);
+    gDPSetCombineMode(gDisplayListHead++, G_CC_MODULATEIDECALA, G_CC_MODULATEIDECALA);
+    gDPSetRenderMode(gDisplayListHead++, G_RM_AA_ZB_TEX_EDGE, G_RM_AA_ZB_TEX_EDGE2);
+    var_s5 = NULL;
+    var_s1 = var_t1;
+    while (var_s1->pos[0] != END_OF_SPAWN_DATA) {
+        sp88[0] = var_s1->pos[0] * gCourseDirection;
+        sp88[1] = var_s1->pos[1];
+        sp88[2] = var_s1->pos[2];
+        temp_f0 = is_within_render_distance(camera->pos, sp88, camera->rot[1], 0.0f, gCameraZoom[camera - camera1],
+                                            4000000.0f);
+        if (temp_f0 > 0.0f) {
+            if (temp_f0 < D_8015F704) {
+                D_8015F704 = temp_f0;
+                var_s5 = var_s1;
+            }
+            arg1[3][0] = sp88[0];
+            arg1[3][1] = sp88[1];
+            arg1[3][2] = sp88[2];
+            if ((gMatrixObjectCount < MTX_OBJECT_POOL_SIZE)) {
+                // @recomp Tag the transform.
+                gEXMatrixGroupDecomposedNormal(gDisplayListHead++, TAG_OBJECT((u32) actor << 16) | var_s1->someId,
+                                               G_EX_PUSH, G_MTX_MODELVIEW, G_EX_EDIT_ALLOW);
+
+                if (render_set_position(arg1, 0) != 0) {
+
+                    switch (var_s1->someId) {
+                        case 0:
+                            gSPDisplayList(gDisplayListHead++, (Gfx*) 0x06013c00 /* d_course_moo_moo_farm_dl_cow1 */);
+                            break;
+                        case 1:
+                            gSPDisplayList(gDisplayListHead++, (Gfx*) 0x06013ca0 /* d_course_moo_moo_farm_dl_cow2 */);
+                            break;
+                        case 2:
+                            gSPDisplayList(gDisplayListHead++, (Gfx*) 0x06013d20 /* d_course_moo_moo_farm_dl_cow3 */);
+                            break;
+                        case 3:
+                            gSPDisplayList(gDisplayListHead++, (Gfx*) 0x06013da0 /* d_course_moo_moo_farm_dl_cow4 */);
+                            break;
+                        case 4:
+                            gSPDisplayList(gDisplayListHead++, (Gfx*) 0x06013e20 /* d_course_moo_moo_farm_dl_cow5 */);
+                            break;
+                    }
+                }
+                // @recomp Pop the transform id.
+                gEXPopMatrixGroup(gDisplayListHead++, G_MTX_MODELVIEW);
+            } else {
+                return;
+            }
+        }
+        var_s1++;
     }
 
-    temp_f0 =
-        is_within_render_distance(camera->pos, arg2->pos, camera->rot[1], 0, gCameraZoom[camera - camera1], 4000000.0f);
-
-    if (temp_f0 < 0.0f) {
-        return;
+    if ((camera == camera1) && (var_s5 != NULL)) {
+        if (D_8015F700 == 0) {
+            temp_s1 = var_s5 - var_t1;
+            if ((temp_s1 != D_8015F702) && (D_8015F704 < 160000.0f)) {
+                func_800C99E0(D_8015F708, soundThing);
+                D_8015F708[0] = var_s5->pos[0] * gCourseDirection;
+                D_8015F708[1] = var_s5->pos[1];
+                D_8015F708[2] = var_s5->pos[2];
+                D_8015F702 = temp_s1;
+                func_800C98B8(D_8015F708, D_802B91C8, soundThing);
+                D_8015F700 = 0x00F0;
+            }
+        } else {
+            D_8015F700 -= 1;
+        }
     }
-
-    if (((temp_v0 & 0x400) == 0) && (temp_f0 < 250000.0f)) {
-        func_8029794C(arg2->pos, arg2->rot, 2.79999995f);
-    }
-    arg1[3][0] = arg2->pos[0];
-    arg1[3][1] = arg2->pos[1];
-    arg1[3][2] = arg2->pos[2];
-
-    // @recomp Tag the transform.
-    gEXMatrixGroupDecomposedNormal(gDisplayListHead++, TAG_OBJECT(arg2), G_EX_PUSH, G_MTX_MODELVIEW, G_EX_EDIT_ALLOW);
-
-    if (render_set_position(arg1, 0) != 0) {
-        gDPLoadTLUT_pal256(gDisplayListHead++, (Gfx*) 0x0d004c68 /* common_tlut_trees_import */);
-        gSPDisplayList(gDisplayListHead++, (Gfx*) 0x06015b48 /* d_course_yoshi_valley_dl_tree */);
-    }
-
-    // @recomp Pop the transform id.
-    gEXPopMatrixGroup(gDisplayListHead++, G_MTX_MODELVIEW);
-}
-#endif
-
-#if 1
-/**
- * @brief Renders the tree actor in Royal Raceway.
- *
- * @param camera
- * @param arg1
- * @param arg2
- */
-RECOMP_PATCH void render_actor_tree_royal_raceway(Camera* camera, Mat4 arg1, struct Actor* arg2) {
-    f32 temp_f0;
-    s16 temp_v0 = arg2->flags;
-
-    if ((temp_v0 & 0x800) != 0) {
-        return;
-    }
-
-    temp_f0 =
-        is_within_render_distance(camera->pos, arg2->pos, camera->rot[1], 0, gCameraZoom[camera - camera1], 4000000.0f);
-
-    if (temp_f0 < 0.0f) {
-        return;
-    }
-
-    if (((temp_v0 & 0x400) == 0) && (temp_f0 < 250000.0f)) {
-        func_8029794C(arg2->pos, arg2->rot, 2.79999995f);
-    }
-    arg1[3][0] = arg2->pos[0];
-    arg1[3][1] = arg2->pos[1];
-    arg1[3][2] = arg2->pos[2];
-
-    // @recomp Tag the transform.
-    gEXMatrixGroupDecomposedNormal(gDisplayListHead++, TAG_OBJECT(arg2), G_EX_PUSH, G_MTX_MODELVIEW, G_EX_EDIT_ALLOW);
-
-    if (render_set_position(arg1, 0) != 0) {
-        gDPLoadTLUT_pal256(gDisplayListHead++, (Gfx*) 0x0d004c68 /* common_tlut_trees_import */);
-        gSPDisplayList(gDisplayListHead++, (Gfx*) 0x0600d4a0 /* d_course_royal_raceway_dl_tree */);
-    }
-
-    // @recomp Pop the transform id.
-    gEXPopMatrixGroup(gDisplayListHead++, G_MTX_MODELVIEW);
-}
-#endif
-
-#if 1
-/**
- * @brief Renders the tree actor in Moo Moo Farm.
- *
- * @param camera
- * @param arg1
- * @param arg2
- */
-RECOMP_PATCH void render_actor_tree_moo_moo_farm(Camera* camera, Mat4 arg1, struct Actor* arg2) {
-    f32 temp_f0;
-    s16 temp_v0 = arg2->flags;
-
-    if ((temp_v0 & 0x800) != 0) {
-        return;
-    }
-
-    temp_f0 =
-        is_within_render_distance(camera->pos, arg2->pos, camera->rot[1], 0, gCameraZoom[camera - camera1], 6250000.0f);
-
-    if (temp_f0 < 0.0f) {
-        return;
-    }
-
-    if (((temp_v0 & 0x400) == 0) && (temp_f0 < 600.0f)) {
-        func_8029794C(arg2->pos, arg2->rot, 5.0f);
-    }
-    arg1[3][0] = arg2->pos[0];
-    arg1[3][1] = arg2->pos[1];
-    arg1[3][2] = arg2->pos[2];
-
-    // @recomp Tag the transform.
-    gEXMatrixGroupDecomposedNormal(gDisplayListHead++, TAG_OBJECT(arg2), G_EX_PUSH, G_MTX_MODELVIEW, G_EX_EDIT_ALLOW);
-
-    if (render_set_position(arg1, 0) != 0) {
-        gDPLoadTLUT_pal256(gDisplayListHead++, (Gfx*) 0x0d004c68 /* common_tlut_trees_import */);
-        gSPDisplayList(gDisplayListHead++, (Gfx*) 0x06013f20 /* d_course_moo_moo_farm_dl_tree */);
-    }
-    
-    // @recomp Pop the transform id.
-    gEXPopMatrixGroup(gDisplayListHead++, G_MTX_MODELVIEW);
 }
 #endif

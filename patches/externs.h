@@ -514,6 +514,8 @@ void profiler_log_thread5_time(s32 eventID);
 void func_800382DC(void);
 void func_8001EE98(Player *, Camera *, s8);
 void render_fireworks(f32 *arg0, f32 arg1, s32 rgb, s16 alpha);
+void func_800C99E0(f32 *, s32);
+void func_800C98B8(f32 *, f32 *, u32);
 
 extern Vec3f D_80183E50;
 extern Vec3f D_80183E70;
@@ -733,4 +735,6 @@ extern Vtx gBalloonVertexPlane1[];
 extern Vtx gBalloonVertexPlane2[];
 extern s16 D_802874B0[17];
 extern s32 fireworkColour[4];
+extern Lights1 D_800DC610[];
+extern Vec3f D_802B91C8;
 #endif
