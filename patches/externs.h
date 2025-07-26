@@ -760,4 +760,5 @@ extern Vec3su D_80183E80;
 extern s16 D_8018CFE8;
 extern s16 D_8018D000;
 extern s8 D_80165908;
+extern s32 gIndexObjectBombKart[7];
 #endif

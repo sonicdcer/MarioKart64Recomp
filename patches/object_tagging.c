@@ -1708,6 +1708,38 @@ RECOMP_PATCH void render_object_for_player(s32 cameraId) {
 #endif
 
 #if 1
+RECOMP_PATCH void render_object_bomb_kart(s32 cameraId) {
+    Player* temp_v0;
+    s32 temp_s1;
+    s32 temp_s0;
+    s32 i;
+    Object* object;
+
+    for (i = 0; i < 4; i++) {
+        temp_s0 = gIndexObjectBombKart[i];
+        object = &gObjectList[temp_s0];
+        // @recomp Tag the transform.
+        gEXMatrixGroupDecomposedNormal(gDisplayListHead++,
+                                       TAG_OBJECT((u32) &gObjectList[temp_s0] << 16) | temp_s0 & 0xFF << 8 | cameraId,
+                                       G_EX_PUSH, G_MTX_MODELVIEW, G_EX_EDIT_ALLOW);
+        if (object->state != 0) {
+            temp_s1 = object->primAlpha;
+            temp_v0 = &gPlayerOne[i];
+            object->pos[0] = temp_v0->pos[0];
+            object->pos[1] = temp_v0->pos[1] - 2.0;
+            object->pos[2] = temp_v0->pos[2];
+            object->surfaceHeight = temp_v0->unk_074;
+            func_800563DC(temp_s0, cameraId, temp_s1);
+            func_8005669C(temp_s0, cameraId, temp_s1);
+            func_800568A0(temp_s0, cameraId);
+        }
+        // @recomp Pop the transform id.
+        gEXPopMatrixGroup(gDisplayListHead++, G_MTX_MODELVIEW);
+    }
+}
+#endif
+
+#if 1
 RECOMP_PATCH void func_80053E6C(s32 arg0) {
     s32 i;
     s32 objectIndex;
