@@ -1740,7 +1740,7 @@ RECOMP_PATCH void render_object_bomb_kart(s32 cameraId) {
 #endif
 
 #if 1
-RECOMP_PATCH void func_80053E6C(s32 arg0) {
+RECOMP_PATCH void func_80053E6C(s32 arg0) __attribute__((optnone)) {
     s32 i;
     s32 objectIndex;
 
@@ -1750,6 +1750,7 @@ RECOMP_PATCH void func_80053E6C(s32 arg0) {
     D_80183E80[0] = 0;
     D_80183E80[1] = 0x8000;
     rsp_load_texture(D_8018D4BC, 64, 32);
+
     for (i = 0; i < D_80165738; i++) {
         objectIndex = gObjectParticle3[i];
         // @recomp Tag the transform.
@@ -1761,7 +1762,9 @@ RECOMP_PATCH void func_80053E6C(s32 arg0) {
         // @recomp Pop the transform id.
         gEXPopMatrixGroup(gDisplayListHead++, G_MTX_MODELVIEW);
     }
+
     rsp_load_texture(D_8018D4C0, 0x40, 0x20);
+
     for (i = 0; i < D_80165738; i++) {
         objectIndex = gObjectParticle3[i];
         // @recomp Tag the transform.
@@ -1814,7 +1817,7 @@ RECOMP_PATCH void render_object_smoke_particles(s32 cameraId) {
 
     sp54 = &camera1[cameraId];
     gSPDisplayList(gDisplayListHead++, (Gfx*) 0x0D007AE0);
-    u8(*common_texture_particle_smoke)[1024] = (u8*) 0x0d02bc58;
+    u8(*common_texture_particle_smoke)[1024] = (u8 (*)[1024]) 0x0d02bc58;
     load_texture_block_i8_nomirror(common_texture_particle_smoke[D_80165598], 32, 32);
     func_8004B72C(255, 255, 255, 255, 255, 255, 255);
     D_80183E80[0] = 0;
