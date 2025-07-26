@@ -6,6 +6,44 @@ typedef enum ObjectList {
     /* 10 */ OBJECT_12
 } ObjectList;
 
+// Sets statis visibility for some objects
+// used by:
+// render_object_trash_bin
+// render_object_snowmans_list_2
+// render_object_snowmans_list_1
+// render_object_smoke_particles
+// func_80054D00 (moles)
+// func_80054F04 (moles)
+// func_80055228 (Unk Yoshi Valley object)
+// render_object_seagulls
+// render_object_crabs
+// render_object_hedgehogs
+// render_object_train_penguins
+// func_80057114 (VS bomb karts?)
+RECOMP_PATCH s32 func_8008A364(s32 objectIndex, s32 cameraId, u16 arg2, s32 arg3) {
+    Camera* camera;
+    u32 dist;
+    u16 var_a2;
+
+    camera = &camera1[cameraId];
+    set_object_flag_status_false(objectIndex, 0x00020000 | VISIBLE);
+    dist = get_horizontal_distance_to_camera(objectIndex, camera);
+    if (1 /* dist < (arg3 * arg3)*/) {
+        set_object_flag_status_true(objectIndex, 0x00020000);
+        // if (dist < 0x2711U) {
+        //     var_a2 = 0x5555;
+        // } else if (dist < 0x9C41U) {
+        //     var_a2 = 0x4000;
+        // } else {
+        //     var_a2 = arg2;
+        // }
+        if (1 /* is_object_visible_on_camera(objectIndex, camera, var_a2) != 0 */) {
+            set_object_flag_status_true(objectIndex, VISIBLE);
+        }
+    }
+    return dist;
+}
+
 #if 1
 RECOMP_PATCH void render_player(Player* player, s8 playerId, s8 screenId) {
     UNUSED s32 pad[2];
@@ -612,7 +650,7 @@ RECOMP_PATCH void func_80051ABC(s16 arg0, s32 arg1) {
 #endif
 
 // Farm Moles
-#if 1
+#if 0
 RECOMP_PATCH void func_80054D00(s32 objectIndex, s32 cameraId) {
     Camera* camera;
 
@@ -1673,6 +1711,81 @@ RECOMP_PATCH void render_object_for_player(s32 cameraId) {
 #endif
 
 #if 1
+RECOMP_PATCH void render_object_moles(s32 cameraId) {
+    s32 i;
+
+    for (i = 0; i < NUM_GROUP1_MOLES; i++) {
+        // @recomp Tag the transform.
+        gEXMatrixGroupDecomposedNormal(gDisplayListHead++, TAG_OBJECT(&indexObjectList1[i]) | cameraId, G_EX_PUSH,
+                                       G_MTX_MODELVIEW, G_EX_EDIT_ALLOW);
+        func_80054D00(indexObjectList1[i], cameraId);
+        // @recomp Pop the transform id.
+        gEXPopMatrixGroup(gDisplayListHead++, G_MTX_MODELVIEW);
+    }
+    for (i = 0; i < NUM_GROUP2_MOLES; i++) {
+        // @recomp Tag the transform.
+        gEXMatrixGroupDecomposedNormal(gDisplayListHead++, TAG_OBJECT(&indexObjectList2[i]) | cameraId, G_EX_PUSH,
+                                       G_MTX_MODELVIEW, G_EX_EDIT_ALLOW);
+        func_80054D00(indexObjectList2[i], cameraId);
+        // @recomp Pop the transform id.
+        gEXPopMatrixGroup(gDisplayListHead++, G_MTX_MODELVIEW);
+    }
+    for (i = 0; i < NUM_GROUP3_MOLES; i++) {
+        // @recomp Tag the transform.
+        gEXMatrixGroupDecomposedNormal(gDisplayListHead++, TAG_OBJECT(&indexObjectList3[i]) | cameraId, G_EX_PUSH,
+                                       G_MTX_MODELVIEW, G_EX_EDIT_ALLOW);
+        func_80054D00(indexObjectList3[i], cameraId);
+        // @recomp Pop the transform id.
+        gEXPopMatrixGroup(gDisplayListHead++, G_MTX_MODELVIEW);
+    }
+    func_80054EB8(cameraId);
+    func_80054F04(cameraId);
+}
+
+RECOMP_PATCH void func_80054EB8(s32 cameraId) {
+    s32 i;
+
+    for (i = 0; i < NUM_TOTAL_MOLES; i++) {
+        // @recomp Tag the transform.
+        gEXMatrixGroupDecomposedNormal(gDisplayListHead++, TAG_OBJECT(&gObjectParticle1[i]) | cameraId, G_EX_PUSH,
+                                       G_MTX_MODELVIEW, G_EX_EDIT_ALLOW);
+        func_80054E10(gObjectParticle1[i]);
+        // @recomp Pop the transform id.
+        gEXPopMatrixGroup(gDisplayListHead++, G_MTX_MODELVIEW);
+    }
+}
+
+RECOMP_PATCH void func_80054F04(s32 cameraId) {
+    s32 i;
+    s32 objectIndex;
+    Camera* sp44;
+    Object* object;
+
+    sp44 = &camera1[cameraId];
+    gSPDisplayList(gDisplayListHead++, (Gfx*) 0x0D0079C8);
+    load_texture_block_rgba16_mirror((u8*) 0x06013670 /* d_course_moo_moo_farm_mole_dirt */, 0x00000010, 0x00000010);
+    for (i = 0; i < gObjectParticle2_SIZE; i++) {
+        objectIndex = gObjectParticle2[i];
+        object = &gObjectList[objectIndex];
+        // @recomp Tag the transform.
+        gEXMatrixGroupDecomposedNormal(gDisplayListHead++, TAG_OBJECT(object) | cameraId | (i & 0xFF) << 8, G_EX_PUSH,
+                                       G_MTX_MODELVIEW, G_EX_EDIT_ALLOW);
+        if (object->state > 0) {
+            func_8008A364(objectIndex, cameraId, 0x2AABU, 0x000000C8);
+            if ((is_obj_flag_status_active(objectIndex, VISIBLE) != 0) && (gMatrixHudCount <= MTX_HUD_POOL_SIZE_MAX)) {
+                object->orientation[1] = func_800418AC(object->pos[0], object->pos[2], sp44->pos);
+                rsp_set_matrix_gObjectList(objectIndex);
+                gSPDisplayList(gDisplayListHead++, (Gfx*) 0x0D006980);
+            }
+        }
+        // @recomp Pop the transform id.
+        gEXPopMatrixGroup(gDisplayListHead++, G_MTX_MODELVIEW);
+    }
+    gSPTexture(gDisplayListHead++, 1, 1, 0, G_TX_RENDERTILE, G_OFF);
+}
+#endif
+
+#if 1
 RECOMP_PATCH void render_object_seagulls(s32 arg0) {
     s32 i;
     s32 var_s1;
@@ -1680,8 +1793,12 @@ RECOMP_PATCH void render_object_seagulls(s32 arg0) {
     for (i = 0; i < NUM_SEAGULLS; i++) {
         var_s1 = indexObjectList2[i];
         // @recomp Tag the transform.
-        gEXMatrixGroupDecomposedNormal(gDisplayListHead++, TAG_OBJECT(&indexObjectList1[i]) | arg0, G_EX_PUSH,
-                                       G_MTX_MODELVIEW, G_EX_EDIT_ALLOW);
+        // gEXMatrixGroupDecomposedNormal(gDisplayListHead++, TAG_OBJECT(&indexObjectList1[i]) | arg0, G_EX_PUSH,
+        //                                G_MTX_MODELVIEW, G_EX_EDIT_ALLOW);
+        gEXMatrixGroupDecomposed(gDisplayListHead++, TAG_OBJECT(&indexObjectList1[i]) | arg0, G_EX_PUSH,
+                                 G_MTX_MODELVIEW, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO,
+                                 G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP,
+                                 G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_LINEAR, G_EX_EDIT_ALLOW);
 
         if (func_8008A364(var_s1, arg0, 0x5555U, 0x000005DC) < 0x9C401) {
             D_80165908 = 1;
@@ -1694,6 +1811,7 @@ RECOMP_PATCH void render_object_seagulls(s32 arg0) {
         gEXPopMatrixGroup(gDisplayListHead++, G_MTX_MODELVIEW);
     }
 }
+
 #endif
 
 #if 1
@@ -1704,10 +1822,14 @@ RECOMP_PATCH void render_object_crabs(s32 cameraId) {
     for (i = 0; i < NUM_CRABS; i++) {
         objId = indexObjectList1[i];
         // @recomp Tag the transform.
-        gEXMatrixGroupDecomposedNormal(gDisplayListHead++, TAG_OBJECT(&indexObjectList1[i]) | cameraId, G_EX_PUSH,
-                                       G_MTX_MODELVIEW, G_EX_EDIT_ALLOW);
+        // gEXMatrixGroupDecomposedNormal(gDisplayListHead++, TAG_OBJECT(&indexObjectList1[i]) | cameraId, G_EX_PUSH,
+        //                               G_MTX_MODELVIEW, G_EX_EDIT_ALLOW);
+        gEXMatrixGroupDecomposed(gDisplayListHead++, TAG_OBJECT(&indexObjectList1[i]) | cameraId, G_EX_PUSH,
+                                 G_MTX_MODELVIEW, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO,
+                                 G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP,
+                                 G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_LINEAR, G_EX_EDIT_ALLOW);
         func_8008A364(objId, cameraId, 0x2AABU, 800);
-        if (is_obj_flag_status_active(objId, VISIBLE) != 0) {
+        if (1 /* is_obj_flag_status_active(objId, VISIBLE) != 0*/) {
             draw_crabs(objId, cameraId);
         }
         // @recomp Pop the transform id.
