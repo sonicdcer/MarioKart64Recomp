@@ -1607,7 +1607,6 @@ RECOMP_PATCH void render_object_for_player(s32 cameraId) {
                 render_object_crabs(cameraId);
             }
             if (gGamestate != CREDITS_SEQUENCE) {
-
                 if ((gPlayerCount == 1) || (gPlayerCount == 2)) {
                     render_object_seagulls(cameraId);
                 }
@@ -1670,6 +1669,30 @@ RECOMP_PATCH void render_object_for_player(s32 cameraId) {
     }
     // @recomp Pop the transform id.
     gEXPopMatrixGroup(gDisplayListHead++, G_MTX_MODELVIEW);
+}
+#endif
+
+#if 1
+RECOMP_PATCH void render_object_seagulls(s32 arg0) {
+    s32 i;
+    s32 var_s1;
+
+    for (i = 0; i < NUM_SEAGULLS; i++) {
+        var_s1 = indexObjectList2[i];
+        // @recomp Tag the transform.
+        gEXMatrixGroupDecomposedNormal(gDisplayListHead++, TAG_OBJECT(&indexObjectList1[i]) | arg0, G_EX_PUSH,
+                                       G_MTX_MODELVIEW, G_EX_EDIT_ALLOW);
+
+        if (func_8008A364(var_s1, arg0, 0x5555U, 0x000005DC) < 0x9C401) {
+            D_80165908 = 1;
+            func_800722A4(var_s1, 2);
+        }
+        if (is_obj_flag_status_active(var_s1, VISIBLE) != 0) {
+            func_800552BC(var_s1);
+        }
+        // @recomp Pop the transform id.
+        gEXPopMatrixGroup(gDisplayListHead++, G_MTX_MODELVIEW);
+    }
 }
 #endif
 
@@ -1738,7 +1761,7 @@ RECOMP_PATCH void render_object_snowmans_list_2(s32 cameraId) {
     s32 i;
     s32 objectIndex;
     Object* object;
-    
+
     load_texture_and_tlut((u8*) 0x06006d20 /* d_course_frappe_snowland_snow_tlut */,
                           (u8*) 0x06006f20 /* d_course_frappe_snowland_snow */, 32, 32);
     for (i = 0; i < gObjectParticle2_SIZE; i++) {
