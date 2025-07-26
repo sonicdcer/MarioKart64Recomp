@@ -516,6 +516,8 @@ void func_8001EE98(Player *, Camera *, s8);
 void render_fireworks(f32 *arg0, f32 arg1, s32 rgb, s16 alpha);
 void func_800C99E0(f32 *, s32);
 void func_800C98B8(f32 *, f32 *, u32);
+void func_800722CC(s32, s32);
+bool is_object_visible_on_camera(s32, Camera*, u16);
 
 extern Vec3f D_80183E50;
 extern Vec3f D_80183E70;
@@ -738,4 +740,7 @@ extern s32 fireworkColour[4];
 extern Lights1 D_800DC610[];
 extern Vec3f D_802B91C8;
 extern Gfx D_02007F60[];
+extern s8 D_80165898;
+extern s16 D_8018CF68[];
+extern u8 *D_8018D490;
 #endif

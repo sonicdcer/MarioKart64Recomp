@@ -1569,6 +1569,207 @@ RECOMP_PATCH void render_course_actors(struct UnkStruct_800DC5EC* arg0) {
 #endif
 
 #if 0
+RECOMP_PATCH void render_object_for_player(s32 cameraId) {
+    // @recomp Tag the transform.
+    gEXMatrixGroupDecomposedNormal(gDisplayListHead++, TAG_OBJECT_BY_CAM_ID(cameraId), G_EX_PUSH, G_MTX_MODELVIEW,
+                                   G_EX_EDIT_ALLOW);
+
+    switch (gCurrentCourseId) {
+        case COURSE_MARIO_RACEWAY:
+            break;
+        case COURSE_CHOCO_MOUNTAIN:
+            break;
+        case COURSE_BOWSER_CASTLE:
+            render_object_thwomps(cameraId);
+            render_object_bowser_flame(cameraId);
+            break;
+        case COURSE_BANSHEE_BOARDWALK:
+            if (gGamestate != CREDITS_SEQUENCE) {
+                render_object_trash_bin(cameraId);
+                render_object_bat(cameraId);
+                func_8005217C(cameraId);
+                render_object_boos(cameraId);
+            }
+            break;
+        case COURSE_YOSHI_VALLEY:
+            func_80055228(cameraId);
+            if (gGamestate != CREDITS_SEQUENCE) {
+                render_object_hedgehogs(cameraId);
+            }
+            break;
+        case COURSE_FRAPPE_SNOWLAND:
+            if (gGamestate != CREDITS_SEQUENCE) {
+                render_object_snowmans(cameraId);
+            }
+            break;
+        case COURSE_KOOPA_BEACH:
+            if (gGamestate != CREDITS_SEQUENCE) {
+                render_object_crabs(cameraId);
+            }
+            if (gGamestate != CREDITS_SEQUENCE) {
+
+                if ((gPlayerCount == 1) || (gPlayerCount == 2)) {
+                    render_object_seagulls(cameraId);
+                }
+            } else {
+                render_object_seagulls(cameraId);
+            }
+            break;
+        case COURSE_ROYAL_RACEWAY:
+            break;
+        case COURSE_LUIGI_RACEWAY:
+            if (D_80165898 != 0) {
+                render_object_hot_air_balloon(cameraId);
+            }
+            break;
+        case COURSE_MOO_MOO_FARM:
+            if (gGamestate != CREDITS_SEQUENCE) {
+                render_object_moles(cameraId);
+            }
+            break;
+        case COURSE_TOADS_TURNPIKE:
+            break;
+        case COURSE_KALAMARI_DESERT:
+            render_object_trains_smoke_particles(cameraId);
+            break;
+        case COURSE_SHERBET_LAND:
+            if (gGamestate != CREDITS_SEQUENCE) {
+                func_80052E30(cameraId);
+            }
+            render_object_train_penguins(cameraId);
+            break;
+        case COURSE_RAINBOW_ROAD:
+            if (gGamestate != CREDITS_SEQUENCE) {
+                render_object_neon(cameraId);
+                render_object_chain_chomps(cameraId);
+            }
+            break;
+        case COURSE_WARIO_STADIUM:
+            break;
+        case COURSE_BLOCK_FORT:
+            break;
+        case COURSE_SKYSCRAPER:
+            break;
+        case COURSE_DOUBLE_DECK:
+            break;
+        case COURSE_DK_JUNGLE:
+            if (gGamestate != CREDITS_SEQUENCE) {
+                render_object_paddle_boat_smoke_particles(cameraId);
+            }
+            break;
+    }
+
+    render_object_smoke_particles(cameraId);
+    render_object_leaf_particle(cameraId);
+
+    if (D_80165730 != 0) {
+        func_80053E6C(cameraId);
+    }
+    if (gModeSelection == BATTLE) {
+        render_object_bomb_kart(cameraId);
+    }
+    // @recomp Pop the transform id.
+    gEXPopMatrixGroup(gDisplayListHead++, G_MTX_MODELVIEW);
+}
+#endif
+
+#if 1
+RECOMP_PATCH void render_object_thwomps(s32 cameraId) {
+    s32 objectIndex = 0;
+    s32 i;
+    UNUSED s32 stackPadding0;
+    s16 minusone, plusone;
+    Camera* camera;
+    Object* object;
+
+    camera = &camera1[cameraId];
+    if (cameraId == PLAYER_ONE) {
+        for (i = 0; i < gNumActiveThwomps; i++) {
+            objectIndex = indexObjectList1[i];
+            set_object_flag_status_false(objectIndex, 0x00070000);
+            func_800722CC(objectIndex, 0x00000110);
+        }
+    }
+
+    func_800534A4(objectIndex);
+    for (i = 0; i < gNumActiveThwomps; i++) {
+        objectIndex = indexObjectList1[i];
+        minusone = gObjectList[objectIndex].unk_0DF - 1;
+        plusone = gObjectList[objectIndex].unk_0DF + 1;
+
+        // @recomp Tag the transform.
+        gEXMatrixGroupDecomposedNormal(gDisplayListHead++, TAG_OBJECT(&gObjectList[objectIndex]) | i, G_EX_PUSH,
+                                       G_MTX_MODELVIEW, G_EX_EDIT_ALLOW);
+
+        if (gGamestate != 9) {
+            if ((D_8018CF68[cameraId] >= minusone) && (plusone >= D_8018CF68[cameraId]) &&
+                (is_object_visible_on_camera(objectIndex, camera, 0x8000U) != 0)) {
+                render_object_thwomps_model(objectIndex);
+            }
+        } else {
+            render_object_thwomps_model(objectIndex);
+        }
+
+        // @recomp Pop the transform id.
+        gEXPopMatrixGroup(gDisplayListHead++, G_MTX_MODELVIEW);
+    }
+    gSPDisplayList(gDisplayListHead++, (Gfx*) 0x0D0079C8);
+    gDPSetCombineMode(gDisplayListHead++, G_CC_MODULATEIA, G_CC_MODULATEIA);
+    gSPNumLights(gDisplayListHead++, 1);
+    gSPLight(gDisplayListHead++, &D_800E4668.l[0], LIGHT_1);
+    gSPLight(gDisplayListHead++, &D_800E4668.a, LIGHT_2);
+    gSPClearGeometryMode(gDisplayListHead++, G_CULL_BOTH);
+    gSPSetGeometryMode(gDisplayListHead++, G_SHADE | G_LIGHTING | G_SHADING_SMOOTH);
+    load_texture_block_rgba16_mirror((u8*) 0x06006738 /* d_course_bowsers_castle_thwomp_side */, 0x00000020,
+                                     0x00000020);
+    for (i = 0; i < gObjectParticle3_SIZE; i++) {
+        objectIndex = gObjectParticle3[i];
+        if (objectIndex != NULL_OBJECT_ID) {
+            object = &gObjectList[objectIndex];
+            if ((object->state > 0) && (object->unk_0D5 == 3) && (gMatrixHudCount <= MTX_HUD_POOL_SIZE_MAX)) {
+                // @recomp Tag the transform.
+                gEXMatrixGroupDecomposedNormal(gDisplayListHead++, TAG_OBJECT(object) | i, G_EX_PUSH, G_MTX_MODELVIEW,
+                                               G_EX_EDIT_ALLOW);
+
+                rsp_set_matrix_transformation(object->pos, object->orientation, object->sizeScaling);
+                gSPVertex(gDisplayListHead++, (Vtx*) 0x0D005C00, 3, 0);
+                gSPDisplayList(gDisplayListHead++, (Gfx*) 0x0D006930);
+
+                // @recomp Pop the transform id.
+                gEXPopMatrixGroup(gDisplayListHead++, G_MTX_MODELVIEW);
+            }
+        }
+    }
+    gSPSetGeometryMode(gDisplayListHead++, G_CULL_BACK);
+    gSPClearGeometryMode(gDisplayListHead++, G_LIGHTING);
+    gSPTexture(gDisplayListHead++, 0x0001, 0x0001, 0, G_TX_RENDERTILE, G_OFF);
+    gSPDisplayList(gDisplayListHead++, (Gfx*) 0x0D007AE0);
+    load_texture_block_ia8_nomirror(D_8018D490, 0x00000020, 0x00000020);
+    func_8004B3C8(0);
+    D_80183E80[0] = 0;
+    D_80183E80[2] = 0x8000;
+    for (i = 0; i < gObjectParticle2_SIZE; i++) {
+        objectIndex = gObjectParticle2[i];
+        if (objectIndex != NULL_OBJECT_ID) {
+            object = &gObjectList[objectIndex];
+            if ((object->state >= 2) && (object->unk_0D5 == 2) && (gMatrixHudCount <= MTX_HUD_POOL_SIZE_MAX)) {
+                // @recomp Tag the transform.
+                gEXMatrixGroupDecomposedNormal(gDisplayListHead++, TAG_OBJECT(object) | i, G_EX_PUSH, G_MTX_MODELVIEW,
+                                               G_EX_EDIT_ALLOW);
+
+                func_8004B138(0x000000FF, 0x000000FF, 0x000000FF, (s32) object->primAlpha);
+                D_80183E80[1] = func_800418AC(object->pos[0], object->pos[2], camera->pos);
+                func_800431B0(object->pos, D_80183E80, object->sizeScaling, (Vtx*) 0x0D005AE0);
+
+                // @recomp Pop the transform id.
+                gEXPopMatrixGroup(gDisplayListHead++, G_MTX_MODELVIEW);
+            }
+        }
+    }
+}
+#endif
+
+#if 0
 RECOMP_PATCH void render_cows(Camera* camera, Mat4 arg1, UNUSED struct Actor* actor) {
     u16 temp_s1;
     f32 temp_f0;
@@ -1654,7 +1855,7 @@ RECOMP_PATCH void render_cows(Camera* camera, Mat4 arg1, UNUSED struct Actor* ac
 }
 #endif
 
-#if 1  // Nintendo Logo (Nintendo Rotating Blur Effect)
+#if 1 // Nintendo Logo (Nintendo Rotating Blur Effect)
 RECOMP_PATCH void func_800942D0(void) {
     Mtx* test;
     f32 var_f26;
