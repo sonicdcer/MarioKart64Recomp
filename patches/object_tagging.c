@@ -1708,6 +1708,72 @@ RECOMP_PATCH void render_object_for_player(s32 cameraId) {
 #endif
 
 #if 1
+RECOMP_PATCH void func_80053E6C(s32 arg0) {
+    s32 i;
+    s32 objectIndex;
+
+    gSPDisplayList(gDisplayListHead++, (Gfx*) 0x0D007E98);
+    gDPLoadTLUT_pal256(gDisplayListHead++, (u8*) 0x800E52D0);
+    func_8004B614(0, 0, 0, 0, 0, 0, 0);
+    D_80183E80[0] = 0;
+    D_80183E80[1] = 0x8000;
+    rsp_load_texture(D_8018D4BC, 64, 32);
+    for (i = 0; i < D_80165738; i++) {
+        objectIndex = gObjectParticle3[i];
+        // @recomp Tag the transform.
+        gEXMatrixGroupDecomposedNormal(gDisplayListHead++, TAG_OBJECT(&gObjectParticle3[i]) | arg0, G_EX_PUSH,
+                                       G_MTX_MODELVIEW, G_EX_EDIT_ALLOW);
+        if ((objectIndex != NULL_OBJECT_ID) && (gObjectList[objectIndex].state >= 2)) {
+            func_80053D74(objectIndex, arg0, 0);
+        }
+        // @recomp Pop the transform id.
+        gEXPopMatrixGroup(gDisplayListHead++, G_MTX_MODELVIEW);
+    }
+    rsp_load_texture(D_8018D4C0, 0x40, 0x20);
+    for (i = 0; i < D_80165738; i++) {
+        objectIndex = gObjectParticle3[i];
+        // @recomp Tag the transform.
+        gEXMatrixGroupDecomposedNormal(gDisplayListHead++, TAG_OBJECT(&gObjectParticle3[i]) | arg0, G_EX_PUSH,
+                                       G_MTX_MODELVIEW, G_EX_EDIT_ALLOW);
+        if ((objectIndex != NULL_OBJECT_ID) && (gObjectList[objectIndex].state >= 2)) {
+            func_80053D74(objectIndex, arg0, 4);
+        }
+        // @recomp Pop the transform id.
+        gEXPopMatrixGroup(gDisplayListHead++, G_MTX_MODELVIEW);
+    }
+}
+#endif
+
+#if 1
+RECOMP_PATCH void render_object_leaf_particle(s32 cameraId) {
+    s32 i;
+    s32 leafIndex;
+    Object* object;
+
+    gSPDisplayList(gDisplayListHead++, (Gfx*) 0x0D0079C8);
+    gSPClearGeometryMode(gDisplayListHead++, G_CULL_BOTH);
+    load_texture_block_rgba16_mirror((u8*) 0x0d028dd8 /* common_texture_particle_leaf */, 32, 16);
+    for (i = 0; i < gLeafParticle_SIZE; i++) {
+        leafIndex = gLeafParticle[i];
+        // @recomp Tag the transform.
+        gEXMatrixGroupDecomposedNormal(gDisplayListHead++, TAG_OBJECT(&gLeafParticle[i]) | cameraId, G_EX_PUSH,
+                                       G_MTX_MODELVIEW, G_EX_EDIT_ALLOW);
+        if (leafIndex != -1) {
+            object = &gObjectList[leafIndex];
+            if ((object->state >= 2) && (object->unk_0D5 == 7) && (gMatrixHudCount <= MTX_HUD_POOL_SIZE_MAX)) {
+                rsp_set_matrix_gObjectList(leafIndex);
+                gSPDisplayList(gDisplayListHead++, (Gfx*) 0x0D0069C8);
+            }
+        }
+        // @recomp Pop the transform id.
+        gEXPopMatrixGroup(gDisplayListHead++, G_MTX_MODELVIEW);
+    }
+    gSPSetGeometryMode(gDisplayListHead++, G_CULL_BACK);
+    gSPTexture(gDisplayListHead++, 1, 1, 0, G_TX_RENDERTILE, G_OFF);
+}
+#endif
+
+#if 1
 RECOMP_PATCH void render_object_smoke_particles(s32 cameraId) {
     Camera* sp54;
     s32 i;
@@ -1728,7 +1794,7 @@ RECOMP_PATCH void render_object_smoke_particles(s32 cameraId) {
                                  G_EX_PUSH, G_MTX_MODELVIEW, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO,
                                  G_EX_COMPONENT_AUTO, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE,
                                  G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
-                                 
+
         if (objectIndex != NULL_OBJECT_ID) {
             object = &gObjectList[objectIndex];
             if (object->state >= 2) {
