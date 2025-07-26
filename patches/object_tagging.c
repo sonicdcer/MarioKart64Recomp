@@ -1588,3 +1588,46 @@ RECOMP_PATCH void render_actor_railroad_crossing(Camera* arg0, struct RailroadCr
     }
 }
 #endif
+
+#if 1
+/**
+ * @brief Renders the tree actor in Mario rawceay.
+ *
+ * @param camera
+ * @param arg1
+ * @param arg2
+ */
+RECOMP_PATCH void render_actor_tree_mario_raceway(Camera* camera, Mat4 arg1, struct Actor* arg2) {
+    f32 temp_f0;
+    s16 temp_v0 = arg2->flags;
+
+    if ((temp_v0 & 0x800) != 0) {
+        return;
+    }
+
+    temp_f0 = is_within_render_distance(camera->pos, arg2->pos, camera->rot[1], 0, gCameraZoom[camera - camera1],
+                                        16000000.0f);
+
+    if (temp_f0 < 0.0f) {
+        return;
+    }
+
+    if (((temp_v0 & 0x400) == 0) && (temp_f0 < 250000.0f)) {
+        func_8029794C(arg2->pos, arg2->rot, 3.0f);
+    }
+    arg1[3][0] = arg2->pos[0];
+    arg1[3][1] = arg2->pos[1];
+    arg1[3][2] = arg2->pos[2];
+
+    // @recomp Tag the transform.
+    gEXMatrixGroupDecomposedNormal(gDisplayListHead++, TAG_OBJECT(arg2), G_EX_PUSH, G_MTX_MODELVIEW, G_EX_EDIT_ALLOW);
+
+    if (render_set_position(arg1, 0) != 0) {
+        gDPLoadTLUT_pal256(gDisplayListHead++, (Gfx*) 0x0d004c68 /* common_tlut_trees_import */);
+        gSPDisplayList(gDisplayListHead++, (Gfx*) 0x06006a68 /* d_course_mario_raceway_dl_tree */);
+    }
+
+    // @recomp Pop the transform id.
+    gEXPopMatrixGroup(gDisplayListHead++, G_MTX_MODELVIEW);
+}
+#endif
