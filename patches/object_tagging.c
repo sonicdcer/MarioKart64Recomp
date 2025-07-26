@@ -1653,3 +1653,58 @@ RECOMP_PATCH void render_cows(Camera* camera, Mat4 arg1, UNUSED struct Actor* ac
     }
 }
 #endif
+
+#if 1  // Nintendo Logo (Nintendo Rotating Blur Effect)
+RECOMP_PATCH void func_800942D0(void) {
+    Mtx* test;
+    f32 var_f26;
+    s32 var_s2;
+    s32 thing;
+
+    test = &gGfxPool->mtxObject[0];
+    gSPMatrix(gDisplayListHead++, &gGfxPool->mtxScreen, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
+    gSPMatrix(gDisplayListHead++, &gGfxPool->mtxLookAt[0], G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+
+    // **Base Transformation (No Tagging for Static Logo)**
+    guRotate(test, gIntroModelRotX, 1.0f, 0.0f, 0.0f);
+    guRotate(test + 1, gIntroModelRotY, 0.0f, 1.0f, 0.0f);
+    guScale(test + 2, 1.0f, 1.0f, gIntroModelScale);
+    gSPMatrix(gDisplayListHead++, test++, G_MTX_NOPUSH | G_MTX_MUL | G_MTX_MODELVIEW);
+    gSPMatrix(gDisplayListHead++, test++, G_MTX_NOPUSH | G_MTX_MUL | G_MTX_MODELVIEW);
+    gSPMatrix(gDisplayListHead++, test++, G_MTX_PUSH | G_MTX_MUL | G_MTX_MODELVIEW);
+    gDPSetRenderMode(gDisplayListHead++, G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
+    gDPSetEnvColor(gDisplayListHead++, 0x00, 0x00, 0x00, 0x00);
+    gSPDisplayList(gDisplayListHead++, D_02007F60);
+    gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
+
+    if (sIntroModelMotionSpeed > 0) {
+        var_f26 = sIntroModelSpeed;
+        if (var_f26 > 10.0f) {
+            var_f26 = 10.0f;
+        }
+        for (var_s2 = 0, thing = 0xC0; var_s2 < 0xC; var_s2++, thing -= 0x10) {
+
+            // **Effect-Only Tagging for Motion (Keeps FPS Stable)**
+            s32 motionTag = ((var_s2 & 0xF) << 8) | (((s32) sIntroModelMotionSpeed & 0xFF) << 16);
+            gEXMatrixGroupDecomposed(gDisplayListHead++, motionTag, G_EX_PUSH, G_MTX_MODELVIEW, G_EX_COMPONENT_AUTO,
+                                     G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_INTERPOLATE,
+                                     G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE,
+                                     G_EX_ORDER_LINEAR, G_EX_EDIT_ALLOW);
+
+            guRotate(test, 0.0f, 1.0f, 0.0f, 0.0f);
+            guRotate(test + 1, (var_s2 + 1) * sIntroModelMotionSpeed * var_f26, 0.0f, 1.0f, 0.0f);
+            guScale(test + 2, 1.0f, 1.0f, 2.0f);
+            gSPMatrix(gDisplayListHead++, test++, G_MTX_PUSH | G_MTX_MUL | G_MTX_MODELVIEW);
+            gSPMatrix(gDisplayListHead++, test++, G_MTX_NOPUSH | G_MTX_MUL | G_MTX_MODELVIEW);
+            gSPMatrix(gDisplayListHead++, test++, G_MTX_NOPUSH | G_MTX_MUL | G_MTX_MODELVIEW);
+            gDPSetRenderMode(gDisplayListHead++, G_RM_AA_ZB_XLU_SURF, G_RM_AA_ZB_XLU_SURF2);
+            gDPSetEnvColor(gDisplayListHead++, 0x00, 0x00, 0x00, thing);
+            gSPDisplayList(gDisplayListHead++, 0x0000000006009410);
+
+            // **Pop Effect Transform**
+            gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
+            gEXPopMatrixGroup(gDisplayListHead++, G_MTX_MODELVIEW);
+        }
+    }
+}
+#endif

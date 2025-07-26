@@ -737,4 +737,5 @@ extern s16 D_802874B0[17];
 extern s32 fireworkColour[4];
 extern Lights1 D_800DC610[];
 extern Vec3f D_802B91C8;
+extern Gfx D_02007F60[];
 #endif
