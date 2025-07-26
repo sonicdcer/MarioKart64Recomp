@@ -1708,6 +1708,50 @@ RECOMP_PATCH void render_object_for_player(s32 cameraId) {
 #endif
 
 #if 1
+RECOMP_PATCH void render_object_paddle_boat_smoke_particles(s32 cameraId) {
+    UNUSED s32 pad[2];
+    Camera* camera;
+    s32 i;
+
+    camera = &camera1[cameraId];
+    gSPDisplayList(gDisplayListHead++, (Gfx*) 0x0D007AE0);
+
+    load_texture_block_i8_nomirror((u8*) 0x0D029458, 32, 32);
+    func_8004B72C(255, 255, 255, 255, 255, 255, 255);
+    D_80183E80[0] = 0;
+    D_80183E80[2] = 0x8000;
+    if ((gPaddleBoats[0].someFlags != 0) && (is_particle_on_screen(gPaddleBoats[0].position, camera, 0x4000U) != 0)) {
+        for (i = 0; i < gObjectParticle2_SIZE; i++) {
+            // @recomp Tag the transform
+            gEXMatrixGroupDecomposed(gDisplayListHead++, (TAG_OBJECT(gObjectParticle2[i]) << 16) & 0xFFFF0000 | i,
+                                     G_EX_PUSH, G_MTX_MODELVIEW, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO,
+                                     G_EX_COMPONENT_AUTO, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE,
+                                     G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
+
+            render_object_paddle_boat_smoke_particle(gObjectParticle2[i], cameraId);
+
+            // @recomp Pop the transform id.
+            gEXPopMatrixGroup(gDisplayListHead++, G_MTX_MODELVIEW);
+        }
+    }
+    if ((gPaddleBoats[1].someFlags != 0) && (is_particle_on_screen(gPaddleBoats[1].position, camera, 0x4000U) != 0)) {
+        for (i = 0; i < gObjectParticle3_SIZE; i++) {
+            // @recomp Tag the transform
+            gEXMatrixGroupDecomposed(gDisplayListHead++, (TAG_OBJECT(gObjectParticle3[i]) << 16) & 0xFFFF0000 | i,
+                                     G_EX_PUSH, G_MTX_MODELVIEW, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO,
+                                     G_EX_COMPONENT_AUTO, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE,
+                                     G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
+
+            render_object_paddle_boat_smoke_particle(gObjectParticle3[i], cameraId);
+
+            // @recomp Pop the transform id.
+            gEXPopMatrixGroup(gDisplayListHead++, G_MTX_MODELVIEW);
+        }
+    }
+}
+#endif
+
+#if 1
 RECOMP_PATCH void render_object_neon(s32 cameraId) {
     Camera* camera;
     s32 i;
