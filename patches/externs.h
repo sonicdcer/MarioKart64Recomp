@@ -522,7 +522,8 @@ void func_800722A4(s32, s32);
 u32 get_horizontal_distance_to_camera(s32, Camera*);
 signed int func_80072320(s32, s32);
 s32 is_obj_index_flag_status_inactive(s32, s32);
-s32 angle_between_object_camera(s32, Camera*);;
+s32 angle_between_object_camera(s32, Camera*);
+signed int func_80072354(s32, s32);
 
 extern Vec3f D_80183E50;
 extern Vec3f D_80183E70;
@@ -761,4 +762,5 @@ extern s16 D_8018CFE8;
 extern s16 D_8018D000;
 extern s8 D_80165908;
 extern s32 gIndexObjectBombKart[7];
+extern Camera* D_8018CF14;
 #endif

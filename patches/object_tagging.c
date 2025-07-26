@@ -1817,7 +1817,7 @@ RECOMP_PATCH void render_object_smoke_particles(s32 cameraId) {
 
     sp54 = &camera1[cameraId];
     gSPDisplayList(gDisplayListHead++, (Gfx*) 0x0D007AE0);
-    u8(*common_texture_particle_smoke)[1024] = (u8 (*)[1024]) 0x0d02bc58;
+    u8(*common_texture_particle_smoke)[1024] = (u8(*)[1024]) 0x0d02bc58;
     load_texture_block_i8_nomirror(common_texture_particle_smoke[D_80165598], 32, 32);
     func_8004B72C(255, 255, 255, 255, 255, 255, 255);
     D_80183E80[0] = 0;
@@ -2599,6 +2599,54 @@ RECOMP_PATCH void func_800942D0(void) {
             gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
             gEXPopMatrixGroup(gDisplayListHead++, G_MTX_MODELVIEW);
         }
+    }
+}
+#endif
+
+#if 1
+RECOMP_PATCH void render_lakitu(s32 cameraId) {
+    Camera* camera;
+    f32 var_f0;
+    f32 var_f2;
+    s32 objectIndex;
+    Object* object;
+
+    objectIndex = gIndexLakituList[cameraId];
+    camera = &camera1[cameraId];
+    if (is_obj_flag_status_active(objectIndex, 0x00000010) != 0) {
+        object = &gObjectList[objectIndex];
+        object->orientation[0] = 0;
+        object->orientation[1] = func_800418AC(object->pos[0], object->pos[2], camera->pos);
+        object->orientation[2] = 0x8000;
+        // @recomp Tag the transform.
+        gEXMatrixGroupDecomposedNormal(gDisplayListHead++, TAG_OBJECT(&gIndexLakituList[cameraId]) | cameraId,
+                                       G_EX_PUSH, G_MTX_MODELVIEW, G_EX_EDIT_ALLOW);
+
+        if (func_80072354(objectIndex, 2) != 0) {
+            draw_2d_texture_at(object->pos, object->orientation, object->sizeScaling, (u8*) object->activeTLUT,
+                               object->activeTexture, object->vertex, (s32) object->textureWidth,
+                               (s32) object->textureHeight, (s32) object->textureWidth,
+                               (s32) object->textureHeight / 2);
+        } else {
+            func_800485C4(object->pos, object->orientation, object->sizeScaling, (s32) object->primAlpha,
+                          (u8*) object->activeTLUT, object->activeTexture, object->vertex, (s32) object->textureWidth,
+                          (s32) object->textureHeight, (s32) object->textureWidth, (s32) object->textureHeight / 2);
+        }
+        if (gScreenModeSelection == SCREEN_MODE_1P) {
+            var_f0 = object->pos[0] - D_8018CF14->pos[0];
+            var_f2 = object->pos[2] - D_8018CF14->pos[2];
+            if (var_f0 < 0.0f) {
+                var_f0 = -var_f0;
+            }
+            if (var_f2 < 0.0f) {
+                var_f2 = -var_f2;
+            }
+            if ((var_f0 + var_f2) <= 200.0) {
+                func_8004A630(&D_8018C0B0[cameraId], object->pos, 0.35f);
+            }
+        }
+        // @recomp Pop the transform id.
+        gEXPopMatrixGroup(gDisplayListHead++, G_MTX_MODELVIEW);
     }
 }
 #endif
