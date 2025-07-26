@@ -1674,6 +1674,26 @@ RECOMP_PATCH void render_object_for_player(s32 cameraId) {
 #endif
 
 #if 1
+RECOMP_PATCH void render_object_crabs(s32 cameraId) {
+    s32 i;
+    s32 objId;
+
+    for (i = 0; i < NUM_CRABS; i++) {
+        objId = indexObjectList1[i];
+        // @recomp Tag the transform.
+        gEXMatrixGroupDecomposedNormal(gDisplayListHead++, TAG_OBJECT(&indexObjectList1[i]) | cameraId, G_EX_PUSH,
+                                       G_MTX_MODELVIEW, G_EX_EDIT_ALLOW);
+        func_8008A364(objId, cameraId, 0x2AABU, 800);
+        if (is_obj_flag_status_active(objId, VISIBLE) != 0) {
+            draw_crabs(objId, cameraId);
+        }
+        // @recomp Pop the transform id.
+        gEXPopMatrixGroup(gDisplayListHead++, G_MTX_MODELVIEW);
+    }
+}
+#endif
+
+#if 1
 RECOMP_PATCH void render_object_snowmans_list_1(s32 cameraId) {
     s32 i;
     s32 objectIndex;
