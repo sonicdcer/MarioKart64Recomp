@@ -1568,7 +1568,7 @@ RECOMP_PATCH void render_course_actors(struct UnkStruct_800DC5EC* arg0) {
 }
 #endif
 
-#if 0
+#if 1
 RECOMP_PATCH void render_object_for_player(s32 cameraId) {
     // @recomp Tag the transform.
     gEXMatrixGroupDecomposedNormal(gDisplayListHead++, TAG_OBJECT_BY_CAM_ID(cameraId), G_EX_PUSH, G_MTX_MODELVIEW,
@@ -1673,9 +1673,34 @@ RECOMP_PATCH void render_object_for_player(s32 cameraId) {
 }
 #endif
 
+#if 1
+RECOMP_PATCH void render_object_boos(s32 arg0) {
+    u32 temp_s2;
+    s32 i;
+    s32 objectIndex;
+
+    for (i = 0; i < NUM_BOOS; i++) {
+        objectIndex = indexObjectList3[i];
+
+        // @recomp Tag the transform.
+        gEXMatrixGroupDecomposedNormal(gDisplayListHead++, TAG_OBJECT(&gObjectList[objectIndex]) | arg0, G_EX_PUSH,
+                                       G_MTX_MODELVIEW, G_EX_EDIT_ALLOW);
+        if (gObjectList[objectIndex].state >= 2) {
+            temp_s2 = func_8008A364(objectIndex, arg0, 0x4000U, 0x00000320);
+            if (is_obj_flag_status_active(objectIndex, VISIBLE) != 0) {
+                func_800523B8(objectIndex, arg0, temp_s2);
+            }
+        }
+
+        // @recomp Pop the transform id.
+        gEXPopMatrixGroup(gDisplayListHead++, G_MTX_MODELVIEW);
+    }
+}
+#endif
+
 #if 1 // Bats (Banshee Boardwalk) tb181
 RECOMP_PATCH void render_object_bat(s32 cameraId) {
-    s32 var_s2;
+    s32 i;
     s32 objectIndex;
     Camera* temp_s7;
 
@@ -1688,8 +1713,8 @@ RECOMP_PATCH void render_object_bat(s32 cameraId) {
     D_80183E80[2] = gObjectList[objectIndex].orientation[2];
 
     if ((D_8018CFB0 != 0) || (D_8018CFC8 != 0)) {
-        for (var_s2 = 0; var_s2 < 40; var_s2++) {
-            objectIndex = gObjectParticle2[var_s2];
+        for (i = 0; i < 40; i++) {
+            objectIndex = gObjectParticle2[i];
             if (objectIndex == -1)
                 continue;
 
@@ -1698,7 +1723,7 @@ RECOMP_PATCH void render_object_bat(s32 cameraId) {
                     func_800418AC(gObjectList[objectIndex].pos[0], gObjectList[objectIndex].pos[2], temp_s7->pos);
 
                 // Tagging the transform with unique object properties
-                s32 transformTag = ((objectIndex & 0xFF) << 16) | ((var_s2 & 0xFF) << 8) | (cameraId & 0xFF);
+                s32 transformTag = ((objectIndex & 0xFF) << 16) | ((i & 0xFF) << 8) | (cameraId & 0xFF);
 
                 gEXMatrixGroupDecomposed(gDisplayListHead++, transformTag, G_EX_PUSH, G_MTX_MODELVIEW,
                                          G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO,
@@ -1715,8 +1740,8 @@ RECOMP_PATCH void render_object_bat(s32 cameraId) {
     }
 
     if ((D_8018CFE8 != 0) || (D_8018D000 != 0)) {
-        for (var_s2 = 0; var_s2 < 30; var_s2++) {
-            objectIndex = gObjectParticle3[var_s2];
+        for (i = 0; i < 30; i++) {
+            objectIndex = gObjectParticle3[i];
             if (objectIndex == -1)
                 continue;
 
@@ -1725,7 +1750,7 @@ RECOMP_PATCH void render_object_bat(s32 cameraId) {
                     func_800418AC(gObjectList[objectIndex].pos[0], gObjectList[objectIndex].pos[2], temp_s7->pos);
 
                 // Tagging the transform with unique object properties
-                s32 transformTag = ((objectIndex & 0xFF) << 16) | ((var_s2 & 0xFF) << 8) | (cameraId & 0xFF);
+                s32 transformTag = ((objectIndex & 0xFF) << 16) | ((i & 0xFF) << 8) | (cameraId & 0xFF);
 
                 gEXMatrixGroupDecomposed(gDisplayListHead++, transformTag, G_EX_PUSH, G_MTX_MODELVIEW,
                                          G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO,
