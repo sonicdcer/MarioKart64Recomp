@@ -2,6 +2,8 @@
 
 f32 func_802AAB4C(Player*);
 
+#if 1 // GLOBAL
+
 // Draws the map
 #if 0
 extern Gfx* sherbet_land_dls_2[];
@@ -816,7 +818,7 @@ RECOMP_PATCH void render_player_two_2p_screen_horizontal(void) {
 }
 #endif
 
-#if 1
+#if 0
 RECOMP_PATCH void render_player_one_3p_4p_screen(void) {
     Camera* camera = camera1;
     UNUSED s32 pad[2];
@@ -891,7 +893,7 @@ RECOMP_PATCH void render_player_one_3p_4p_screen(void) {
 }
 #endif
 
-#if 1
+#if 0
 RECOMP_PATCH void render_player_two_3p_4p_screen(void) {
     Camera* camera = camera2;
     UNUSED s32 pad[2];
@@ -966,7 +968,7 @@ RECOMP_PATCH void render_player_two_3p_4p_screen(void) {
 }
 #endif
 
-#if 1
+#if 0
 RECOMP_PATCH void render_player_three_3p_4p_screen(void) {
     Camera* camera = camera3;
     UNUSED s32 pad[2];
@@ -1042,7 +1044,7 @@ RECOMP_PATCH void render_player_three_3p_4p_screen(void) {
 }
 #endif
 
-#if 1
+#if 0
 RECOMP_PATCH void render_player_four_3p_4p_screen(void) {
     Camera* camera = camera4;
     UNUSED s32 pad[2];
@@ -1125,3 +1127,5 @@ RECOMP_PATCH void render_player_four_3p_4p_screen(void) {
     D_8015F788 += 1;
 }
 #endif
+
+#endif // GLOBAL
