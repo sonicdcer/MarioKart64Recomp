@@ -20,6 +20,7 @@ typedef enum ObjectList {
 // render_object_hedgehogs
 // render_object_train_penguins
 // func_80057114 (VS bomb karts?)
+#if 0 // CRASHES THE GAME IN THE 4 PLAYER SHERBET LAND DEMO
 RECOMP_PATCH s32 func_8008A364(s32 objectIndex, s32 cameraId, u16 arg2, s32 arg3) {
     Camera* camera;
     u32 dist;
@@ -43,6 +44,7 @@ RECOMP_PATCH s32 func_8008A364(s32 objectIndex, s32 cameraId, u16 arg2, s32 arg3
     }
     return dist;
 }
+#endif
 
 #if 1
 RECOMP_PATCH void render_player(Player* player, s8 playerId, s8 screenId) {
@@ -67,7 +69,7 @@ RECOMP_PATCH void render_player(Player* player, s8 playerId, s8 screenId) {
     temp_t1 = 8 << (screenId * 4);
     if ((temp_t1 == (player->unk_002 & temp_t1)) && (player->collision.surfaceDistance[2] <= 50.0f) &&
         (player->surfaceType != ICE)) {
-        gEXMatrixGroupDecomposed(gDisplayListHead++, (TAG_OBJECT(player) << 16) & 0xFFFF0000 | playerId, G_EX_PUSH,
+        gEXMatrixGroupDecomposed(gDisplayListHead++, (TAG_OBJECT(player) << 16) & 0xFFFF0000 | playerId << 8 | screenId, G_EX_PUSH,
                                  G_MTX_MODELVIEW, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO,
                                  G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP,
                                  G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
@@ -83,17 +85,17 @@ RECOMP_PATCH void render_player(Player* player, s8 playerId, s8 screenId) {
         gEXPopMatrixGroup(gDisplayListHead++, G_MTX_MODELVIEW);
     }
     if ((player->type & PLAYER_INVISIBLE_OR_BOMB) != PLAYER_INVISIBLE_OR_BOMB) {
-        gEXMatrixGroupDecomposed(gDisplayListHead++, (TAG_OBJECT(player) << 16) & 0xFFFF0000 | playerId, G_EX_PUSH,
-                                 G_MTX_MODELVIEW, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO,
-                                 G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP,
-                                 G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
+        gEXMatrixGroupDecomposed(gDisplayListHead++, (TAG_OBJECT(player) << 16) & 0xFFFF0000 | playerId << 8 | screenId,
+                                 G_EX_PUSH, G_MTX_MODELVIEW, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO,
+                                 G_EX_COMPONENT_AUTO, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE,
+                                 G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
 
         render_kart(player, playerId, screenId, var_v1);
 
         // @recomp Pop the transform id.
         gEXPopMatrixGroup(gDisplayListHead++, G_MTX_MODELVIEW);
     } else {
-        gEXMatrixGroupDecomposed(gDisplayListHead++, (TAG_OBJECT(player) << 16) & 0xFFFF0000 | playerId, G_EX_PUSH,
+        gEXMatrixGroupDecomposed(gDisplayListHead++, (TAG_OBJECT(player) << 16) & 0xFFFF0000 | playerId << 8 | screenId, G_EX_PUSH,
                                  G_MTX_MODELVIEW, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO,
                                  G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP,
                                  G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
@@ -106,7 +108,7 @@ RECOMP_PATCH void render_player(Player* player, s8 playerId, s8 screenId) {
     osRecvMesg(&gDmaMesgQueue, (OSMesg*) &sp34, OS_MESG_BLOCK);
     if ((temp_t1 == (player->unk_002 & temp_t1)) && (player->surfaceType == ICE) && ((player->unk_0CA & 1) != 1) &&
         (player->collision.surfaceDistance[2] <= 30.0f)) {
-        gEXMatrixGroupDecomposed(gDisplayListHead++, (TAG_OBJECT(player) << 16) & 0xFFFF0000 | playerId, G_EX_PUSH,
+        gEXMatrixGroupDecomposed(gDisplayListHead++, (TAG_OBJECT(player) << 16) & 0xFFFF0000 | playerId << 8 | screenId, G_EX_PUSH,
                                  G_MTX_MODELVIEW, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO,
                                  G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP,
                                  G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
@@ -117,7 +119,7 @@ RECOMP_PATCH void render_player(Player* player, s8 playerId, s8 screenId) {
         gEXPopMatrixGroup(gDisplayListHead++, G_MTX_MODELVIEW);
     }
     if (player->boostPower >= 2.0f) {
-        gEXMatrixGroupDecomposed(gDisplayListHead++, (TAG_OBJECT(player) << 16) & 0xFFFF0000 | playerId, G_EX_PUSH,
+        gEXMatrixGroupDecomposed(gDisplayListHead++, (TAG_OBJECT(player) << 16) & 0xFFFF0000 | playerId << 8 | screenId, G_EX_PUSH,
                                  G_MTX_MODELVIEW, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO,
                                  G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP,
                                  G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
