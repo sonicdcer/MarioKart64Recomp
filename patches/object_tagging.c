@@ -2676,4 +2676,160 @@ RECOMP_PATCH void render_lakitu(s32 cameraId) {
 }
 #endif
 
+#define ABS(x) ((x) >= 0 ? (x) : -(x))
+#define ABSF(x) ((x) >= 0.0f ? (x) : -(x))
+
+// Snowflakes in the background
+#if 1
+struct ObjectInterpData {
+    s32 objectIndex;
+    s16 x, y;
+};
+struct ObjectInterpData prevObject[OBJECT_LIST_SIZE] = { 0 };
+
+RECOMP_PATCH void func_800518F8(s32 objectIndex, s16 x, s16 y) {
+    // Search all recorded objects for the one we're drawing
+    for (size_t i = 140; i < 190; i++) {
+        if (objectIndex == prevObject[i].objectIndex) {
+            // recomp_printf("Object coincidence: %d\n", objectIndex);
+            //  Coincidence!
+            //  Skip drawing the object this frame if it warped to the other side of the screen
+            if ((ABS(x - prevObject[i].x) > SCREEN_WIDTH / 2) || (ABS(y - prevObject[i].y) > SCREEN_HEIGHT / 2)) {
+                prevObject[objectIndex].x = x;
+                prevObject[objectIndex].y = y;
+                prevObject[objectIndex].objectIndex = objectIndex;
+                return;
+            }
+        }
+    }
+
+    if (gObjectList[objectIndex].status & 0x10) {
+        // @recomp Tag the transform.
+        gEXMatrixGroupDecomposedNormal(gDisplayListHead++, TAG_OBJECT(&gObjectList[objectIndex]), G_EX_PUSH,
+                                       G_MTX_MODELVIEW, G_EX_EDIT_ALLOW);
+
+        if (D_8018D228 != gObjectList[objectIndex].unk_0D5) {
+            D_8018D228 = gObjectList[objectIndex].unk_0D5;
+            func_80044DA0(gObjectList[objectIndex].activeTexture, gObjectList[objectIndex].textureWidth,
+                          gObjectList[objectIndex].textureHeight);
+        }
+        func_80042330(x, y, 0, gObjectList[objectIndex].sizeScaling);
+        gSPVertex(gDisplayListHead++, gObjectList[objectIndex].vertex, 4, 0);
+        gSPDisplayList(gDisplayListHead++, (Gfx*) 0x0d006940 /* common_rectangle_display */);
+
+        // @recomp Pop the transform id.
+        gEXPopMatrixGroup(gDisplayListHead++, G_MTX_MODELVIEW);
+    }
+
+    // Save current cloud index and x position
+    prevObject[objectIndex].x = x;
+    prevObject[objectIndex].y = y;
+    prevObject[objectIndex].objectIndex = objectIndex;
+}
 #endif
+
+#if 1
+struct ObjectInterpData2 {
+    s32 objectIndex;
+    f32 x, y;
+};
+struct ObjectInterpData2 prevObject2[OBJECT_LIST_SIZE] = { 0 };
+
+s32 mtxf_set_matrix_gObjectList_snowflakes(s32 objectIndex, Mat4 transformMatrix) {
+    f32 sinX;
+    Object* object = &gObjectList[objectIndex];
+    f32 sinY;
+    f32 cosY;
+    f32 sinZ;
+    f32 cosZ;
+    f32 cosX;
+
+    sinX = sins(object->orientation[0]);
+    cosX = coss(object->orientation[0]);
+    sinY = sins(object->orientation[1]);
+    cosY = coss(object->orientation[1]);
+    sinZ = sins(object->orientation[2]);
+    cosZ = coss(object->orientation[2]);
+
+    transformMatrix[0][0] = object->sizeScaling * ((cosY * cosZ) + (sinX * sinY * sinZ));
+    transformMatrix[1][0] = object->sizeScaling * ((-cosY * sinZ) + sinX * sinY * cosZ);
+    transformMatrix[2][0] = object->sizeScaling * (cosX * sinY);
+    transformMatrix[3][0] = object->pos[0];
+    transformMatrix[0][1] = object->sizeScaling * (cosX * sinZ);
+    transformMatrix[1][1] = object->sizeScaling * (cosX * cosZ);
+    transformMatrix[2][1] = object->sizeScaling * -sinX;
+    transformMatrix[3][1] = object->pos[1];
+    transformMatrix[0][2] = object->sizeScaling * ((-sinY * cosZ) + (sinX * cosY * sinZ));
+    transformMatrix[1][2] = object->sizeScaling * ((sinY * sinZ) + (sinX * cosY * cosZ));
+    transformMatrix[2][2] = object->sizeScaling * (cosX * cosY);
+    transformMatrix[3][2] = object->pos[2];
+    transformMatrix[0][3] = 0.0f;
+    transformMatrix[1][3] = 0.0f;
+    transformMatrix[2][3] = 0.0f;
+    transformMatrix[3][3] = 1.0f;
+
+    // Search all recorded objects for the one we're drawing
+    for (int i = 240; i < 290; i++) {
+        if (objectIndex == prevObject2[i].objectIndex) {
+            // recomp_printf("Object coincidence: %d\n", objectIndex);
+            // Coincidence!
+            // Skip drawing the object this frame if it warped to the other side of the screen
+            if ((ABSF(object->pos[0] - prevObject2[i].x) > 10) || (ABSF(object->pos[1] - prevObject2[i].y) > 10)) {
+                prevObject2[objectIndex].x = object->pos[0];
+                prevObject2[objectIndex].y = object->pos[1];
+                prevObject2[objectIndex].objectIndex = objectIndex;
+                // recomp_printf("IDX: %d X: %f Y: %f Z: ", objectIndex, object->pos[0], object->pos[1],
+                // object->pos[2]); recomp_printf("%f DX: %f DY %f \n", ABSF(object->pos[0] - prevObject2[i].x),
+                //               ABSF(object->pos[1] - prevObject2[i].y));
+                return 1;
+            }
+        }
+    }
+    prevObject2[objectIndex].x = object->pos[0];
+    prevObject2[objectIndex].y = object->pos[1];
+    prevObject2[objectIndex].objectIndex = objectIndex;
+
+    return 0;
+}
+#endif
+
+#if 1
+void rsp_set_matrix_gObjectList_snowflakes(s32 transformIndex) {
+    Mat4 matrix;
+
+    if (mtxf_set_matrix_gObjectList_snowflakes(transformIndex, matrix))
+        return;
+    ;
+    convert_to_fixed_point_matrix(&gGfxPool->mtxHud[gMatrixHudCount], matrix);
+
+    gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxHud[gMatrixHudCount++]),
+              G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+}
+#endif
+
+// Snowflakes
+#if 1
+RECOMP_PATCH void render_object_snowflakes_particles(void) {
+    s32 i;
+    s32 snowflakeIndex;
+
+    gSPDisplayList(gDisplayListHead++, (Gfx*) 0x0D007AE0);
+    gDPSetCombineLERP(gDisplayListHead++, 1, 0, SHADE, 0, 0, 0, 0, TEXEL0, 1, 0, SHADE, 0, 0, 0, 0, TEXEL0);
+    func_80044F34((u8*) 0x0D0293D8, 0x10, 0x10);
+    for (i = 0; i < NUM_SNOWFLAKES; i++) {
+        snowflakeIndex = gObjectParticle1[i];
+        // @recomp Tag the transform.
+        gEXMatrixGroupDecomposedNormal(gDisplayListHead++, TAG_OBJECT(&gObjectParticle1[i]), G_EX_PUSH, G_MTX_MODELVIEW,
+                                       G_EX_EDIT_ALLOW);
+        if (gObjectList[snowflakeIndex].state >= 2) {
+            rsp_set_matrix_gObjectList_snowflakes(snowflakeIndex);
+            gSPDisplayList(gDisplayListHead++, (Gfx*) 0x0D006980);
+        }
+        // @recomp Pop the transform id.
+        gEXPopMatrixGroup(gDisplayListHead++, G_MTX_MODELVIEW);
+    }
+    gSPTexture(gDisplayListHead++, 1, 1, 0, G_TX_RENDERTILE, G_OFF);
+}
+#endif
+
+#endif // GLOBAL
