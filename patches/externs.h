@@ -532,6 +532,7 @@ void render_players_on_screen_three(void);
 void render_players_on_screen_four(void);
 void audio_set_volume(void);
 void func_8008C214(void);
+void func_8008A1D0(s32 objectIndex, s32 cameraId, s32 arg2, s32 arg3);
 
 extern Vec3f D_80183E50;
 extern Vec3f D_80183E70;
