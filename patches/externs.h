@@ -530,6 +530,8 @@ void func_80021D40(void);
 void func_80021DA8(void);
 void render_players_on_screen_three(void);
 void render_players_on_screen_four(void);
+void audio_set_volume(void);
+void func_8008C214(void);
 
 extern Vec3f D_80183E50;
 extern Vec3f D_80183E70;
@@ -769,4 +771,5 @@ extern s16 D_8018D000;
 extern s8 D_80165908;
 extern s32 gIndexObjectBombKart[7];
 extern Camera* D_8018CF14;
+extern u64 gGfxSPTaskOutputBuffer[16128];
 #endif

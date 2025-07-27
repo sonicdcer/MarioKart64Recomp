@@ -1,5 +1,6 @@
 #include "patches.h"
 
+#if 1 // GLOBAL
 typedef enum ObjectList {
     /* 10 */ OBJECT_10 = 10,
     /* 10 */ OBJECT_11,
@@ -2651,4 +2652,6 @@ RECOMP_PATCH void render_lakitu(s32 cameraId) {
         gEXPopMatrixGroup(gDisplayListHead++, G_MTX_MODELVIEW);
     }
 }
+#endif
+
 #endif

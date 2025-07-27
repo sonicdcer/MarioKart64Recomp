@@ -3,16 +3,13 @@
 
 #define GFX_POOL_EXTENDED_SIZE (GFX_POOL_SIZE * 0x10)
 
-void audio_set_volume(void);
-void func_8008C214(void);
-
-extern u64 gGfxSPTaskOutputBuffer[16128];
-// Gfx gfxPoolExtended[2][GFX_POOL_EXTENDED_SIZE];
+Gfx gfxPoolExtended[2][GFX_POOL_EXTENDED_SIZE];
 
 RECOMP_PATCH void config_gfx_pool(void) {
     gGfxPool = &gGfxPools[gGlobalTimer & 1];
     set_segment_base_addr(1, gGfxPool);
-    gDisplayListHead = gGfxPool->gfxPool;
+    // gDisplayListHead = gGfxPool->gfxPool;
+    gDisplayListHead = gfxPoolExtended[gGlobalTimer & 1];
     gEXEnable(gDisplayListHead++);              // @recomp
     gEXSetRDRAMExtended(gDisplayListHead++, 1); // @recomp
     gEXSetRefreshRate(gDisplayListHead++, 60 / 2);
@@ -24,7 +21,7 @@ RECOMP_PATCH void config_gfx_pool(void) {
     audio_set_volume();
 }
 
-#if 0
+#if 1
 /**
  * Initializes the Fast3D OSTask structure.
  * Loads F3DEX or F3DLX based on the number of players
@@ -54,13 +51,21 @@ RECOMP_PATCH void create_gfx_task_structure(void) {
     gGfxSPTask->task.t.dram_stack_size = SP_DRAM_STACK_SIZE8;
     gGfxSPTask->task.t.output_buff = (u64*) &gGfxSPTaskOutputBuffer;
     gGfxSPTask->task.t.output_buff_size = (u64*) ((u8*) gGfxSPTaskOutputBuffer + sizeof(gGfxSPTaskOutputBuffer));
-    gGfxSPTask->task.t.data_ptr = (u64*) gGfxPool->gfxPool;
-    gGfxSPTask->task.t.data_size = (gDisplayListHead - gGfxPool->gfxPool) * sizeof(Gfx);
+    // gGfxSPTask->task.t.data_ptr = (u64*) gGfxPool->gfxPool;
+    gGfxSPTask->task.t.data_ptr = (u64*) gfxPoolExtended[gGlobalTimer & 1];
+    // gGfxSPTask->task.t.data_size = (gDisplayListHead - gGfxPool->gfxPool) * sizeof(Gfx);
+    gGfxSPTask->task.t.data_size = (gDisplayListHead - gfxPoolExtended[gGlobalTimer & 1]) * sizeof(Gfx);
     func_8008C214();
     gGfxSPTask->task.t.yield_data_ptr = (u64*) &gGfxSPTaskYieldBuffer;
     gGfxSPTask->task.t.yield_data_size = OS_YIELD_DATA_SIZE;
 
-    // recomp_printf("Remaining space in memory : %d\n", GFX_POOL_SIZE * 8 - gGfxSPTask->task.t.data_size);
+    u32 bytesLeft = (GFX_POOL_EXTENDED_SIZE * 8 - gGfxSPTask->task.t.data_size);
+    // recomp_printf("bytesLeft: %d\n\n", bytesLeft);
+    if (bytesLeft < 0) {
+        // CRASH
+        recomp_printf("GFXPOOL is full!\n bytesLeft: %x\n\n", bytesLeft);
+        *(volatile int*) 0 = 0;
+    }
 }
 #endif
 
@@ -89,13 +94,13 @@ RECOMP_PATCH void rendering_init(void) {
 Mtx mtxObjectExtended[2][MTX_OBJECT_POOL_SIZE_EXTENDED];
 
 RECOMP_PATCH s32 render_set_position(Mat4 mtx, s32 mode) {
-    int frameIndex = (int)(gGfxPool - gGfxPools);
-    
+    int frameIndex = (int) (gGfxPool - gGfxPools);
+
     if (gMatrixObjectCount >= MTX_OBJECT_POOL_SIZE * 10) {
         recomp_printf("gMatrixObjectCount : %d\n", gMatrixObjectCount);
         return 0;
     }
-    
+
     mtxf_to_mtx(&mtxObjectExtended[frameIndex][gMatrixObjectCount], mtx);
     switch (mode) {
         case 0:
@@ -117,4 +122,3 @@ RECOMP_PATCH s32 render_set_position(Mat4 mtx, s32 mode) {
     }
     return 1;
 }
-
