@@ -371,32 +371,41 @@ f32 Math_Vec3f_DistXYZ(Vec3f a, Vec3f b) {
     return sqrtf(SQXYZ(diff));
 }
 
-bool should_interpolate_perspective(Vec3f eye, Vec3f at) {
-    static Vec3f prev_eye = { 0, 0, 0 };
-    static Vec3f prev_at = { 0, 0, 0 };
-    static Vec3f eye_velocity = { 0, 0, 0 };
-    static Vec3f at_velocity = { 0, 0, 0 };
+typedef struct CameraProps {
+    Vec3f prev_eye;
+    Vec3f prev_at;
+    Vec3f eye_velocity;
+    Vec3f at_velocity;
+} CameraProps;
+
+static CameraProps gMultiCamera[4];
+
+bool should_interpolate_perspective(Vec3f eye, Vec3f at, int cameraId) {
+    (void) gMultiCamera[cameraId].prev_eye;
+    (void) gMultiCamera[cameraId].prev_at;
+    (void) gMultiCamera[cameraId].eye_velocity;
+    (void) gMultiCamera[cameraId].at_velocity;
 
     Vec3f predicted_eye;
     Vec3f predicted_at;
     // Predict the new eye and at positions based on the previous velocity and positions.
-    Math_Vec3f_Sum(prev_eye, eye_velocity, predicted_eye);
-    Math_Vec3f_Sum(prev_at, at_velocity, predicted_at);
+    Math_Vec3f_Sum(gMultiCamera[cameraId].prev_eye, gMultiCamera[cameraId].eye_velocity, predicted_eye);
+    Math_Vec3f_Sum(gMultiCamera[cameraId].prev_at, gMultiCamera[cameraId].at_velocity, predicted_at);
 
     // Calculate the current velocities from the previous and current positions.
-    Math_Vec3f_Diff(eye, prev_eye, eye_velocity);
-    Math_Vec3f_Diff(at, prev_at, at_velocity);
+    Math_Vec3f_Diff(eye, gMultiCamera[cameraId].prev_eye, gMultiCamera[cameraId].eye_velocity);
+    Math_Vec3f_Diff(at, gMultiCamera[cameraId].prev_at, gMultiCamera[cameraId].at_velocity);
 
     // Compare the predicted positions to the real positions.
     float eye_dist = Math_Vec3f_DistXYZ(predicted_eye, eye);
     float at_dist = Math_Vec3f_DistXYZ(predicted_at, at);
 
     // Compare the velocities of the eye and at positions.
-    float velocity_diff = Math_Vec3f_DistXYZ(eye_velocity, at_velocity);
+    float velocity_diff = Math_Vec3f_DistXYZ(gMultiCamera[cameraId].eye_velocity, gMultiCamera[cameraId].at_velocity);
 
     // Update the tracking for the previous positions with the new ones.
-    memcpy2(prev_eye, eye, sizeof(Vec3f));
-    memcpy2(prev_at, at, sizeof(Vec3f));
+    memcpy2(gMultiCamera[cameraId].prev_eye, eye, sizeof(Vec3f));
+    memcpy2(gMultiCamera[cameraId].prev_at, at, sizeof(Vec3f));
 
     // These numbers are all picked via testing.
 
@@ -415,12 +424,12 @@ bool should_interpolate_perspective(Vec3f eye, Vec3f at) {
     // }
 
     if (velocity_diff > 50.0f || at_dist > 50.0f || eye_dist > 300.0f) {
-        eye_velocity[0] = 0.0f;
-        eye_velocity[1] = 0.0f;
-        eye_velocity[2] = 0.0f;
-        at_velocity[0] = 0.0f;
-        at_velocity[1] = 0.0f;
-        at_velocity[2] = 0.0f;
+        gMultiCamera[cameraId].eye_velocity[0] = 0.0f;
+        gMultiCamera[cameraId].eye_velocity[1] = 0.0f;
+        gMultiCamera[cameraId].eye_velocity[2] = 0.0f;
+        gMultiCamera[cameraId].at_velocity[0] = 0.0f;
+        gMultiCamera[cameraId].at_velocity[1] = 0.0f;
+        gMultiCamera[cameraId].at_velocity[2] = 0.0f;
         return false;
     }
 
@@ -439,14 +448,14 @@ RECOMP_PATCH void render_player_one_1p_screen(void) {
     UNUSED s32 pad3;
     Mat4 matrix;
 
-    bool bigJump = !should_interpolate_perspective(camera->pos, camera->lookAt);
-
     // recomp_printf("CAMERA POS X: %f\n", camera->pos[0]);
     // recomp_printf("CAMERA POS Y: %f\n", camera->pos[1]);
     // recomp_printf("CAMERA POS Z: %f\n\n", camera->pos[2]);
     // recomp_printf("CAMERA LOOKAT X: %f\n", camera->pos[0]);
     // recomp_printf("CAMERA LOOKAT Y: %f\n", camera->pos[1]);
     // recomp_printf("CAMERA LOOKAT Z: %f\n\n", camera->pos[2]);
+
+    bool bigJump = !should_interpolate_perspective(camera->pos, camera->lookAt, 1);
 
     if (bigJump) {
         gEXMatrixGroupSimple(gDisplayListHead++, 0xFFFFAAAA, G_EX_NOPUSH, G_MTX_PROJECTION, G_EX_COMPONENT_SKIP,
@@ -458,7 +467,7 @@ RECOMP_PATCH void render_player_one_1p_screen(void) {
                              G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE,
                              G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_LINEAR, G_EX_EDIT_NONE);
     }
-    
+
     func_802A53A4();
     init_rdp();
     // func_802A3730(D_800DC5EC);
@@ -505,5 +514,614 @@ RECOMP_PATCH void render_player_one_1p_screen(void) {
     if (D_800DC5B8 != 0) {
         render_hud(RENDER_SCREEN_MODE_1P_PLAYER_ONE);
     }
+}
+#endif
+
+#if 1
+RECOMP_PATCH void render_player_one_2p_screen_vertical(void) {
+    Camera* camera = &cameras[0];
+    UNUSED s32 pad[2];
+    u16 perspNorm;
+    Mat4 matrix;
+
+    bool bigJump = !should_interpolate_perspective(camera->pos, camera->lookAt, 1);
+
+    if (bigJump) {
+        gEXMatrixGroupSimple(gDisplayListHead++, 0xFFFFAAAB, G_EX_NOPUSH, G_MTX_PROJECTION, G_EX_COMPONENT_SKIP,
+                             G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE,
+                             G_EX_ORDER_LINEAR, G_EX_EDIT_NONE);
+        recomp_printf("CAMERA SKIPED: %d\n", bigJump);
+    } else {
+        gEXMatrixGroupSimple(gDisplayListHead++, 0xFFFFAAAB, G_EX_NOPUSH, G_MTX_PROJECTION, G_EX_COMPONENT_INTERPOLATE,
+                             G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE,
+                             G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_LINEAR, G_EX_EDIT_NONE);
+    }
+
+    func_802A50EC();
+
+    init_rdp();
+    func_802A3730(D_800DC5EC);
+    gSPSetGeometryMode(gDisplayListHead++, G_ZBUFFER | G_SHADE | G_CULL_BACK | G_SHADING_SMOOTH);
+
+    guPerspective(&gGfxPool->mtxPersp[0], &perspNorm, gCameraZoom[0], gScreenAspect, gCourseNearPersp, gCourseFarPersp,
+                  1.0f);
+    gSPPerspNormalize(gDisplayListHead++, perspNorm);
+    gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxPersp[0]),
+              G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
+    guLookAt(&gGfxPool->mtxLookAt[0], camera->pos[0], camera->pos[1], camera->pos[2], camera->lookAt[0],
+             camera->lookAt[1], camera->lookAt[2], camera->up[0], camera->up[1], camera->up[2]);
+
+    if (D_800DC5C8 == 0) {
+
+        gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxLookAt[0]),
+                  G_MTX_NOPUSH | G_MTX_MUL | G_MTX_PROJECTION);
+        mtxf_identity(matrix);
+        render_set_position(matrix, 0);
+    } else {
+        gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxLookAt[0]),
+                  G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    }
+    render_course(D_800DC5EC);
+    if (D_800DC5C8 == 1) {
+
+        gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxLookAt[0]),
+                  G_MTX_NOPUSH | G_MTX_MUL | G_MTX_PROJECTION);
+
+        mtxf_identity(matrix);
+        render_set_position(matrix, 0);
+    }
+    render_course_actors(D_800DC5EC);
+    render_object(RENDER_SCREEN_MODE_2P_HORIZONTAL_PLAYER_ONE);
+    render_players_on_screen_one();
+    func_8029122C(D_800DC5EC, PLAYER_ONE);
+    func_80021B0C();
+    render_item_boxes(D_800DC5EC);
+    render_player_snow_effect(RENDER_SCREEN_MODE_2P_HORIZONTAL_PLAYER_ONE);
+    func_80058BF4();
+    if (D_800DC5B8 != 0) {
+        func_80058C20(RENDER_SCREEN_MODE_2P_HORIZONTAL_PLAYER_ONE);
+    }
+    func_80093A5C(RENDER_SCREEN_MODE_2P_HORIZONTAL_PLAYER_ONE);
+    if (D_800DC5B8 != 0) {
+        render_hud(RENDER_SCREEN_MODE_2P_HORIZONTAL_PLAYER_ONE);
+    }
+    D_8015F788 += 1;
+}
+#endif
+
+#if 1
+RECOMP_PATCH void render_player_two_2p_screen_vertical(void) {
+    Camera* camera = &cameras[1];
+    UNUSED s32 pad[2];
+    u16 perspNorm;
+    Mat4 matrix;
+
+    bool bigJump = !should_interpolate_perspective(camera->pos, camera->lookAt, 2);
+
+    if (bigJump) {
+        gEXMatrixGroupSimple(gDisplayListHead++, 0xFFFFAAAC, G_EX_NOPUSH, G_MTX_PROJECTION, G_EX_COMPONENT_SKIP,
+                             G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE,
+                             G_EX_ORDER_LINEAR, G_EX_EDIT_NONE);
+        recomp_printf("CAMERA SKIPED: %d\n", bigJump);
+    } else {
+        gEXMatrixGroupSimple(gDisplayListHead++, 0xFFFFAAAC, G_EX_NOPUSH, G_MTX_PROJECTION, G_EX_COMPONENT_INTERPOLATE,
+                             G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE,
+                             G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_LINEAR, G_EX_EDIT_NONE);
+    }
+
+    func_802A5004();
+    init_rdp();
+    func_802A3730(D_800DC5F0);
+
+    gSPSetGeometryMode(gDisplayListHead++, G_ZBUFFER | G_SHADE | G_CULL_BACK | G_SHADING_SMOOTH);
+
+    guPerspective(&gGfxPool->mtxPersp[1], &perspNorm, gCameraZoom[1], gScreenAspect, gCourseNearPersp, gCourseFarPersp,
+                  1.0f);
+
+    gSPPerspNormalize(gDisplayListHead++, perspNorm);
+    gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxPersp[1]),
+              G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
+    guLookAt(&gGfxPool->mtxLookAt[1], camera->pos[0], camera->pos[1], camera->pos[2], camera->lookAt[0],
+             camera->lookAt[1], camera->lookAt[2], camera->up[0], camera->up[1], camera->up[2]);
+
+    if (D_800DC5C8 == 0) {
+        gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxLookAt[1]),
+                  G_MTX_NOPUSH | G_MTX_MUL | G_MTX_PROJECTION);
+        mtxf_identity(matrix);
+        render_set_position(matrix, 0);
+    } else {
+        gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxLookAt[1]),
+                  G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    }
+    render_course(D_800DC5F0);
+    if (D_800DC5C8 == 1) {
+        gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxLookAt[1]),
+                  G_MTX_NOPUSH | G_MTX_MUL | G_MTX_PROJECTION);
+        mtxf_identity(matrix);
+        render_set_position(matrix, 0);
+    }
+    render_course_actors(D_800DC5F0);
+    render_object(RENDER_SCREEN_MODE_2P_HORIZONTAL_PLAYER_TWO);
+    render_players_on_screen_two();
+    func_8029122C(D_800DC5F0, PLAYER_TWO);
+    func_80021C78();
+    render_item_boxes(D_800DC5F0);
+    func_80058BF4();
+    render_player_snow_effect(RENDER_SCREEN_MODE_2P_HORIZONTAL_PLAYER_TWO);
+    if (D_800DC5B8 != 0) {
+        func_80058C20(RENDER_SCREEN_MODE_2P_HORIZONTAL_PLAYER_TWO);
+    }
+    func_80093A5C(RENDER_SCREEN_MODE_2P_HORIZONTAL_PLAYER_TWO);
+    if (D_800DC5B8 != 0) {
+        render_hud(RENDER_SCREEN_MODE_2P_HORIZONTAL_PLAYER_TWO);
+    }
+    D_8015F788 += 1;
+}
+#endif
+
+#if 1
+RECOMP_PATCH void render_player_one_2p_screen_horizontal(void) {
+    Camera* camera = &cameras[0];
+    UNUSED s32 pad[2];
+    u16 perspNorm;
+    Mat4 matrix;
+#ifdef VERSION_EU
+    f32 sp9C;
+#endif
+
+    bool bigJump = !should_interpolate_perspective(camera->pos, camera->lookAt, 1);
+
+    if (bigJump) {
+        gEXMatrixGroupSimple(gDisplayListHead++, 0xFFFFAAAD, G_EX_NOPUSH, G_MTX_PROJECTION, G_EX_COMPONENT_SKIP,
+                             G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE,
+                             G_EX_ORDER_LINEAR, G_EX_EDIT_NONE);
+        recomp_printf("CAMERA SKIPED: %d\n", bigJump);
+    } else {
+        gEXMatrixGroupSimple(gDisplayListHead++, 0xFFFFAAAD, G_EX_NOPUSH, G_MTX_PROJECTION, G_EX_COMPONENT_INTERPOLATE,
+                             G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE,
+                             G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_LINEAR, G_EX_EDIT_NONE);
+    }
+
+    func_802A51D4();
+    gSPSetGeometryMode(gDisplayListHead++, G_SHADE | G_CULL_BACK | G_LIGHTING | G_SHADING_SMOOTH);
+    init_rdp();
+    func_802A3730(D_800DC5EC);
+#ifdef VERSION_EU
+    sp9C = gScreenAspect * 1.2f;
+#endif
+    gSPSetGeometryMode(gDisplayListHead++, G_ZBUFFER | G_SHADE | G_CULL_BACK | G_SHADING_SMOOTH);
+#ifdef VERSION_EU
+    guPerspective(&gGfxPool->mtxPersp[0], &perspNorm, gCameraZoom[0], sp9C, gCourseNearPersp, gCourseFarPersp, 1.0f);
+#else
+    guPerspective(&gGfxPool->mtxPersp[0], &perspNorm, gCameraZoom[0], gScreenAspect, gCourseNearPersp, gCourseFarPersp,
+                  1.0f);
+#endif
+    gSPPerspNormalize(gDisplayListHead++, perspNorm);
+    gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxPersp[0]),
+              G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
+    guLookAt(&gGfxPool->mtxLookAt[0], camera->pos[0], camera->pos[1], camera->pos[2], camera->lookAt[0],
+             camera->lookAt[1], camera->lookAt[2], camera->up[0], camera->up[1], camera->up[2]);
+
+    if (D_800DC5C8 == 0) {
+
+        gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxLookAt[0]),
+                  G_MTX_NOPUSH | G_MTX_MUL | G_MTX_PROJECTION);
+        mtxf_identity(matrix);
+        render_set_position(matrix, 0);
+    } else {
+        gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxLookAt[0]),
+                  G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    }
+    render_course(D_800DC5EC);
+    if (D_800DC5C8 == 1) {
+        gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxLookAt[0]),
+                  G_MTX_NOPUSH | G_MTX_MUL | G_MTX_PROJECTION);
+        mtxf_identity(matrix);
+        render_set_position(matrix, 0);
+    }
+    render_course_actors(D_800DC5EC);
+    render_object(RENDER_SCREEN_MODE_2P_VERTICAL_PLAYER_ONE);
+    render_players_on_screen_one();
+    func_8029122C(D_800DC5EC, PLAYER_ONE);
+    func_80021B0C();
+    render_item_boxes(D_800DC5EC);
+    render_player_snow_effect(RENDER_SCREEN_MODE_2P_VERTICAL_PLAYER_ONE);
+    func_80058BF4();
+    if (D_800DC5B8 != 0) {
+        func_80058C20(RENDER_SCREEN_MODE_2P_VERTICAL_PLAYER_ONE);
+    }
+    func_80093A5C(RENDER_SCREEN_MODE_2P_VERTICAL_PLAYER_ONE);
+    if (D_800DC5B8 != 0) {
+        render_hud(RENDER_SCREEN_MODE_2P_VERTICAL_PLAYER_ONE);
+    }
+    D_8015F788 += 1;
+}
+#endif
+
+#if 1
+RECOMP_PATCH void render_player_two_2p_screen_horizontal(void) {
+    Camera* camera = &cameras[1];
+    UNUSED s32 pad[2];
+    u16 perspNorm;
+    Mat4 matrix;
+#ifdef VERSION_EU
+    f32 sp9C;
+#endif
+
+    bool bigJump = !should_interpolate_perspective(camera->pos, camera->lookAt, 2);
+
+    if (bigJump) {
+        gEXMatrixGroupSimple(gDisplayListHead++, 0xFFFFAAAE, G_EX_NOPUSH, G_MTX_PROJECTION, G_EX_COMPONENT_SKIP,
+                             G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE,
+                             G_EX_ORDER_LINEAR, G_EX_EDIT_NONE);
+        recomp_printf("CAMERA SKIPED: %d\n", bigJump);
+    } else {
+        gEXMatrixGroupSimple(gDisplayListHead++, 0xFFFFAAAE, G_EX_NOPUSH, G_MTX_PROJECTION, G_EX_COMPONENT_INTERPOLATE,
+                             G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE,
+                             G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_LINEAR, G_EX_EDIT_NONE);
+    }
+
+    func_802A52BC();
+    gSPSetGeometryMode(gDisplayListHead++, G_SHADE | G_CULL_BACK | G_LIGHTING | G_SHADING_SMOOTH);
+    init_rdp();
+    func_802A3730(D_800DC5F0);
+#ifdef VERSION_EU
+    sp9C = gScreenAspect * 1.2f;
+#endif
+    gSPSetGeometryMode(gDisplayListHead++, G_ZBUFFER | G_SHADE | G_CULL_BACK | G_SHADING_SMOOTH);
+#ifdef VERSION_EU
+    guPerspective(&gGfxPool->mtxPersp[1], &perspNorm, gCameraZoom[1], sp9C, gCourseNearPersp, gCourseFarPersp, 1.0f);
+#else
+    guPerspective(&gGfxPool->mtxPersp[1], &perspNorm, gCameraZoom[1], gScreenAspect, gCourseNearPersp, gCourseFarPersp,
+                  1.0f);
+#endif
+    gSPPerspNormalize(gDisplayListHead++, perspNorm);
+    gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxPersp[1]),
+              G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
+    guLookAt(&gGfxPool->mtxLookAt[1], camera->pos[0], camera->pos[1], camera->pos[2], camera->lookAt[0],
+             camera->lookAt[1], camera->lookAt[2], camera->up[0], camera->up[1], camera->up[2]);
+
+    if (D_800DC5C8 == 0) {
+        gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxLookAt[1]),
+                  G_MTX_NOPUSH | G_MTX_MUL | G_MTX_PROJECTION);
+        mtxf_identity(matrix);
+        render_set_position(matrix, 0);
+    } else {
+        gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxLookAt[1]),
+                  G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    }
+    render_course(D_800DC5F0);
+    if (D_800DC5C8 == 1) {
+        gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxLookAt[1]),
+                  G_MTX_NOPUSH | G_MTX_MUL | G_MTX_PROJECTION);
+        mtxf_identity(matrix);
+        render_set_position(matrix, 0);
+    }
+    render_course_actors(D_800DC5F0);
+    render_object(RENDER_SCREEN_MODE_2P_VERTICAL_PLAYER_TWO);
+    render_players_on_screen_two();
+    func_8029122C(D_800DC5F0, PLAYER_TWO);
+    func_80021C78();
+    render_item_boxes(D_800DC5F0);
+    render_player_snow_effect(RENDER_SCREEN_MODE_2P_VERTICAL_PLAYER_TWO);
+    func_80058BF4();
+    if (D_800DC5B8 != 0) {
+        func_80058C20(RENDER_SCREEN_MODE_2P_VERTICAL_PLAYER_TWO);
+    }
+    func_80093A5C(RENDER_SCREEN_MODE_2P_VERTICAL_PLAYER_TWO);
+    if (D_800DC5B8 != 0) {
+        render_hud(RENDER_SCREEN_MODE_2P_VERTICAL_PLAYER_TWO);
+    }
+    D_8015F788 += 1;
+}
+#endif
+
+#if 1
+RECOMP_PATCH void render_player_one_3p_4p_screen(void) {
+    Camera* camera = camera1;
+    UNUSED s32 pad[2];
+    u16 perspNorm;
+    Mat4 matrix;
+#ifdef VERSION_EU
+    f32 sp9C;
+    sp9C = gScreenAspect * 1.2f;
+#endif
+
+    bool bigJump = !should_interpolate_perspective(camera->pos, camera->lookAt, 1);
+
+    if (bigJump) {
+        gEXMatrixGroupSimple(gDisplayListHead++, 0xFFFFAAAF, G_EX_NOPUSH, G_MTX_PROJECTION, G_EX_COMPONENT_SKIP,
+                             G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE,
+                             G_EX_ORDER_LINEAR, G_EX_EDIT_NONE);
+        recomp_printf("CAMERA SKIPED: %d\n", bigJump);
+    } else {
+        gEXMatrixGroupSimple(gDisplayListHead++, 0xFFFFAAAF, G_EX_NOPUSH, G_MTX_PROJECTION, G_EX_COMPONENT_INTERPOLATE,
+                             G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE,
+                             G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_LINEAR, G_EX_EDIT_NONE);
+    }
+
+    func_802A54A8();
+    init_rdp();
+    func_802A3730(D_800DC5EC);
+    gSPSetGeometryMode(gDisplayListHead++, G_ZBUFFER | G_SHADE | G_CULL_BACK | G_SHADING_SMOOTH);
+#ifdef VERSION_EU
+    guPerspective(&gGfxPool->mtxPersp[0], &perspNorm, gCameraZoom[0], sp9C, gCourseNearPersp, gCourseFarPersp, 1.0f);
+#else
+    guPerspective(&gGfxPool->mtxPersp[0], &perspNorm, gCameraZoom[0], gScreenAspect, gCourseNearPersp, gCourseFarPersp,
+                  1.0f);
+#endif
+    gSPPerspNormalize(gDisplayListHead++, perspNorm);
+    gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxPersp[0]),
+              G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
+    guLookAt(&gGfxPool->mtxLookAt[0], camera->pos[0], camera->pos[1], camera->pos[2], camera->lookAt[0],
+             camera->lookAt[1], camera->lookAt[2], camera->up[0], camera->up[1], camera->up[2]);
+
+    if (D_800DC5C8 == 0) {
+        gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxLookAt[0]),
+                  G_MTX_NOPUSH | G_MTX_MUL | G_MTX_PROJECTION);
+        mtxf_identity(matrix);
+        render_set_position(matrix, 0);
+    } else {
+        gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxLookAt[0]),
+                  G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    }
+    render_course(D_800DC5EC);
+    if (D_800DC5C8 == 1) {
+        gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxLookAt[0]),
+                  G_MTX_NOPUSH | G_MTX_MUL | G_MTX_PROJECTION);
+        mtxf_identity(matrix);
+        render_set_position(matrix, 0);
+    }
+    render_course_actors(D_800DC5EC);
+    render_object(RENDER_SCREEN_MODE_3P_4P_PLAYER_ONE);
+    render_players_on_screen_one();
+    func_8029122C(D_800DC5EC, PLAYER_ONE);
+    func_80021B0C();
+    render_item_boxes(D_800DC5EC);
+    render_player_snow_effect(RENDER_SCREEN_MODE_3P_4P_PLAYER_ONE);
+    func_80058BF4();
+    if (D_800DC5B8 != 0) {
+        func_80058C20(RENDER_SCREEN_MODE_3P_4P_PLAYER_ONE);
+    }
+    func_80093A5C(RENDER_SCREEN_MODE_3P_4P_PLAYER_ONE);
+    if (D_800DC5B8 != 0) {
+        render_hud(RENDER_SCREEN_MODE_3P_4P_PLAYER_ONE);
+    }
+    D_8015F788 += 1;
+}
+#endif
+
+#if 1
+RECOMP_PATCH void render_player_two_3p_4p_screen(void) {
+    Camera* camera = camera2;
+    UNUSED s32 pad[2];
+    u16 perspNorm;
+    Mat4 matrix;
+#ifdef VERSION_EU
+    f32 sp9C;
+    sp9C = gScreenAspect * 1.2f;
+#endif
+
+    bool bigJump = !should_interpolate_perspective(camera->pos, camera->lookAt, 2);
+
+    if (bigJump) {
+        gEXMatrixGroupSimple(gDisplayListHead++, 0xFFFFAAB0, G_EX_NOPUSH, G_MTX_PROJECTION, G_EX_COMPONENT_SKIP,
+                             G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE,
+                             G_EX_ORDER_LINEAR, G_EX_EDIT_NONE);
+        recomp_printf("CAMERA SKIPED: %d\n", bigJump);
+    } else {
+        gEXMatrixGroupSimple(gDisplayListHead++, 0xFFFFAAB0, G_EX_NOPUSH, G_MTX_PROJECTION, G_EX_COMPONENT_INTERPOLATE,
+                             G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE,
+                             G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_LINEAR, G_EX_EDIT_NONE);
+    }
+
+    func_802A5590();
+    init_rdp();
+    func_802A3730(D_800DC5F0);
+    gSPSetGeometryMode(gDisplayListHead++, G_ZBUFFER | G_SHADE | G_CULL_BACK | G_SHADING_SMOOTH);
+#ifdef VERSION_EU
+    guPerspective(&gGfxPool->mtxPersp[1], &perspNorm, gCameraZoom[1], sp9C, gCourseNearPersp, gCourseFarPersp, 1.0f);
+#else
+    guPerspective(&gGfxPool->mtxPersp[1], &perspNorm, gCameraZoom[1], gScreenAspect, gCourseNearPersp, gCourseFarPersp,
+                  1.0f);
+#endif
+    gSPPerspNormalize(gDisplayListHead++, perspNorm);
+    gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxPersp[1]),
+              G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
+
+    guLookAt(&gGfxPool->mtxLookAt[1], camera->pos[0], camera->pos[1], camera->pos[2], camera->lookAt[0],
+             camera->lookAt[1], camera->lookAt[2], camera->up[0], camera->up[1], camera->up[2]);
+    if (D_800DC5C8 == 0) {
+        gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxLookAt[1]),
+                  G_MTX_NOPUSH | G_MTX_MUL | G_MTX_PROJECTION);
+        mtxf_identity(matrix);
+        render_set_position(matrix, 0);
+    } else {
+        gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxLookAt[1]),
+                  G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    }
+    render_course(D_800DC5F0);
+    if (D_800DC5C8 == 1) {
+        gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxLookAt[1]),
+                  G_MTX_NOPUSH | G_MTX_MUL | G_MTX_PROJECTION);
+        mtxf_identity(matrix);
+        render_set_position(matrix, 0);
+    }
+    render_course_actors(D_800DC5F0);
+    render_object(RENDER_SCREEN_MODE_3P_4P_PLAYER_TWO);
+    render_players_on_screen_two();
+    func_8029122C(D_800DC5F0, PLAYER_TWO);
+    func_80021C78();
+    render_item_boxes(D_800DC5F0);
+    render_player_snow_effect(RENDER_SCREEN_MODE_3P_4P_PLAYER_TWO);
+    func_80058BF4();
+    if (D_800DC5B8 != 0) {
+        func_80058C20(RENDER_SCREEN_MODE_3P_4P_PLAYER_TWO);
+    }
+    func_80093A5C(RENDER_SCREEN_MODE_3P_4P_PLAYER_TWO);
+    if (D_800DC5B8 != 0) {
+        render_hud(RENDER_SCREEN_MODE_3P_4P_PLAYER_TWO);
+    }
+    D_8015F788 += 1;
+}
+#endif
+
+#if 1
+RECOMP_PATCH void render_player_three_3p_4p_screen(void) {
+    Camera* camera = camera3;
+    UNUSED s32 pad[2];
+    u16 perspNorm;
+    Mat4 matrix;
+#ifdef VERSION_EU
+    f32 sp9C;
+    sp9C = gScreenAspect * 1.2f;
+#endif
+
+    bool bigJump = !should_interpolate_perspective(camera->pos, camera->lookAt, 3);
+
+    if (bigJump) {
+        gEXMatrixGroupSimple(gDisplayListHead++, 0xFFFFAAB1, G_EX_NOPUSH, G_MTX_PROJECTION, G_EX_COMPONENT_SKIP,
+                             G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE,
+                             G_EX_ORDER_LINEAR, G_EX_EDIT_NONE);
+        recomp_printf("CAMERA SKIPED: %d\n", bigJump);
+    } else {
+        gEXMatrixGroupSimple(gDisplayListHead++, 0xFFFFAAB1, G_EX_NOPUSH, G_MTX_PROJECTION, G_EX_COMPONENT_INTERPOLATE,
+                             G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE,
+                             G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_LINEAR, G_EX_EDIT_NONE);
+    }
+
+    func_802A5678();
+    init_rdp();
+    func_802A3730(D_800DC5F4);
+
+    gSPSetGeometryMode(gDisplayListHead++, G_ZBUFFER | G_SHADE | G_CULL_BACK | G_SHADING_SMOOTH);
+#ifdef VERSION_EU
+    guPerspective(&gGfxPool->mtxPersp[2], &perspNorm, gCameraZoom[2], sp9C, gCourseNearPersp, gCourseFarPersp, 1.0f);
+#else
+    guPerspective(&gGfxPool->mtxPersp[2], &perspNorm, gCameraZoom[2], gScreenAspect, gCourseNearPersp, gCourseFarPersp,
+                  1.0f);
+#endif
+    gSPPerspNormalize(gDisplayListHead++, perspNorm);
+    gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxPersp[2]),
+              G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
+    guLookAt(&gGfxPool->mtxLookAt[2], camera->pos[0], camera->pos[1], camera->pos[2], camera->lookAt[0],
+             camera->lookAt[1], camera->lookAt[2], camera->up[0], camera->up[1], camera->up[2]);
+    if (D_800DC5C8 == 0) {
+        gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxLookAt[2]),
+                  G_MTX_NOPUSH | G_MTX_MUL | G_MTX_PROJECTION);
+
+        mtxf_identity(matrix);
+        render_set_position(matrix, 0);
+    } else {
+        gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxLookAt[2]),
+                  G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    }
+    render_course(D_800DC5F4);
+    if (D_800DC5C8 == 1) {
+        gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxLookAt[2]),
+                  G_MTX_NOPUSH | G_MTX_MUL | G_MTX_PROJECTION);
+        mtxf_identity(matrix);
+        render_set_position(matrix, 0);
+    }
+    render_course_actors(D_800DC5F4);
+    render_object(RENDER_SCREEN_MODE_3P_4P_PLAYER_THREE);
+    render_players_on_screen_three();
+    func_8029122C(D_800DC5F4, PLAYER_THREE);
+    func_80021D40();
+    render_item_boxes(D_800DC5F4);
+    render_player_snow_effect(RENDER_SCREEN_MODE_3P_4P_PLAYER_THREE);
+    func_80058BF4();
+    if (D_800DC5B8 != 0) {
+        func_80058C20(RENDER_SCREEN_MODE_3P_4P_PLAYER_THREE);
+    }
+    func_80093A5C(RENDER_SCREEN_MODE_3P_4P_PLAYER_THREE);
+    if (D_800DC5B8 != 0) {
+        render_hud(RENDER_SCREEN_MODE_3P_4P_PLAYER_THREE);
+    }
+    D_8015F788 += 1;
+}
+#endif
+
+#if 1
+RECOMP_PATCH void render_player_four_3p_4p_screen(void) {
+    Camera* camera = camera4;
+    UNUSED s32 pad[2];
+    u16 perspNorm;
+    Mat4 matrix;
+#ifdef VERSION_EU
+    f32 sp9C;
+    sp9C = gScreenAspect * 1.2f;
+#endif
+
+    func_802A5760();
+    if (gPlayerCountSelection1 == 3) {
+        func_80093A5C(RENDER_SCREEN_MODE_3P_4P_PLAYER_FOUR);
+        if (D_800DC5B8 != 0) {
+            render_hud(RENDER_SCREEN_MODE_3P_4P_PLAYER_FOUR);
+        }
+        D_8015F788 += 1;
+        return;
+    }
+
+    bool bigJump = !should_interpolate_perspective(camera->pos, camera->lookAt, 4);
+
+    if (bigJump) {
+        gEXMatrixGroupSimple(gDisplayListHead++, 0xFFFFAAB2, G_EX_NOPUSH, G_MTX_PROJECTION, G_EX_COMPONENT_SKIP,
+                             G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE,
+                             G_EX_ORDER_LINEAR, G_EX_EDIT_NONE);
+        recomp_printf("CAMERA SKIPED: %d\n", bigJump);
+    } else {
+        gEXMatrixGroupSimple(gDisplayListHead++, 0xFFFFAAB2, G_EX_NOPUSH, G_MTX_PROJECTION, G_EX_COMPONENT_INTERPOLATE,
+                             G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE,
+                             G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_LINEAR, G_EX_EDIT_NONE);
+    }
+
+    init_rdp();
+    func_802A3730(D_800DC5F8);
+
+    gSPSetGeometryMode(gDisplayListHead++, G_ZBUFFER | G_SHADE | G_CULL_BACK | G_SHADING_SMOOTH);
+#ifdef VERSION_EU
+    guPerspective(&gGfxPool->mtxPersp[3], &perspNorm, gCameraZoom[3], sp9C, gCourseNearPersp, gCourseFarPersp, 1.0f);
+#else
+    guPerspective(&gGfxPool->mtxPersp[3], &perspNorm, gCameraZoom[3], gScreenAspect, gCourseNearPersp, gCourseFarPersp,
+                  1.0f);
+#endif
+    gSPPerspNormalize(gDisplayListHead++, perspNorm);
+    gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxPersp[3]),
+              G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
+    guLookAt(&gGfxPool->mtxLookAt[3], camera->pos[0], camera->pos[1], camera->pos[2], camera->lookAt[0],
+             camera->lookAt[1], camera->lookAt[2], camera->up[0], camera->up[1], camera->up[2]);
+    if (D_800DC5C8 == 0) {
+        gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxLookAt[3]),
+                  G_MTX_NOPUSH | G_MTX_MUL | G_MTX_PROJECTION);
+        mtxf_identity(matrix);
+        render_set_position(matrix, 0);
+    } else {
+        gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxLookAt[3]),
+                  G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    }
+    render_course(D_800DC5F8);
+    if (D_800DC5C8 == 1) {
+        gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxLookAt[3]),
+                  G_MTX_NOPUSH | G_MTX_MUL | G_MTX_PROJECTION);
+        mtxf_identity(matrix);
+        render_set_position(matrix, 0);
+    }
+    render_course_actors(D_800DC5F8);
+    render_object(RENDER_SCREEN_MODE_3P_4P_PLAYER_FOUR);
+    render_players_on_screen_four();
+    func_8029122C(D_800DC5F8, PLAYER_FOUR);
+    func_80021DA8();
+    render_item_boxes(D_800DC5F8);
+    render_player_snow_effect(RENDER_SCREEN_MODE_3P_4P_PLAYER_FOUR);
+    func_80058BF4();
+    if (D_800DC5B8 != 0) {
+        func_80058C20(RENDER_SCREEN_MODE_3P_4P_PLAYER_FOUR);
+    }
+    func_80093A5C(RENDER_SCREEN_MODE_3P_4P_PLAYER_FOUR);
+    if (D_800DC5B8 != 0) {
+        render_hud(RENDER_SCREEN_MODE_3P_4P_PLAYER_FOUR);
+    }
+    D_8015F788 += 1;
 }
 #endif

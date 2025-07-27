@@ -524,6 +524,12 @@ signed int func_80072320(s32, s32);
 s32 is_obj_index_flag_status_inactive(s32, s32);
 s32 angle_between_object_camera(s32, Camera*);
 signed int func_80072354(s32, s32);
+void render_players_on_screen_two(void);
+void func_80021C78(void);
+void func_80021D40(void);
+void func_80021DA8(void);
+void render_players_on_screen_three(void);
+void render_players_on_screen_four(void);
 
 extern Vec3f D_80183E50;
 extern Vec3f D_80183E70;
