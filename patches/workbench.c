@@ -247,3 +247,78 @@ RECOMP_PATCH void func_8009D77C(s32 arg0, s32 arg1, s32 arg2) {
     }
 }
 #endif
+
+#if 0
+RECOMP_PATCH void render_course(struct UnkStruct_800DC5EC* arg0) {
+
+    set_course_lighting(D_800DC610, D_802B87D4, 0, 1);
+    if (creditsRenderMode) {
+        render_course_credits();
+        return;
+    }
+
+    switch (gCurrentCourseId) {
+        case COURSE_MARIO_RACEWAY:
+            render_mario_raceway(arg0);
+            break;
+        case COURSE_CHOCO_MOUNTAIN:
+            render_choco_mountain(arg0);
+            break;
+        case COURSE_BOWSER_CASTLE:
+            render_bowsers_castle(arg0);
+            break;
+        case COURSE_BANSHEE_BOARDWALK:
+            render_banshee_boardwalk(arg0);
+            break;
+        case COURSE_YOSHI_VALLEY:
+            render_yoshi_valley(arg0);
+            break;
+        case COURSE_FRAPPE_SNOWLAND:
+            render_frappe_snowland(arg0);
+            break;
+        case COURSE_KOOPA_BEACH:
+            render_koopa_troopa_beach(arg0);
+            break;
+        case COURSE_ROYAL_RACEWAY:
+            render_royal_raceway(arg0);
+            break;
+        case COURSE_LUIGI_RACEWAY:
+            render_luigi_raceway(arg0);
+            break;
+        case COURSE_MOO_MOO_FARM:
+            render_moo_moo_farm(arg0);
+            break;
+        case COURSE_TOADS_TURNPIKE:
+            render_toads_turnpike(arg0);
+            break;
+        case COURSE_KALAMARI_DESERT:
+            render_kalimari_desert(arg0);
+            break;
+        case COURSE_SHERBET_LAND:
+            render_sherbet_land(arg0);
+            break;
+        case COURSE_RAINBOW_ROAD:
+            render_rainbow_road(arg0);
+            // render_course_credits();
+            break;
+        case COURSE_WARIO_STADIUM:
+            render_wario_stadium(arg0);
+            break;
+        case COURSE_BLOCK_FORT:
+            render_block_fort(arg0);
+            break;
+        case COURSE_SKYSCRAPER:
+            render_skyscraper(arg0);
+            break;
+        case COURSE_DOUBLE_DECK:
+            render_double_deck(arg0);
+            break;
+        case COURSE_DK_JUNGLE:
+            render_dks_jungle_parkway(arg0);
+            break;
+        case COURSE_BIG_DONUT:
+            render_big_donut(arg0);
+            break;
+    }
+}
+#endif
