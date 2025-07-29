@@ -100,7 +100,6 @@ namespace ultramodern {
             {"ar_option",       config.ar_option},
             {"msaa_option",     config.msaa_option},
             {"rr_option",       config.rr_option},
-            {"hpfb_option",     config.hpfb_option},
             {"rr_manual_value", config.rr_manual_value},
             {"developer_mode",  config.developer_mode},
         };
@@ -115,7 +114,6 @@ namespace ultramodern {
         config.ar_option        = from_or_default(j, "ar_option",       ar_default);
         config.msaa_option      = from_or_default(j, "msaa_option",     msaa_default);
         config.rr_option        = from_or_default(j, "rr_option",       rr_default);
-        config.hpfb_option      = from_or_default(j, "hpfb_option",     hpfb_default);
         config.rr_manual_value  = from_or_default(j, "rr_manual_value", rr_manual_default);
         config.developer_mode   = from_or_default(j, "developer_mode",  developer_mode_default);
     }
@@ -349,7 +347,6 @@ void reset_graphics_options() {
     new_config.ar_option = ar_default;
     new_config.msaa_option = msaa_default;
     new_config.rr_option = rr_default;
-    new_config.hpfb_option = hpfb_default;
     new_config.rr_manual_value = rr_manual_default;
     new_config.developer_mode = developer_mode_default;
     ultramodern::renderer::set_graphics_config(new_config);

@@ -177,7 +177,7 @@ void set_application_user_config(RT64::Application* application, const ultramode
     application->userConfig.antialiasing = to_rt64(config.msaa_option);
     application->userConfig.refreshRate = to_rt64(config.rr_option);
     application->userConfig.refreshRateTarget = config.rr_manual_value;
-    application->userConfig.internalColorFormat = to_rt64(config.hpfb_option);
+    application->userConfig.internalColorFormat = RT64::UserConfiguration::InternalColorFormat::Standard;
     application->userConfig.displayBuffering = RT64::UserConfiguration::DisplayBuffering::Triple;
 }
 
