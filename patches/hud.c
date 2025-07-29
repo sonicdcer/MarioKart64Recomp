@@ -33,7 +33,7 @@ RECOMP_PATCH void func_8004EB38(s32 playerId) {
     }
 
     gEXSetRectAlign(gDisplayListHead++, G_EX_ORIGIN_LEFT, G_EX_ORIGIN_LEFT, 0, 0, 0, 0); // @recomp
-    
+
     if ((u8) temp_s0->unk_7E != 0) {
         func_8004C9D8((s32) temp_s0->lapAfterImage1X, temp_s0->lapY + 3, 0x00000080, (u8*) 0x000000000d00a958,
                       0x00000020, 8, 0x00000020, 8);
@@ -123,11 +123,13 @@ RECOMP_PATCH void func_8004ED40(s32 arg0) {
 }
 #endif
 
+// Theboy181: Temp fix for HUD in MP (until proper widescreen is made for MP modes)
 #if 1
 RECOMP_PATCH void func_800591B4(void) {
     if ((gHUDDisable == 0) && (D_800DC5B8 != 0)) {
         func_80057C60();
-        gSPDisplayList(gDisplayListHead++, 0x000000000d0076f8); // SETUP_DL
+        gSPDisplayList(gDisplayListHead++, 0x0d0076f8); // SETUP_DL
+
         if (gIsHUDVisible != 0) {
             if (D_801657D8 == 0) {
                 if (D_801657F0 != false) {
@@ -136,24 +138,31 @@ RECOMP_PATCH void func_800591B4(void) {
 
                 if ((!gDemoMode) && (D_801657E8 != false)) {
                     if (D_80165800[0] != 0) {
-                        gEXSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, G_EX_ORIGIN_LEFT, G_EX_ORIGIN_RIGHT, 0, 0,
-                                      0,
-                                      SCREEN_HEIGHT); // @recomp
-                        gEXSetRectAlign(gDisplayListHead++, G_EX_ORIGIN_RIGHT, G_EX_ORIGIN_RIGHT, -(SCREEN_WIDTH) * 4,
-                                        0, -(SCREEN_WIDTH) * 4, 0); // @recomp
+                        if (gScreenModeSelection < SCREEN_MODE_3P_4P_SPLITSCREEN) {
+                            gEXSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, G_EX_ORIGIN_LEFT, G_EX_ORIGIN_RIGHT,
+                                          0, 0, 0, SCREEN_HEIGHT); // @recomp
+
+                            gEXSetRectAlign(gDisplayListHead++, G_EX_ORIGIN_RIGHT, G_EX_ORIGIN_RIGHT,
+                                            -(SCREEN_WIDTH) * 4, 0, -(SCREEN_WIDTH) * 4, 0); // @recomp
+                        }
 
                         func_8004EE54(0); // map
                         if (gModeSelection != BATTLE) {
                             render_mini_map_finish_line(0);
                         }
 
-                        gEXSetViewportAlign(gDisplayListHead++, G_EX_ORIGIN_RIGHT, -(SCREEN_WIDTH) * 4, 0);
-                        gSPViewport(gDisplayListHead++, VIRTUAL_TO_PHYSICAL((void*) 0x802B8880));
+                        if (gScreenModeSelection < SCREEN_MODE_3P_4P_SPLITSCREEN) {
+                            gEXSetViewportAlign(gDisplayListHead++, G_EX_ORIGIN_RIGHT, -(SCREEN_WIDTH) * 4, 0);
+                            gSPViewport(gDisplayListHead++, VIRTUAL_TO_PHYSICAL((void*) 0x802B8880));
+                        }
 
                         func_8004F3E4(0); // racers on the map, including the player.
 
-                        gEXSetViewportAlign(gDisplayListHead++, G_EX_ORIGIN_NONE, 0, 0);
-                        gEXSetRectAlign(gDisplayListHead++, G_EX_ORIGIN_NONE, G_EX_ORIGIN_NONE, 0, 0, 0, 0); // @recomp
+                        if (gScreenModeSelection < SCREEN_MODE_3P_4P_SPLITSCREEN) {
+                            gEXSetViewportAlign(gDisplayListHead++, G_EX_ORIGIN_NONE, 0, 0);
+                            gEXSetRectAlign(gDisplayListHead++, G_EX_ORIGIN_NONE, G_EX_ORIGIN_NONE, 0, 0, 0,
+                                            0); // @recomp
+                        }
                     }
 
                     if ((gScreenModeSelection == SCREEN_MODE_2P_SPLITSCREEN_HORIZONTAL) && (D_80165800[1] != 0)) {
@@ -166,26 +175,38 @@ RECOMP_PATCH void func_800591B4(void) {
                 }
             }
 
-            gEXSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, G_EX_ORIGIN_LEFT, G_EX_ORIGIN_RIGHT, 0, 0, 0,
-                          SCREEN_HEIGHT); // @recomp
-            if (D_801657E2 == 0) {
-                gEXSetViewportAlign(gDisplayListHead++, G_EX_ORIGIN_LEFT, 0, 0);
-            } else {
-                gEXSetViewportAlign(gDisplayListHead++, G_EX_ORIGIN_NONE, 0, 0);
+            if (gScreenModeSelection < SCREEN_MODE_3P_4P_SPLITSCREEN) {
+                gEXSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, G_EX_ORIGIN_LEFT, G_EX_ORIGIN_RIGHT, 0, 0, 0,
+                              SCREEN_HEIGHT); // @recomp
+
+                if (D_801657E2 == 0) {
+                    gEXSetViewportAlign(gDisplayListHead++, G_EX_ORIGIN_LEFT, 0, 0);
+                } else {
+                    gEXSetViewportAlign(gDisplayListHead++, G_EX_ORIGIN_NONE, 0, 0);
+                }
+
+                gSPViewport(gDisplayListHead++, VIRTUAL_TO_PHYSICAL((void*) 0x802B8880));
             }
-            gSPViewport(gDisplayListHead++, VIRTUAL_TO_PHYSICAL((void*) 0x802B8880));
 
             if ((D_801657E4 != 2) && (gModeSelection == GRAND_PRIX) && (D_8018D2BC != 0)) {
                 func_80050320(); // racers ranking
             }
+
             func_800590D4(); // Player Ranking position (ex. 1st, 2nd, etc)
-            gEXSetViewportAlign(gDisplayListHead++, G_EX_ORIGIN_NONE, 0, 0);
-            gEXSetRectAlign(gDisplayListHead++, G_EX_ORIGIN_NONE, G_EX_ORIGIN_NONE, 0, 0, 0, 0); // @recomp
+
+            if (gScreenModeSelection < SCREEN_MODE_3P_4P_SPLITSCREEN) {
+                gEXSetViewportAlign(gDisplayListHead++, G_EX_ORIGIN_NONE, 0, 0);
+                gEXSetRectAlign(gDisplayListHead++, G_EX_ORIGIN_NONE, G_EX_ORIGIN_NONE, 0, 0, 0, 0); // @recomp
+            }
         }
+
         func_8005902C();
         func_80057DD0();
         func_80057CE4();
     }
-    gEXSetViewportAlign(gDisplayListHead++, G_EX_ORIGIN_NONE, 0, 0);
+
+    if (gScreenModeSelection < SCREEN_MODE_3P_4P_SPLITSCREEN) {
+        gEXSetViewportAlign(gDisplayListHead++, G_EX_ORIGIN_NONE, 0, 0);
+    }
 }
 #endif
