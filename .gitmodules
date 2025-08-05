@@ -24,4 +24,4 @@
 	url = https://github.com/sonicdcer/MarioKart64RecompSyms
 [submodule "lib/slot_map"]
 	path = lib/slot_map
-	url = https://github.com/SergeyMakeev/slot_map
+	url = https://github.com/SergeyMakeev/SlotMap
