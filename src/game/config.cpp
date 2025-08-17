@@ -251,7 +251,7 @@ void set_general_settings_from_json(const nlohmann::json& config_json) {
     recomp::set_rumble_strength(from_or_default(config_json, "rumble_strength", 50));
     recomp::set_gyro_sensitivity(from_or_default(config_json, "gyro_sensitivity", 50));
     recomp::set_mouse_sensitivity(from_or_default(config_json, "mouse_sensitivity", is_steam_deck ? 50 : 0));
-    recomp::set_joystick_deadzone(from_or_default(config_json, "joystick_deadzone", 5));
+    recomp::set_joystick_deadzone(from_or_default(config_json, "joystick_deadzone", 0));
     zelda64::set_autosave_mode(from_or_default(config_json, "autosave_mode", zelda64::AutosaveMode::On));
     zelda64::set_camera_invert_mode(from_or_default(config_json, "camera_invert_mode", zelda64::CameraInvertMode::InvertY));
     zelda64::set_analog_cam_mode(from_or_default(config_json, "analog_cam_mode", zelda64::AnalogCamMode::Off));
