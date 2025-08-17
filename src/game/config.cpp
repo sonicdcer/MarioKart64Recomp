@@ -25,7 +25,7 @@ constexpr std::u8string_view sound_filename = u8"sound.json";
 constexpr std::u8string_view program_id = u8"MarioKart64Recompiled";
 
 constexpr auto res_default            = ultramodern::renderer::Resolution::Auto;
-constexpr auto hr_default             = ultramodern::renderer::HUDRatioMode::Clamp16x9;
+constexpr auto hr_default             = ultramodern::renderer::HUDRatioMode::Full;
 constexpr auto api_default            = ultramodern::renderer::GraphicsApi::Auto;
 constexpr auto ar_default             = ultramodern::renderer::AspectRatio::Expand;
 constexpr auto msaa_default           = ultramodern::renderer::Antialiasing::MSAA2X;
