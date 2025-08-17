@@ -303,7 +303,7 @@ f32 is_within_render_distance(Vec3f, Vec3f, u16, f32, f32, f32);
 f32 distance_if_visible(Vec3f, Vec3f, u16, f32, f32, f32);
 void mtxf_rotate_zxy_translate(Mat4, Vec3f, Vec3s);
 void render_course_segments(uintptr_t addr, struct UnkStruct_800DC5EC* arg1);
-void copy_framebuffer(s32, s32, s32, s32, u16*, u16*);
+void copy_framebuffer(s32 arg0, s32 arg1, s32 width, s32 height, u16* source, u16* target);
 s32 func_80290C20(Camera* camera);
 void init_rdp(void);
 void init_z_buffer(void);
@@ -555,6 +555,8 @@ void render_double_deck(struct UnkStruct_800DC5EC *arg0);
 void render_dks_jungle_parkway(struct UnkStruct_800DC5EC *arg0);
 void render_big_donut(struct UnkStruct_800DC5EC *arg0);
 
+extern u8 *D_802BA050;
+extern u8 *D_802BA054;
 extern u8 D_0D0293D8[];
 extern s16 D_802B87D4;
 extern Vec3f D_80183E50;
