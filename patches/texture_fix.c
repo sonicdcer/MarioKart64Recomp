@@ -705,8 +705,8 @@ Gfx* RenderBackground(Gfx* displayListHead, s8 arg1, s32 arg2, s32 arg3, s32 arg
                                // tile size and the mask.
                                var_a1_2 + var_s2 - 1, var_s3 + var_s4 - 1, 0, G_TX_NOMIRROR | G_TX_WRAP,
                                G_TX_NOMIRROR | G_TX_WRAP, 0, 0, G_TX_NOLOD, G_TX_NOLOD);
-            gEXTextureRectangle(displayListHead++, G_EX_ORIGIN_LEFT, G_EX_ORIGIN_RIGHT, arg8 * 4, arg9 * 4,
-                                (arg8 + var_s2) * 4, (arg9 + var_s4) * 4, 0, (var_a1_2 * 32) & 0xFFFF,
+            gEXTextureRectangle(displayListHead++, G_EX_ORIGIN_CENTER, G_EX_ORIGIN_CENTER, arg8 * 4 - SCREEN_WIDTH * 2, arg9 * 4,
+                                (arg8 + var_s2) * 4 - SCREEN_WIDTH * 2, (arg9 + var_s4) * 4, 0, (var_a1_2 * 32) & 0xFFFF,
                                 (var_s3 * 32) & 0xFFFF, arg2, arg3);
 
             arg8 += var_t0;
@@ -803,8 +803,8 @@ Gfx* drawBackground2(Gfx* displayListHead, s8 arg1, s32 arg2, s32 arg3, s32 arg4
                                // tile size and the mask.
                                var_a1_2 + var_s2 - 1, var_s3 + var_s4 - 1, 0, G_TX_NOMIRROR | G_TX_WRAP,
                                G_TX_NOMIRROR | G_TX_WRAP, 0, 0, G_TX_NOLOD, G_TX_NOLOD);
-            gEXTextureRectangle(displayListHead++, G_EX_ORIGIN_LEFT, G_EX_ORIGIN_RIGHT, arg8 * 4, arg9 * 4,
-                                (arg8 + var_s2) * 4, (arg9 + var_s4) * 4, 0, (var_a1_2 * 32) & 0xFFFF,
+            gEXTextureRectangle(displayListHead++, G_EX_ORIGIN_CENTER, G_EX_ORIGIN_CENTER, arg8 * 4 - SCREEN_WIDTH * 2, arg9 * 4,
+                                (arg8 + var_s2) * 4 - SCREEN_WIDTH * 2, (arg9 + var_s4) * 4, 0, (var_a1_2 * 32) & 0xFFFF,
                                 (var_s3 * 32) & 0xFFFF, arg2, arg3);
 
             arg8 += var_t0;

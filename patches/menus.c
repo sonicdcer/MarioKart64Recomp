@@ -902,7 +902,6 @@ RECOMP_PATCH void render_menus(MenuItem* arg0) {
                 func_800A2EB8(arg0);
                 break;
             case MENU_ITEM_TYPE_0AB:
-
                 // scissor
                 gEXSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, G_EX_ORIGIN_LEFT, G_EX_ORIGIN_RIGHT, 0, 0,
                               SCREEN_WIDTH, SCREEN_HEIGHT);
