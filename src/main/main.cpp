@@ -56,7 +56,7 @@
 
 #include "../../lib/rt64/src/contrib/stb/stb_image.h"
 
-const std::string version_string = "0.9.0";
+const std::string version_string = "0.9.1";
 
 template<typename... Ts>
 void exit_error(const char* str, Ts ...args) {
