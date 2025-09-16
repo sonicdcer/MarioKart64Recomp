@@ -219,8 +219,10 @@ void queue_samples(int16_t* audio_data, size_t sample_count) {
     // swap buffer to correct for the address xor caused by endianness handling.
     float cur_main_volume = zelda64::get_main_volume() / 100.0f; // Get the current main volume, normalized to 0.0-1.0.
     for (size_t i = 0; i < sample_count; i += input_channels) {
-        swap_buffer[i + 0 + duplicated_input_frames * input_channels] = audio_data[i + 1] * (1.0f / 32768.0f) * cur_main_volume;
-        swap_buffer[i + 1 + duplicated_input_frames * input_channels] = audio_data[i + 0] * (1.0f / 32768.0f) * cur_main_volume;
+        // TODO: Don't swap buffers since the channels are reversed in MK64 for some reason
+        // Investigate
+        swap_buffer[i + 0 + duplicated_input_frames * input_channels] = audio_data[i + 0] * (1.0f / 32768.0f) * cur_main_volume;
+        swap_buffer[i + 1 + duplicated_input_frames * input_channels] = audio_data[i + 1] * (1.0f / 32768.0f) * cur_main_volume;
     }
     
     // TODO handle cases where a chunk is smaller than the duplicated frame count.
