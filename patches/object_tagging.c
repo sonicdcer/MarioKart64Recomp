@@ -54,11 +54,21 @@ RECOMP_PATCH void render_player(Player* player, s8 playerId, s8 screenId) {
     s32 var_v1;
     OSMesg* sp34;
 
-    // @recomp Tag the transform
-    gEXMatrixGroupDecomposed(gDisplayListHead++, (TAG_OBJECT(player) << 16) | screenId, G_EX_PUSH, G_MTX_MODELVIEW,
-                             G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_INTERPOLATE,
-                             G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE,
-                             G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
+    if ((gCamera1Skipped && (screenId == 0)) || (gCamera2Skipped && (screenId == 1)) ||
+        (gCamera3Skipped && (screenId == 2)) || (gCamera4Skipped && (screenId == 3))) {
+        // Skip
+        // @recomp Tag the transform
+        gEXMatrixGroupDecomposed(gDisplayListHead++, (TAG_OBJECT(player) << 16) | screenId, G_EX_PUSH, G_MTX_MODELVIEW,
+                                 G_EX_COMPONENT_AUTO, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_AUTO,
+                                 G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP,
+                                 G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
+    } else {
+        // @recomp Tag the transform
+        gEXMatrixGroupDecomposed(gDisplayListHead++, (TAG_OBJECT(player) << 16) | screenId, G_EX_PUSH, G_MTX_MODELVIEW,
+                                 G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO,
+                                 G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP,
+                                 G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
+    }
 
     update_wheel_palette(player, playerId, screenId, D_801651D0[screenId][playerId]);
     if (!(player->unk_002 & (4 << (screenId * 4)))) {
@@ -70,11 +80,22 @@ RECOMP_PATCH void render_player(Player* player, s8 playerId, s8 screenId) {
     temp_t1 = 8 << (screenId * 4);
     if ((temp_t1 == (player->unk_002 & temp_t1)) && (player->collision.surfaceDistance[2] <= 50.0f) &&
         (player->surfaceType != ICE)) {
-        gEXMatrixGroupDecomposed(gDisplayListHead++, (TAG_OBJECT(player) << 16) & 0xFFFF0000 | playerId << 8 | screenId,
-                                 G_EX_PUSH, G_MTX_MODELVIEW, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO,
-                                 G_EX_COMPONENT_AUTO, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE,
-                                 G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
-
+        if ((gCamera1Skipped && (screenId == 0)) || (gCamera2Skipped && (screenId == 1)) ||
+            (gCamera3Skipped && (screenId == 2)) || (gCamera4Skipped && (screenId == 3))) {
+            // Skip
+            // @recomp Tag the transform
+            gEXMatrixGroupDecomposed(gDisplayListHead++,
+                                     (TAG_OBJECT(player) << 16) & 0xFFFF0000 | playerId << 8 | screenId, G_EX_PUSH,
+                                     G_MTX_MODELVIEW, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_AUTO,
+                                     G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP,
+                                     G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
+        } else {
+            gEXMatrixGroupDecomposed(gDisplayListHead++,
+                                     (TAG_OBJECT(player) << 16) & 0xFFFF0000 | playerId << 8 | screenId, G_EX_PUSH,
+                                     G_MTX_MODELVIEW, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO,
+                                     G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP,
+                                     G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
+        }
         if ((player->effects & BOO_EFFECT) == BOO_EFFECT) {
             if (playerId == screenId) {
                 render_player_shadow(player, playerId, screenId);
@@ -86,21 +107,43 @@ RECOMP_PATCH void render_player(Player* player, s8 playerId, s8 screenId) {
         gEXPopMatrixGroup(gDisplayListHead++, G_MTX_MODELVIEW);
     }
     if ((player->type & PLAYER_INVISIBLE_OR_BOMB) != PLAYER_INVISIBLE_OR_BOMB) {
-        gEXMatrixGroupDecomposed(gDisplayListHead++, (TAG_OBJECT(player) << 16) & 0xFFFF0000 | playerId << 8 | screenId,
-                                 G_EX_PUSH, G_MTX_MODELVIEW, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO,
-                                 G_EX_COMPONENT_AUTO, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE,
-                                 G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
-
+        if ((gCamera1Skipped && (screenId == 0)) || (gCamera2Skipped && (screenId == 1)) ||
+            (gCamera3Skipped && (screenId == 2)) || (gCamera4Skipped && (screenId == 3))) {
+            // Skip
+            // @recomp Tag the transform
+            gEXMatrixGroupDecomposed(gDisplayListHead++,
+                                     (TAG_OBJECT(player) << 16) & 0xFFFF0000 | playerId << 8 | screenId, G_EX_PUSH,
+                                     G_MTX_MODELVIEW, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_AUTO,
+                                     G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP,
+                                     G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
+        } else {
+            gEXMatrixGroupDecomposed(gDisplayListHead++,
+                                     (TAG_OBJECT(player) << 16) & 0xFFFF0000 | playerId << 8 | screenId, G_EX_PUSH,
+                                     G_MTX_MODELVIEW, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO,
+                                     G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP,
+                                     G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
+        }
         render_kart(player, playerId, screenId, var_v1);
 
         // @recomp Pop the transform id.
         gEXPopMatrixGroup(gDisplayListHead++, G_MTX_MODELVIEW);
     } else {
-        gEXMatrixGroupDecomposed(gDisplayListHead++, (TAG_OBJECT(player) << 16) & 0xFFFF0000 | playerId << 8 | screenId,
-                                 G_EX_PUSH, G_MTX_MODELVIEW, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO,
-                                 G_EX_COMPONENT_AUTO, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE,
-                                 G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
-
+        if ((gCamera1Skipped && (screenId == 0)) || (gCamera2Skipped && (screenId == 1)) ||
+            (gCamera3Skipped && (screenId == 2)) || (gCamera4Skipped && (screenId == 3))) {
+            // Skip
+            // @recomp Tag the transform
+            gEXMatrixGroupDecomposed(gDisplayListHead++,
+                                     (TAG_OBJECT(player) << 16) & 0xFFFF0000 | playerId << 8 | screenId, G_EX_PUSH,
+                                     G_MTX_MODELVIEW, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_AUTO,
+                                     G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP,
+                                     G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
+        } else {
+            gEXMatrixGroupDecomposed(gDisplayListHead++,
+                                     (TAG_OBJECT(player) << 16) & 0xFFFF0000 | playerId << 8 | screenId, G_EX_PUSH,
+                                     G_MTX_MODELVIEW, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO,
+                                     G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP,
+                                     G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
+        }
         render_ghost(player, playerId, screenId, var_v1);
 
         // @recomp Pop the transform id.
@@ -109,22 +152,44 @@ RECOMP_PATCH void render_player(Player* player, s8 playerId, s8 screenId) {
     osRecvMesg(&gDmaMesgQueue, (OSMesg*) &sp34, OS_MESG_BLOCK);
     if ((temp_t1 == (player->unk_002 & temp_t1)) && (player->surfaceType == ICE) && ((player->unk_0CA & 1) != 1) &&
         (player->collision.surfaceDistance[2] <= 30.0f)) {
-        gEXMatrixGroupDecomposed(gDisplayListHead++, (TAG_OBJECT(player) << 16) & 0xFFFF0000 | playerId << 8 | screenId,
-                                 G_EX_PUSH, G_MTX_MODELVIEW, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO,
-                                 G_EX_COMPONENT_AUTO, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE,
-                                 G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
-
+        if ((gCamera1Skipped && (screenId == 0)) || (gCamera2Skipped && (screenId == 1)) ||
+            (gCamera3Skipped && (screenId == 2)) || (gCamera4Skipped && (screenId == 3))) {
+            // Skip
+            // @recomp Tag the transform
+            gEXMatrixGroupDecomposed(gDisplayListHead++,
+                                     (TAG_OBJECT(player) << 16) & 0xFFFF0000 | playerId << 8 | screenId, G_EX_PUSH,
+                                     G_MTX_MODELVIEW, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_AUTO,
+                                     G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP,
+                                     G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
+        } else {
+            gEXMatrixGroupDecomposed(gDisplayListHead++,
+                                     (TAG_OBJECT(player) << 16) & 0xFFFF0000 | playerId << 8 | screenId, G_EX_PUSH,
+                                     G_MTX_MODELVIEW, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO,
+                                     G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP,
+                                     G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
+        }
         render_player_ice_reflection(player, playerId, screenId, var_v1);
 
         // @recomp Pop the transform id.
         gEXPopMatrixGroup(gDisplayListHead++, G_MTX_MODELVIEW);
     }
     if (player->boostPower >= 2.0f) {
-        gEXMatrixGroupDecomposed(gDisplayListHead++, (TAG_OBJECT(player) << 16) & 0xFFFF0000 | playerId << 8 | screenId,
-                                 G_EX_PUSH, G_MTX_MODELVIEW, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO,
-                                 G_EX_COMPONENT_AUTO, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE,
-                                 G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
-
+        if ((gCamera1Skipped && (screenId == 0)) || (gCamera2Skipped && (screenId == 1)) ||
+            (gCamera3Skipped && (screenId == 2)) || (gCamera4Skipped && (screenId == 3))) {
+            // Skip
+            // @recomp Tag the transform
+            gEXMatrixGroupDecomposed(gDisplayListHead++,
+                                     (TAG_OBJECT(player) << 16) & 0xFFFF0000 | playerId << 8 | screenId, G_EX_PUSH,
+                                     G_MTX_MODELVIEW, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_AUTO,
+                                     G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP,
+                                     G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
+        } else {
+            gEXMatrixGroupDecomposed(gDisplayListHead++,
+                                     (TAG_OBJECT(player) << 16) & 0xFFFF0000 | playerId << 8 | screenId, G_EX_PUSH,
+                                     G_MTX_MODELVIEW, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO,
+                                     G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP,
+                                     G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
+        }
         func_80025DE8(player, playerId, screenId, var_v1);
 
         // @recomp Pop the transform id.
@@ -1463,6 +1528,9 @@ RECOMP_PATCH void render_course_actors(struct UnkStruct_800DC5EC* arg0) {
     }
     D_8015F8E0 = 0;
 
+    // recomp_printf("gCamera1Skipped: %d \n", gCamera1Skipped);
+    // recomp_printf("camera->playerId: %d \n", camera->playerId);
+
     for (i = 0; i < ACTOR_LIST_SIZE; i++) {
         actor = &gActorList[i];
 
@@ -1470,9 +1538,36 @@ RECOMP_PATCH void render_course_actors(struct UnkStruct_800DC5EC* arg0) {
             continue;
         }
 
-        // @recomp Tag the transform.
-        gEXMatrixGroupDecomposedNormal(gDisplayListHead++, TAG_OBJECT(actor), G_EX_PUSH, G_MTX_MODELVIEW,
-                                       G_EX_EDIT_ALLOW);
+        if ((gCamera1Skipped && (camera->playerId == 0)) || (gCamera2Skipped && (camera->playerId == 1)) ||
+            (gCamera3Skipped && (camera->playerId == 2)) || (gCamera4Skipped && (camera->playerId == 3))) {
+            // Skip
+            // @recomp Tag the transform
+            gEXMatrixGroupDecomposed(gDisplayListHead++, TAG_OBJECT((u32) actor << 16) | 0x01000000, G_EX_PUSH,
+                                     G_MTX_MODELVIEW, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP,
+                                     G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP,
+                                     G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
+
+#if 0
+            recomp_printf("render_course_actors: actor->type %d Camera %d skipped \n", actor->type, camera->playerId);
+
+            if (gCamera1Skipped) {
+                recomp_printf("gCamera1Skipped = %d \n", gCamera1Skipped);
+            }
+            if (gCamera2Skipped) {
+                recomp_printf("gCamera2Skipped = %d \n", gCamera2Skipped);
+            }
+            if (gCamera3Skipped) {
+                recomp_printf("gCamera3Skipped = %d \n", gCamera3Skipped);
+            }
+            if (gCamera4Skipped) {
+                recomp_printf("gCamera4Skipped = %d \n", gCamera4Skipped);
+            }
+#endif
+        } else {
+            // @recomp Tag the transform.
+            gEXMatrixGroupDecomposedNormal(gDisplayListHead++, TAG_OBJECT(actor), G_EX_PUSH, G_MTX_MODELVIEW,
+                                           G_EX_EDIT_ALLOW);
+        }
 
         switch (actor->type) {
             case ACTOR_TREE_MARIO_RACEWAY:
@@ -1587,11 +1682,23 @@ RECOMP_PATCH void render_course_actors(struct UnkStruct_800DC5EC* arg0) {
         // @recomp Pop the transform id.
         gEXPopMatrixGroup(gDisplayListHead++, G_MTX_MODELVIEW);
     }
-    // @recomp Tag the transform
-    gEXMatrixGroupDecomposed(gDisplayListHead++, TAG_OBJECT((u32) actor << 16) | 0x01000000, G_EX_PUSH, G_MTX_MODELVIEW,
-                             G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_INTERPOLATE,
-                             G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE,
-                             G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
+
+    if ((gCamera1Skipped && (camera->playerId == 1)) || (gCamera2Skipped && (camera->playerId == 2)) ||
+        (gCamera3Skipped && (camera->playerId == 3)) || (gCamera4Skipped && (camera->playerId == 4))) {
+        // Skip
+        // @recomp Tag the transform
+        gEXMatrixGroupDecomposed(gDisplayListHead++, TAG_OBJECT((u32) actor << 16) | 0x01000000, G_EX_PUSH,
+                                 G_MTX_MODELVIEW, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP,
+                                 G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP,
+                                 G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
+        // recomp_printf("render_course_actors: Camera %d skipped \n", camera->playerId);
+    } else {
+        // @recomp Tag the transform
+        gEXMatrixGroupDecomposed(gDisplayListHead++, TAG_OBJECT((u32) actor << 16) | 0x01000000, G_EX_PUSH,
+                                 G_MTX_MODELVIEW, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO,
+                                 G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP,
+                                 G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
+    }
 
     switch (gCurrentCourseId) {
         case COURSE_MOO_MOO_FARM:

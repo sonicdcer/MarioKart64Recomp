@@ -53,6 +53,11 @@
 #include "objects.h"
 #include "debug.h"
 
+extern s32 gCamera1Skipped;
+extern s32 gCamera2Skipped;
+extern s32 gCamera3Skipped;
+extern s32 gCamera4Skipped;
+
 #define MAKE_RGB(r, g, b) (((r) << 0x10) | ((g) << 0x08) | (b << 0x00))
 
 #ifndef gEXFillRectangle

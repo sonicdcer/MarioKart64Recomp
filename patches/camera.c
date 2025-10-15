@@ -439,6 +439,11 @@ bool should_interpolate_perspective(Vec3f eye, Vec3f at, int cameraId) {
     return true;
 }
 
+s32 gCamera1Skipped = 0;
+s32 gCamera2Skipped = 0;
+s32 gCamera3Skipped = 0;
+s32 gCamera4Skipped = 0;
+
 #if 1
 RECOMP_PATCH void render_player_one_1p_screen(void) {
     Camera* camera = &cameras[0];
@@ -458,17 +463,19 @@ RECOMP_PATCH void render_player_one_1p_screen(void) {
     // recomp_printf("CAMERA LOOKAT Y: %f\n", camera->pos[1]);
     // recomp_printf("CAMERA LOOKAT Z: %f\n\n", camera->pos[2]);
 
-    bool bigJump = !should_interpolate_perspective(camera->pos, camera->lookAt, 1);
+    bool bigJump = !should_interpolate_perspective(camera->pos, camera->lookAt, 0);
 
     if (bigJump) {
         gEXMatrixGroupSimple(gDisplayListHead++, 0xFFFFAAAA, G_EX_NOPUSH, G_MTX_PROJECTION, G_EX_COMPONENT_SKIP,
                              G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE,
                              G_EX_ORDER_LINEAR, G_EX_EDIT_NONE);
         recomp_printf("CAMERA 1 SKIPED: %d\n", bigJump);
+        gCamera1Skipped = true;
     } else {
         gEXMatrixGroupSimple(gDisplayListHead++, 0xFFFFAAAA, G_EX_NOPUSH, G_MTX_PROJECTION, G_EX_COMPONENT_INTERPOLATE,
                              G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE,
                              G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_LINEAR, G_EX_EDIT_NONE);
+        gCamera1Skipped = false;
     }
 
     func_802A53A4();
@@ -527,17 +534,19 @@ RECOMP_PATCH void render_player_one_2p_screen_vertical(void) {
     u16 perspNorm;
     Mat4 matrix;
 
-    bool bigJump = !should_interpolate_perspective(camera->pos, camera->lookAt, 1);
+    bool bigJump = !should_interpolate_perspective(camera->pos, camera->lookAt, 0);
 
     if (bigJump) {
         gEXMatrixGroupSimple(gDisplayListHead++, 0xFFFFAAAB, G_EX_NOPUSH, G_MTX_PROJECTION, G_EX_COMPONENT_SKIP,
                              G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE,
                              G_EX_ORDER_LINEAR, G_EX_EDIT_NONE);
         recomp_printf("CAMERA 1 SKIPED: %d\n", bigJump);
+        gCamera1Skipped = true;
     } else {
         gEXMatrixGroupSimple(gDisplayListHead++, 0xFFFFAAAB, G_EX_NOPUSH, G_MTX_PROJECTION, G_EX_COMPONENT_INTERPOLATE,
                              G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE,
                              G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_LINEAR, G_EX_EDIT_NONE);
+        gCamera1Skipped = false;
     }
 
     func_802A50EC();
@@ -599,17 +608,19 @@ RECOMP_PATCH void render_player_two_2p_screen_vertical(void) {
     u16 perspNorm;
     Mat4 matrix;
 
-    bool bigJump = !should_interpolate_perspective(camera->pos, camera->lookAt, 2);
+    bool bigJump = !should_interpolate_perspective(camera->pos, camera->lookAt, 1);
 
     if (bigJump) {
         gEXMatrixGroupSimple(gDisplayListHead++, 0xFFFFAAAC, G_EX_NOPUSH, G_MTX_PROJECTION, G_EX_COMPONENT_SKIP,
                              G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE,
                              G_EX_ORDER_LINEAR, G_EX_EDIT_NONE);
         recomp_printf("CAMERA 2 SKIPED: %d\n", bigJump);
+        gCamera2Skipped = true;
     } else {
         gEXMatrixGroupSimple(gDisplayListHead++, 0xFFFFAAAC, G_EX_NOPUSH, G_MTX_PROJECTION, G_EX_COMPONENT_INTERPOLATE,
                              G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE,
                              G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_LINEAR, G_EX_EDIT_NONE);
+        gCamera2Skipped = false;
     }
 
     func_802A5004();
@@ -672,17 +683,19 @@ RECOMP_PATCH void render_player_one_2p_screen_horizontal(void) {
     f32 sp9C;
 #endif
 
-    bool bigJump = !should_interpolate_perspective(camera->pos, camera->lookAt, 1);
+    bool bigJump = !should_interpolate_perspective(camera->pos, camera->lookAt, 0);
 
     if (bigJump) {
         gEXMatrixGroupSimple(gDisplayListHead++, 0xFFFFAAAD, G_EX_NOPUSH, G_MTX_PROJECTION, G_EX_COMPONENT_SKIP,
                              G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE,
                              G_EX_ORDER_LINEAR, G_EX_EDIT_NONE);
         recomp_printf("CAMERA 1 SKIPED: %d\n", bigJump);
+        gCamera1Skipped = true;
     } else {
         gEXMatrixGroupSimple(gDisplayListHead++, 0xFFFFAAAD, G_EX_NOPUSH, G_MTX_PROJECTION, G_EX_COMPONENT_INTERPOLATE,
                              G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE,
                              G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_LINEAR, G_EX_EDIT_NONE);
+        gCamera1Skipped = false;
     }
 
     func_802A51D4();
@@ -751,17 +764,19 @@ RECOMP_PATCH void render_player_two_2p_screen_horizontal(void) {
     f32 sp9C;
 #endif
 
-    bool bigJump = !should_interpolate_perspective(camera->pos, camera->lookAt, 2);
+    bool bigJump = !should_interpolate_perspective(camera->pos, camera->lookAt, 1);
 
     if (bigJump) {
         gEXMatrixGroupSimple(gDisplayListHead++, 0xFFFFAAAE, G_EX_NOPUSH, G_MTX_PROJECTION, G_EX_COMPONENT_SKIP,
                              G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE,
                              G_EX_ORDER_LINEAR, G_EX_EDIT_NONE);
         recomp_printf("CAMERA 2 SKIPED: %d\n", bigJump);
+        gCamera2Skipped = true;
     } else {
         gEXMatrixGroupSimple(gDisplayListHead++, 0xFFFFAAAE, G_EX_NOPUSH, G_MTX_PROJECTION, G_EX_COMPONENT_INTERPOLATE,
                              G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE,
                              G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_LINEAR, G_EX_EDIT_NONE);
+        gCamera2Skipped = false;
     }
 
     func_802A52BC();
@@ -830,17 +845,19 @@ RECOMP_PATCH void render_player_one_3p_4p_screen(void) {
     sp9C = gScreenAspect * 1.2f;
 #endif
 
-    bool bigJump = !should_interpolate_perspective(camera->pos, camera->lookAt, 1);
+    bool bigJump = !should_interpolate_perspective(camera->pos, camera->lookAt, 0);
 
     if (bigJump) {
         gEXMatrixGroupSimple(gDisplayListHead++, 0xFFFFAAAF, G_EX_NOPUSH, G_MTX_PROJECTION, G_EX_COMPONENT_SKIP,
                              G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE,
                              G_EX_ORDER_LINEAR, G_EX_EDIT_NONE);
         recomp_printf("CAMERA 1 SKIPED: %d\n", bigJump);
+        gCamera1Skipped = true;
     } else {
         gEXMatrixGroupSimple(gDisplayListHead++, 0xFFFFAAAF, G_EX_NOPUSH, G_MTX_PROJECTION, G_EX_COMPONENT_INTERPOLATE,
                              G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE,
                              G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_LINEAR, G_EX_EDIT_NONE);
+        gCamera1Skipped = false;
     }
 
     func_802A54A8();
@@ -905,17 +922,19 @@ RECOMP_PATCH void render_player_two_3p_4p_screen(void) {
     sp9C = gScreenAspect * 1.2f;
 #endif
 
-    bool bigJump = !should_interpolate_perspective(camera->pos, camera->lookAt, 2);
+    bool bigJump = !should_interpolate_perspective(camera->pos, camera->lookAt, 1);
 
     if (bigJump) {
         gEXMatrixGroupSimple(gDisplayListHead++, 0xFFFFAAB0, G_EX_NOPUSH, G_MTX_PROJECTION, G_EX_COMPONENT_SKIP,
                              G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE,
                              G_EX_ORDER_LINEAR, G_EX_EDIT_NONE);
         recomp_printf("CAMERA 2 SKIPED: %d\n", bigJump);
+        gCamera2Skipped = true;
     } else {
         gEXMatrixGroupSimple(gDisplayListHead++, 0xFFFFAAB0, G_EX_NOPUSH, G_MTX_PROJECTION, G_EX_COMPONENT_INTERPOLATE,
                              G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE,
                              G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_LINEAR, G_EX_EDIT_NONE);
+        gCamera2Skipped = false;
     }
 
     func_802A5590();
@@ -976,17 +995,19 @@ RECOMP_PATCH void render_player_three_3p_4p_screen(void) {
     u16 perspNorm;
     Mat4 matrix;
 
-    bool bigJump = !should_interpolate_perspective(camera->pos, camera->lookAt, 3);
+    bool bigJump = !should_interpolate_perspective(camera->pos, camera->lookAt, 2);
 
     if (bigJump) {
         gEXMatrixGroupSimple(gDisplayListHead++, 0xFFFFAAB1, G_EX_NOPUSH, G_MTX_PROJECTION, G_EX_COMPONENT_SKIP,
                              G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE,
                              G_EX_ORDER_LINEAR, G_EX_EDIT_NONE);
         recomp_printf("CAMERA 3 SKIPED: %d\n", bigJump);
+        gCamera3Skipped = true;
     } else {
         gEXMatrixGroupSimple(gDisplayListHead++, 0xFFFFAAB1, G_EX_NOPUSH, G_MTX_PROJECTION, G_EX_COMPONENT_INTERPOLATE,
                              G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE,
                              G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_LINEAR, G_EX_EDIT_NONE);
+        gCamera3Skipped = false;
     }
 
     func_802A5678();
@@ -1039,25 +1060,26 @@ RECOMP_PATCH void render_player_three_3p_4p_screen(void) {
 }
 #endif
 
-// camera 4 keeps skipping for some reason. Investigate.
-#if 0
+#if 1
 RECOMP_PATCH void render_player_four_3p_4p_screen(void) {
     Camera* camera = camera4;
     UNUSED s32 pad[2];
     u16 perspNorm;
     Mat4 matrix;
 
-    bool bigJump = !should_interpolate_perspective(camera->pos, camera->lookAt, 4);
+    bool bigJump = !should_interpolate_perspective(camera->pos, camera->lookAt, 3);
 
     if (bigJump) {
         gEXMatrixGroupSimple(gDisplayListHead++, 0xFFFFAAB2, G_EX_NOPUSH, G_MTX_PROJECTION, G_EX_COMPONENT_SKIP,
                              G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE,
                              G_EX_ORDER_LINEAR, G_EX_EDIT_NONE);
         recomp_printf("CAMERA 4 SKIPED: %d\n", bigJump);
+        gCamera4Skipped = true;
     } else {
         gEXMatrixGroupSimple(gDisplayListHead++, 0xFFFFAAB2, G_EX_NOPUSH, G_MTX_PROJECTION, G_EX_COMPONENT_INTERPOLATE,
                              G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE,
                              G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_LINEAR, G_EX_EDIT_NONE);
+        gCamera4Skipped = false;
     }
 
     func_802A5760();
