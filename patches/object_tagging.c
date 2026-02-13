@@ -58,13 +58,13 @@ RECOMP_PATCH void render_player(Player* player, s8 playerId, s8 screenId) {
         (gCamera3Skipped && (screenId == 2)) || (gCamera4Skipped && (screenId == 3))) {
         // Skip
         // @recomp Tag the transform
-        gEXMatrixGroupDecomposed(gDisplayListHead++, (TAG_OBJECT(player) << 16) | screenId, G_EX_PUSH, G_MTX_MODELVIEW,
+        gEXMatrixGroupDecomposed(gDisplayListHead++, (TAG_OBJECT(player) << 16) | playerId << 8 | screenId, G_EX_PUSH, G_MTX_MODELVIEW,
                                  G_EX_COMPONENT_AUTO, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_AUTO,
                                  G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP,
                                  G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
     } else {
         // @recomp Tag the transform
-        gEXMatrixGroupDecomposed(gDisplayListHead++, (TAG_OBJECT(player) << 16) | screenId, G_EX_PUSH, G_MTX_MODELVIEW,
+        gEXMatrixGroupDecomposed(gDisplayListHead++, (TAG_OBJECT(player) << 16) | playerId << 8 | screenId, G_EX_PUSH, G_MTX_MODELVIEW,
                                  G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO,
                                  G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP,
                                  G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
