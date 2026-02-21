@@ -591,6 +591,19 @@ int main(int argc, char** argv) {
     timeBeginPeriod(1);
 
     // Process arguments.
+
+    for (int i = 1; i < argc; i++) {
+        if (strcmp(argv[i], "--show-console") == 0) {
+            if (GetConsoleWindow() == nullptr) {
+                AllocConsole();
+                freopen("CONIN$", "r", stdin);
+                freopen("CONOUT$", "w", stderr);
+                freopen("CONOUT$", "w", stdout);
+            }
+
+            break;
+        }
+    }
     
     // Set up console output to accept UTF-8 on windows
     SetConsoleOutputCP(CP_UTF8);
