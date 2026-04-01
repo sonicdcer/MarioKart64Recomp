@@ -1551,10 +1551,11 @@ RECOMP_PATCH void render_course_actors(struct UnkStruct_800DC5EC* arg0) {
             (gCamera3Skipped && (camera->playerId == 2)) || (gCamera4Skipped && (camera->playerId == 3))) {
             // Skip
             // @recomp Tag the transform
-            gEXMatrixGroupDecomposed(gDisplayListHead++, TAG_OBJECT((u32) actor << 16) | 0x01000000, G_EX_PUSH,
-                                     G_MTX_MODELVIEW, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP,
+            gEXMatrixGroupDecomposed(gDisplayListHead++, TAG_OBJECT((u32) actor << 16) | 0x01000000 | camera->playerId,
+                                     G_EX_PUSH, G_MTX_MODELVIEW, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP,
                                      G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP,
-                                     G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP);
+                                     G_EX_COMPONENT_SKIP, G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW, G_EX_COMPONENT_SKIP,
+                                     G_EX_COMPONENT_SKIP);
 
 #if 0
             recomp_printf("render_course_actors: actor->type %d Camera %d skipped \n", actor->type, camera->playerId);
@@ -1574,8 +1575,9 @@ RECOMP_PATCH void render_course_actors(struct UnkStruct_800DC5EC* arg0) {
 #endif
         } else {
             // @recomp Tag the transform.
-            gEXMatrixGroupDecomposedNormal(gDisplayListHead++, TAG_OBJECT(actor), G_EX_PUSH, G_MTX_MODELVIEW,
-                                           G_EX_EDIT_ALLOW);
+            gEXMatrixGroupDecomposedNormal(gDisplayListHead++,
+                                           TAG_OBJECT((u32) actor << 16) | 0x01000000 | camera->playerId, G_EX_PUSH,
+                                           G_MTX_MODELVIEW, G_EX_EDIT_ALLOW);
         }
 
         switch (actor->type) {
@@ -1614,7 +1616,8 @@ RECOMP_PATCH void render_course_actors(struct UnkStruct_800DC5EC* arg0) {
                 break;
             case ACTOR_FALLING_ROCK:
                 // @recomp Tag the transform
-                gEXMatrixGroupDecomposed(gDisplayListHead++, TAG_OBJECT((u32) actor << 16) | 0x01000000, G_EX_PUSH,
+                gEXMatrixGroupDecomposed(gDisplayListHead++,
+                                         TAG_OBJECT((u32) actor << 16) | 0x01000000 | camera->playerId, G_EX_PUSH,
                                          G_MTX_MODELVIEW, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO,
                                          G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP,
                                          G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW,
@@ -1697,14 +1700,14 @@ RECOMP_PATCH void render_course_actors(struct UnkStruct_800DC5EC* arg0) {
         (gCamera3Skipped && (camera->playerId == 3)) || (gCamera4Skipped && (camera->playerId == 4))) {
         // Skip
         // @recomp Tag the transform
-        gEXMatrixGroupDecomposed(gDisplayListHead++, TAG_OBJECT((u32) actor << 16) | 0x01000000, G_EX_PUSH,
+        gEXMatrixGroupDecomposed(gDisplayListHead++, TAG_OBJECT((u32) actor << 16) | 0x01000000 | camera->playerId, G_EX_PUSH,
                                  G_MTX_MODELVIEW, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP,
                                  G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP,
                                  G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP);
         // recomp_printf("render_course_actors: Camera %d skipped \n", camera->playerId);
     } else {
         // @recomp Tag the transform
-        gEXMatrixGroupDecomposed(gDisplayListHead++, TAG_OBJECT((u32) actor << 16) | 0x01000000, G_EX_PUSH,
+        gEXMatrixGroupDecomposed(gDisplayListHead++, TAG_OBJECT((u32) actor << 16) | 0x01000000 | camera->playerId, G_EX_PUSH,
                                  G_MTX_MODELVIEW, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO,
                                  G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP,
                                  G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW, G_EX_COMPONENT_SKIP,
