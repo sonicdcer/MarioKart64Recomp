@@ -34,8 +34,8 @@ RECOMP_PATCH void render_luigi_raceway(struct UnkStruct_800DC5EC* arg0) {
     D_800DC5DC = 88;
     D_800DC5E0 = 72;
 
-    // Render only the first player camera onto the television billboard. Screen agnostic screens of other players).
-    if ((gActiveScreenMode == SCREEN_MODE_1P) && (sp22 >= 10) && (sp22 < 17)) {
+    // @ Recomp: Render Jumbotron to all screens
+    if (/* (gActiveScreenMode == SCREEN_MODE_1P) && */ (sp22 >= 10) && (sp22 < 17)) {
 
         prevFrame = (s16) sRenderedFramebuffer - 1;
 
@@ -116,7 +116,9 @@ RECOMP_PATCH void render_wario_stadium(struct UnkStruct_800DC5EC* arg0) {
 
     D_800DC5DC = 88;
     D_800DC5E0 = 72;
-    if (gActiveScreenMode == SCREEN_MODE_1P) {
+
+    // @ Recomp: Render Jumbotron to all screens
+    if (1 /* gActiveScreenMode == SCREEN_MODE_1P */) {
         prevFrame = (s16) sRenderedFramebuffer - 1;
         if (prevFrame < 0) {
             prevFrame = 2;
