@@ -17,7 +17,7 @@ RECOMP_PATCH f32 is_within_render_distance(Vec3f cameraPos, Vec3f objectPos, u16
     maxDistance *= 6.5f;
     scaleFov = 1.25;
 
-    f32 extended_fov = ((f32) fov * 0xB6 * scaleFov); // Sets the Culling for objects on the left and right
+    f32 extended_fov = ((f32) fov * 300 * scaleFov); // Sets the Culling for objects on the left and right
 
 
     distanceX = objectPos[0] - cameraPos[0];
