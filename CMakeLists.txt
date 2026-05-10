@@ -142,7 +142,6 @@ add_executable(MarioKart64Recompiled)
 set (SOURCES
     ${CMAKE_SOURCE_DIR}/src/main/launcher_animation.cpp
     ${CMAKE_SOURCE_DIR}/src/main/main.cpp
-    ${CMAKE_SOURCE_DIR}/src/main/support.cpp
     ${CMAKE_SOURCE_DIR}/src/main/register_overlays.cpp
     ${CMAKE_SOURCE_DIR}/src/main/register_patches.cpp
     ${CMAKE_SOURCE_DIR}/src/main/theme.cpp

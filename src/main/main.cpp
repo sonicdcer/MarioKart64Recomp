@@ -698,7 +698,7 @@ int main(int argc, char** argv) {
     reset_audio(48000);
 
     // Source controller mappings file
-    std::u8string controller_db_path = (zelda64::get_program_path() / "recompcontrollerdb.txt").u8string();
+    std::u8string controller_db_path = (recompui::file::get_program_path() / "recompcontrollerdb.txt").u8string();
     if (SDL_GameControllerAddMappingsFromFile(reinterpret_cast<const char *>(controller_db_path.c_str())) < 0) {
         fprintf(stderr, "Failed to load controller mappings: %s\n", SDL_GetError());
     }
