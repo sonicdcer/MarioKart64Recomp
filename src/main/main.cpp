@@ -91,12 +91,12 @@ ultramodern::gfx_callbacks_t::gfx_data_t create_gfx() {
     return {};
 }
 
-#if 0
 ultramodern::input::connected_device_info_t get_connected_device_info(int controller_num) {
-    if (controller_num < recompinput::players::get_max_number_of_players()) {
+    bool singleplayer = recompinput::players::is_single_player_mode();
+    if ((singleplayer && controller_num == 0) || (!singleplayer && recompinput::players::get_player_is_assigned(controller_num))) {
         return ultramodern::input::connected_device_info_t{
             .connected_device = ultramodern::input::Device::Controller,
-            .connected_pak = ultramodern::input::Pak::RumblePak,
+            .connected_pak = ultramodern::input::Pak::ControllerPak,
         };
     }
 
@@ -105,38 +105,6 @@ ultramodern::input::connected_device_info_t get_connected_device_info(int contro
         .connected_pak = ultramodern::input::Pak::None,
     };
 }
-#else
-ultramodern::input::connected_device_info_t get_connected_device_info(int controller_num) {
-    if (recompinput::players::is_single_player_mode()) {
-        if (controller_num == 0) {
-            return ultramodern::input::connected_device_info_t{
-                .connected_device = ultramodern::input::Device::Controller,
-                .connected_pak = ultramodern::input::Pak::RumblePak,
-            };
-        }
-        else {
-            return ultramodern::input::connected_device_info_t{
-                .connected_device = ultramodern::input::Device::None,
-                .connected_pak = ultramodern::input::Pak::None,
-            };
-        }
-    }
-    else {
-        if (recompinput::players::get_player_is_assigned(controller_num)) {
-            return ultramodern::input::connected_device_info_t{
-                .connected_device = ultramodern::input::Device::Controller,
-                .connected_pak = ultramodern::input::Pak::RumblePak,
-            };
-        }
-        else {
-            return ultramodern::input::connected_device_info_t{
-                .connected_device = ultramodern::input::Device::None,
-                .connected_pak = ultramodern::input::Pak::None,
-            };
-        }
-    }
-}
-#endif
 
 #include "icon_bytes.h"
 
@@ -728,7 +696,7 @@ int main(int argc, char** argv) {
     zelda64::register_overlays();
     zelda64::register_patches();
 
-    recompinput::players::set_single_player_mode(false);
+    recompinput::players::set_single_player_mode(true);
 
     zelda64::init_config();
 
