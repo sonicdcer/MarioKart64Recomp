@@ -14,6 +14,9 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND CMAKE_CXX_SIMULATE_ID STREQUAL "MSVC")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-everything /W4")
+    set(ALIGNMENT_FLAG "/clang:-falign-functions=16")
+else()
+    set(ALIGNMENT_FLAG "-falign-functions=16")
 endif()
 
 # Opt out of constexpr mutex constructor on windows to prevent vcredist issues
@@ -69,6 +72,7 @@ target_compile_options(RecompiledFuncs PRIVATE
     -fno-strict-aliasing
     -Wno-unused-variable
     -Wno-implicit-function-declaration
+    ${ALIGNMENT_FLAG}
 )
 
 target_include_directories(RecompiledFuncs PRIVATE
