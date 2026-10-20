@@ -300,13 +300,13 @@ static void set_control_defaults() {
         }
     );
 
- //   set_default_mapping_for_controller(
- //       GameInput::C_DOWN,
- //       { 
- //           InputField::controller_digital(SDL_CONTROLLER_BUTTON_EAST),
- //           InputField::controller_analog(SDL_GameControllerAxis::SDL_CONTROLLER_AXIS_TRIGGERLEFT, true)
- //       }
- //   );
+    set_default_mapping_for_controller(
+        GameInput::C_DOWN,
+        { 
+            // InputField::controller_digital(SDL_CONTROLLER_BUTTON_EAST),
+            InputField::controller_analog(SDL_GameControllerAxis::SDL_CONTROLLER_AXIS_RIGHTY, true)
+        }
+    );
 //
  //   set_default_mapping_for_controller(
  //       GameInput::C_LEFT,
