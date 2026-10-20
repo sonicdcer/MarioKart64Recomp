@@ -72,3 +72,7 @@ recomp_sleep_miliseconds = 0x8F0000E4;
 osPfsFindFile_recomp = 0x8F0000F4;
 osPfsReadWriteFile_recomp = 0x8F0000F8;
 osPfsDeleteFile_recomp = 0x8F0000FC;
+recomp_set_singleplayer_mode = 0x8F000100;
+recomp_set_multiplayer_min_max_two_players = 0x8F000104;
+recomp_set_multiplayer_min_max_three_players = 0x8F000108;
+recomp_set_multiplayer_min_max_four_players = 0x8F00010C;

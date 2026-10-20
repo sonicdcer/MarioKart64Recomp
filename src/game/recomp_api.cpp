@@ -89,6 +89,25 @@ extern "C" void recomp_get_window_resolution(uint8_t* rdram, recomp_context* ctx
     MEM_W(0, height_out) = (u32) height;
 }
 
+extern "C" void recomp_set_multiplayer_min_max_two_players(uint8_t* rdram, recomp_context* ctx) {
+    recompinput::players::set_player_count_range(2, 2);
+    recompinput::players::set_single_player_mode(false);
+}
+
+extern "C" void recomp_set_multiplayer_min_max_three_players(uint8_t* rdram, recomp_context* ctx) {
+    recompinput::players::set_player_count_range(3, 3);
+    recompinput::players::set_single_player_mode(false);
+}
+
+extern "C" void recomp_set_multiplayer_min_max_four_players(uint8_t* rdram, recomp_context* ctx) {
+    recompinput::players::set_player_count_range(4, 4);
+    recompinput::players::set_single_player_mode(false);
+}
+
+extern "C" void recomp_set_singleplayer_mode(uint8_t* rdram, recomp_context* ctx) {
+    recompinput::players::set_single_player_mode(true);
+}
+
 extern "C" void recomp_get_aspect_ratio(uint8_t* rdram, recomp_context* ctx) {
     ultramodern::renderer::GraphicsConfig graphics_config = ultramodern::renderer::get_graphics_config();
     float original = _arg<0, float>(rdram, ctx);

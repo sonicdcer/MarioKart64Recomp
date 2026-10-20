@@ -12,5 +12,9 @@ DECLARE_FUNC(float, recomp_get_aspect_ratio, float);
 DECLARE_FUNC(s32, recomp_get_target_framerate, s32);
 DECLARE_FUNC(float, recomp_get_resolution_scale);
 DECLARE_FUNC(void, recomp_sleep_miliseconds, s32);
+DECLARE_FUNC(void, recomp_set_singleplayer_mode, void);
+DECLARE_FUNC(void, recomp_set_multiplayer_min_max_two_players, void);
+DECLARE_FUNC(void, recomp_set_multiplayer_min_max_three_players, void);
+DECLARE_FUNC(void, recomp_set_multiplayer_min_max_four_players, void);
 
 #endif
