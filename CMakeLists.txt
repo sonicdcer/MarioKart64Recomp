@@ -95,6 +95,7 @@ target_compile_options(PatchesLib PRIVATE
     -fno-strict-aliasing
     -Wno-unused-variable
     -Wno-implicit-function-declaration
+    ${ALIGNMENT_FLAG}
 )
 
 target_include_directories(PatchesLib PRIVATE
