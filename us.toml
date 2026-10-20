@@ -7,6 +7,7 @@ symbols_file_path = "MarioKart64RecompSyms/mk64.us.syms.toml"
 rom_file_path = "mk64.us.z64"
 output_func_path = "RecompiledFuncs"
 use_absolute_symbols = true
+# trace_mode = true
 [patches]
 stubs = [
 ]
