@@ -483,7 +483,7 @@ RECOMP_PATCH void render_player_one_1p_screen(void) {
 
     func_802A53A4();
     init_rdp();
-    // func_802A3730(D_800DC5EC);
+    func_802A3730(D_800DC5EC);
     gSPSetGeometryMode(gDisplayListHead++, G_ZBUFFER | G_SHADE | G_CULL_BACK | G_LIGHTING | G_SHADING_SMOOTH);
     gDPSetRenderMode(gDisplayListHead++, G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
 
