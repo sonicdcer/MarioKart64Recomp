@@ -897,8 +897,7 @@ RECOMP_PATCH void render_menus(MenuItem* arg0) {
                                     0 * 4, SCREEN_WIDTH * 4, (SCREEN_HEIGHT / 2) * 4, 0, 0, 0, 0, 0);
                 // black box in the bottom-left
                 gEXTextureRectangle(gDisplayListHead++, G_EX_ORIGIN_LEFT, G_EX_ORIGIN_RIGHT, 0 * 4,
-                                    (SCREEN_HEIGHT / 2) * 4, (-SCREEN_WIDTH / 2) * 4, SCREEN_HEIGHT * 4, 0, 0, 0, 0,
-                                    0);
+                                    (SCREEN_HEIGHT / 2) * 4, (-SCREEN_WIDTH / 2) * 4, SCREEN_HEIGHT * 4, 0, 0, 0, 0, 0);
                 func_800A2EB8(arg0);
                 break;
             case MENU_ITEM_TYPE_0AB:
@@ -1127,3 +1126,66 @@ Gfx* func_8009BC9C_2(Gfx* arg0, MenuTexture* arg1, s32 arg2, s32 arg3, s32 arg4,
     return arg0;
 }
 #endif
+
+RECOMP_PATCH void func_800A9C40(MenuItem* arg0) {
+
+    // recomp_printf(" gPlayerCount: %d\n", gPlayerCount);
+
+    switch (gPlayerCount) {
+        case 1:
+            recomp_set_singleplayer_mode();
+            break;
+        case 2:
+            recomp_set_multiplayer_min_max_two_players();
+            break;
+        case 3:
+            recomp_set_multiplayer_min_max_three_players();
+            break;
+        case 4:
+            recomp_set_multiplayer_min_max_four_players();
+            break;
+        default:
+            recomp_printf("Invalid number of players!\n");
+            break;
+    }
+
+    switch (arg0->state) {
+        case 0:
+            func_800AA280(arg0);
+            if ((gPlayerCount + 0xA) == arg0->type) {
+                arg0->state = 2;
+            } else {
+                arg0->state = 1;
+            }
+            break;
+        case 4:
+            if ((gPlayerCount + 0xA) == arg0->type) {
+                arg0->state = 2;
+                arg0->param1 = 0;
+                break;
+            }
+            arg0->state = 1;
+        case 1:
+            func_800AA280(arg0);
+            if ((gMainMenuSelection == MAIN_MENU_OK_SELECT_GO_BACK) ||
+                (gMainMenuSelection == MAIN_MENU_MODE_SUB_SELECT_GO_BACK)) {
+                arg0->param1 = 0x00000020;
+            } else {
+                if (arg0->param1 < 0x20) {
+                    arg0->param1 += 2;
+                    if (arg0->param1 >= 0x20) {
+                        arg0->param1 = 0x00000020;
+                    }
+                }
+            }
+            break;
+        case 3:
+            if ((gPlayerCount + 0xA) == arg0->type) {
+                arg0->state = 2;
+            }
+            break;
+        case 2:
+        default:
+            break;
+    }
+}

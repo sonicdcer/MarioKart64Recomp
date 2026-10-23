@@ -554,6 +554,9 @@ void render_skyscraper(struct UnkStruct_800DC5EC *arg0);
 void render_double_deck(struct UnkStruct_800DC5EC *arg0);
 void render_dks_jungle_parkway(struct UnkStruct_800DC5EC *arg0);
 void render_big_donut(struct UnkStruct_800DC5EC *arg0);
+void func_80005AE8(Player *);
+void func_8028DF00(void);
+void func_800C9F90(u8);
 
 extern u8 *D_802BA050;
 extern u8 *D_802BA054;
@@ -798,4 +801,6 @@ extern s8 D_80165908;
 extern s32 gIndexObjectBombKart[7];
 extern Camera* D_8018CF14;
 extern u64 gGfxSPTaskOutputBuffer[16128];
+extern s32 D_80162DF0;
+extern s32 gLapCountByPlayerId[];
 #endif
