@@ -15,6 +15,7 @@ typedef enum ScreenID {
     /* 4 */ SCREEN_3_4_P_TOP_RIGHT,
     /* 5 */ SCREEN_3_4_P_BOTTOM_LEFT,
     /* 6 */ SCREEN_3_4_P_BOTTOM_RIGHT,
+    /* 7 */ SCREEN_MAX
 } ScreenID;
 
 #define ABS(x) ((x) >= 0 ? (x) : -(x))
@@ -23,7 +24,7 @@ struct ObjectInterpData {
     s32 objectIndex;
     s16 x, y;
 };
-struct ObjectInterpData prevObject[OBJECT_LIST_SIZE][4] = { 0 };
+struct ObjectInterpData prevObject[OBJECT_LIST_SIZE][SCREEN_MAX] = { 0 };
 
 // Snowflakes in the background (draw func)
 void func_800518F8_recomp(s32 objectIndex, s16 x, s16 y, ScreenID screen) {
