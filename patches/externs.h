@@ -557,6 +557,7 @@ void render_big_donut(struct UnkStruct_800DC5EC *arg0);
 void func_80005AE8(Player *);
 void func_8028DF00(void);
 void func_800C9F90(u8);
+void set_vehicle_pos_waypoint(TrainCarStuff* trainCar, Path2D* posXZ, u16 pathPoint);
 
 extern u8 *D_802BA050;
 extern u8 *D_802BA054;
@@ -803,4 +804,11 @@ extern Camera* D_8018CF14;
 extern u64 gGfxSPTaskOutputBuffer[16128];
 extern s32 D_80162DF0;
 extern s32 gLapCountByPlayerId[];
+extern s8 D_801658FE;
+extern s32 gVehicle2DWaypointLength;
+extern s32 gVehicle2DWaypointLength;
+extern Path2D* gVehicle2DWaypoint;
+extern Path2D *gVehicle2DWaypoint;
+extern s16 gTrainSmokeTimer;
+
 #endif
