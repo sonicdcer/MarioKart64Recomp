@@ -810,5 +810,8 @@ extern s32 gVehicle2DWaypointLength;
 extern Path2D* gVehicle2DWaypoint;
 extern Path2D *gVehicle2DWaypoint;
 extern s16 gTrainSmokeTimer;
+extern s16 D_802B87B0;
+extern s16 D_802B87B4;
+extern Gfx *moo_moo_farm_dls[];
 
 #endif

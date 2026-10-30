@@ -168,3 +168,76 @@ RECOMP_PATCH bool is_object_visible_on_camera(s32 objectIndex, Camera* camera, u
     return var_t0;
 }
 #endif
+
+RECOMP_PATCH void render_moo_moo_farm(struct UnkStruct_800DC5EC* arg0) {
+    UNUSED s32 pad[13];
+    s16 temp_s0 = arg0->pathCounter;
+    s16 playerDirection = arg0->playerDirection;
+
+    set_course_lighting(D_800DC610, D_802B87D4, 0, 1);
+    gSPTexture(gDisplayListHead++, 0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON);
+    gSPSetGeometryMode(gDisplayListHead++, G_SHADING_SMOOTH);
+    gSPClearGeometryMode(gDisplayListHead++, G_LIGHTING);
+    gDPSetCombineMode(gDisplayListHead++, G_CC_MODULATEI, G_CC_MODULATEI);
+    gDPSetRenderMode(gDisplayListHead++, G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
+    // d_course_moo_moo_farm_packed_dl_4DF8
+    gSPDisplayList(gDisplayListHead++, ((uintptr_t) 0x07004DF8));
+    // d_course_moo_moo_farm_packed_dl_5640
+    gSPDisplayList(gDisplayListHead++, ((uintptr_t) 0x07005640));
+    gSPFogPosition(gDisplayListHead++, D_802B87B0, D_802B87B4);
+
+    render_course_segments((uintptr_t) moo_moo_farm_dls, arg0);
+
+    if ((temp_s0 < 14) && (temp_s0 > 10)) {
+        if ((playerDirection == 2) || (playerDirection == 3) || (playerDirection == 1))
+            //
+            gSPDisplayList(gDisplayListHead++, (Gfx*) 0x6013ff8);
+
+    } else if (temp_s0 < 16) {
+        gSPDisplayList(gDisplayListHead++, (Gfx*) 0x6013ff8);
+    } else if (temp_s0 < 19) {
+        if (playerDirection != 2)
+            gSPDisplayList(gDisplayListHead++, (Gfx*) 0x6013ff8);
+
+    } else if (temp_s0 < 20) {
+        if (playerDirection == 0)
+            gSPDisplayList(gDisplayListHead++, (Gfx*) 0x6013ff8);
+    }
+    gDPSetCombineMode(gDisplayListHead++, G_CC_MODULATEI, G_CC_MODULATEI);
+    gDPSetRenderMode(gDisplayListHead++, G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
+
+    // @recomp Always render the barn regardless of section or camera direction angle
+    #if 0
+    if ((temp_s0 >= 16) && (temp_s0 < 24)) {
+        if ((playerDirection == 2) || (playerDirection == 3))
+            // d_course_moo_moo_farm_packed_dl_5410
+            gSPDisplayList(gDisplayListHead++, ((uintptr_t) 0x07005410));
+
+    } else if (temp_s0 < 9) {
+        if (playerDirection == 2)
+            // d_course_moo_moo_farm_packed_dl_5410
+            gSPDisplayList(gDisplayListHead++, ((uintptr_t) 0x07005410));
+    }
+    #else
+            gSPDisplayList(gDisplayListHead++, ((uintptr_t) 0x07005410));
+    #endif
+    
+    if (temp_s0 < 4) {
+        if (playerDirection != 0)
+            gSPDisplayList(gDisplayListHead++, (Gfx*) 0x6014060);
+
+    } else if (temp_s0 < 8) {
+        if (playerDirection == 2)
+            gSPDisplayList(gDisplayListHead++, (Gfx*) 0x6014060);
+
+    } else if (temp_s0 >= 22) {
+        gSPDisplayList(gDisplayListHead++, (Gfx*) 0x6014060);
+    } else if (temp_s0 >= 18) {
+        if ((playerDirection == 0) || (playerDirection == 3))
+            gSPDisplayList(gDisplayListHead++, (Gfx*) 0x6014060);
+    }
+    gDPSetCombineMode(gDisplayListHead++, G_CC_MODULATEIDECALA, G_CC_MODULATEIDECALA);
+    gDPSetRenderMode(gDisplayListHead++, G_RM_AA_ZB_TEX_EDGE, G_RM_AA_ZB_TEX_EDGE2);
+    // d_course_moo_moo_farm_packed_dl_10C0
+    gSPDisplayList(gDisplayListHead++, ((uintptr_t) 0x070010C0));
+}
