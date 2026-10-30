@@ -29,7 +29,7 @@ RECOMP_PATCH void render_actor_item_box(Camera* camera, struct ItemBox* item_box
     gEXMatrixGroupDecomposed(gDisplayListHead++, TAG_ITEM_ADDR(item_box), G_EX_PUSH, G_MTX_MODELVIEW,
                              G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_INTERPOLATE,
                              G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE,
-                             G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
+                             G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP);
 
     temp_f0 = is_within_render_distance(camera->pos, item_box->pos, camera->rot[1], 0.0f, gCameraZoom[camera - camera1],
                                         4000000.0f);
@@ -216,7 +216,7 @@ RECOMP_PATCH void render_actor_fake_item_box(Camera* camera, struct FakeItemBox*
     gEXMatrixGroupDecomposed(gDisplayListHead++, TAG_ITEM_ADDR(fakeItemBox), G_EX_PUSH, G_MTX_MODELVIEW,
                              G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_INTERPOLATE,
                              G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE,
-                             G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
+                             G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP);
 
     if (is_within_render_distance(camera->pos, fakeItemBox->pos, camera->rot[1], 2500.0f, gCameraZoom[camera - camera1],
                                   1000000.0f) < 0) {

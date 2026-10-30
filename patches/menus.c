@@ -1,6 +1,8 @@
 #include "patches.h"
 
+#if 0
 bool recompDebugSwitch = 0;
+#endif
 
 RECOMP_PATCH void handle_menus_with_pri_arg(s32 priSpecial) {
     s32 j = 0;
@@ -11,8 +13,6 @@ RECOMP_PATCH void handle_menus_with_pri_arg(s32 priSpecial) {
     volatile u8* address;
 
     // gDPSetTextureFilter(gDisplayListHead++, G_TF_POINT);
-    // gEXEnable(gDisplayListHead++); // @recomp
-    // gEXSetRefreshRate(gDisplayListHead++, 60 / 2);
 
     // @recomp: Patch the sequence bug that prevented the whole end results song from playing.
     {
@@ -101,9 +101,11 @@ RECOMP_PATCH void handle_menus_with_pri_arg(s32 priSpecial) {
                 gDPSetTextureFilter(gDisplayListHead++, G_TF_BILERP);
                 switch (entry->state) {
                     case 0:
+#if DEBUG_MODE == 1
                         if (gControllers[0].button & L_TRIG) {
                             gDebugMenuSelection = 3;
                         }
+#endif
 #if DEBUG_ENDING == 1
                         if (gControllers[0].button & U_CBUTTONS) {
                             gGamestateNext = CREDITS_SEQUENCE;
@@ -507,7 +509,7 @@ RECOMP_PATCH void render_menus(MenuItem* arg0) {
 
     if (arg0->visible) {
         gDPPipeSync(gDisplayListHead++);
-        switch (arg0->type) { /* switch 6; irregular */
+        switch (arg0->type) {
             case MENU_ITEM_UI_LOGO_INTRO:
                 func_80094660(gGfxPool, arg0->param1);
                 break;
@@ -655,11 +657,11 @@ RECOMP_PATCH void render_menus(MenuItem* arg0) {
             case MAIN_MENU_TIME_TRIALS_DATA:
                 var_v1 = gGameModeSubMenuColumn[gPlayerCount - 1][gGameModeMenuColumn[gPlayerCount - 1]];
                 var_a1 = gGameModePlayerSelection[gPlayerCount - 1][gGameModeMenuColumn[gPlayerCount - 1]];
-                switch (arg0->type) {        /* switch 5 */
-                    case MAIN_MENU_50CC:     /* switch 5 */
-                    case MAIN_MENU_100CC:    /* switch 5 */
-                    case MAIN_MENU_150CC:    /* switch 5 */
-                    case MAIN_MENU_EXTRA_CC: /* switch 5 */
+                switch (arg0->type) {        
+                    case MAIN_MENU_50CC:     
+                    case MAIN_MENU_100CC:    
+                    case MAIN_MENU_150CC:    
+                    case MAIN_MENU_EXTRA_CC: 
                         switch (var_a1) {
                             case 0:
                             case 2:
@@ -672,8 +674,8 @@ RECOMP_PATCH void render_menus(MenuItem* arg0) {
                         var_a1 = MAIN_MENU_50CC;
                         sp9C = segmented_to_virtual_dupe(D_800E8294[arg0->type - MAIN_MENU_50CC]);
                         break;
-                    case MENU_ITEM_TYPE_016: /* switch 5 */
-                    case MENU_ITEM_TYPE_017: /* switch 5 */
+                    case MENU_ITEM_TYPE_016: 
+                    case MENU_ITEM_TYPE_017: 
                         if (var_a1 != 2) {
                             var_v1 = -1;
                         } else {
@@ -681,8 +683,8 @@ RECOMP_PATCH void render_menus(MenuItem* arg0) {
                             sp9C = segmented_to_virtual_dupe(D_800E82A4[arg0->type - MENU_ITEM_TYPE_016]);
                         }
                         break;
-                    case MAIN_MENU_TIME_TRIALS_BEGIN: /* switch 5 */
-                    case MAIN_MENU_TIME_TRIALS_DATA:  /* switch 5 */
+                    case MAIN_MENU_TIME_TRIALS_BEGIN: 
+                    case MAIN_MENU_TIME_TRIALS_DATA:  
                         if (var_a1 != 1) {
                             var_v1 = -1;
                         } else {
@@ -897,8 +899,7 @@ RECOMP_PATCH void render_menus(MenuItem* arg0) {
                                     0 * 4, SCREEN_WIDTH * 4, (SCREEN_HEIGHT / 2) * 4, 0, 0, 0, 0, 0);
                 // black box in the bottom-left
                 gEXTextureRectangle(gDisplayListHead++, G_EX_ORIGIN_LEFT, G_EX_ORIGIN_RIGHT, 0 * 4,
-                                    (SCREEN_HEIGHT / 2) * 4, (-SCREEN_WIDTH / 2) * 4, SCREEN_HEIGHT * 4, 0, 0, 0, 0,
-                                    0);
+                                    (SCREEN_HEIGHT / 2) * 4, (-SCREEN_WIDTH / 2) * 4, SCREEN_HEIGHT * 4, 0, 0, 0, 0, 0);
                 func_800A2EB8(arg0);
                 break;
             case MENU_ITEM_TYPE_0AB:
@@ -1127,3 +1128,66 @@ Gfx* func_8009BC9C_2(Gfx* arg0, MenuTexture* arg1, s32 arg2, s32 arg3, s32 arg4,
     return arg0;
 }
 #endif
+
+RECOMP_PATCH void func_800A9C40(MenuItem* arg0) {
+
+    // recomp_printf(" gPlayerCount: %d\n", gPlayerCount);
+
+    switch (gPlayerCount) {
+        case 1:
+            recomp_set_singleplayer_mode();
+            break;
+        case 2:
+            recomp_set_multiplayer_min_max_two_players();
+            break;
+        case 3:
+            recomp_set_multiplayer_min_max_three_players();
+            break;
+        case 4:
+            recomp_set_multiplayer_min_max_four_players();
+            break;
+        default:
+            recomp_printf("Invalid number of players!\n");
+            break;
+    }
+
+    switch (arg0->state) {
+        case 0:
+            func_800AA280(arg0);
+            if ((gPlayerCount + 0xA) == arg0->type) {
+                arg0->state = 2;
+            } else {
+                arg0->state = 1;
+            }
+            break;
+        case 4:
+            if ((gPlayerCount + 0xA) == arg0->type) {
+                arg0->state = 2;
+                arg0->param1 = 0;
+                break;
+            }
+            arg0->state = 1;
+        case 1:
+            func_800AA280(arg0);
+            if ((gMainMenuSelection == MAIN_MENU_OK_SELECT_GO_BACK) ||
+                (gMainMenuSelection == MAIN_MENU_MODE_SUB_SELECT_GO_BACK)) {
+                arg0->param1 = 0x00000020;
+            } else {
+                if (arg0->param1 < 0x20) {
+                    arg0->param1 += 2;
+                    if (arg0->param1 >= 0x20) {
+                        arg0->param1 = 0x00000020;
+                    }
+                }
+            }
+            break;
+        case 3:
+            if ((gPlayerCount + 0xA) == arg0->type) {
+                arg0->state = 2;
+            }
+            break;
+        case 2:
+        default:
+            break;
+    }
+}
