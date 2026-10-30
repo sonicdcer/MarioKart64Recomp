@@ -51,6 +51,7 @@ RECOMP_PATCH void draw_simplified_hud(s32 playerId) {
     }
     
     // @recomp
+    gEXSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, G_EX_ORIGIN_LEFT, G_EX_ORIGIN_RIGHT, 0, 0, 0, SCREEN_HEIGHT);
     gEXSetRectAlign(gDisplayListHead++, G_EX_ORIGIN_LEFT, G_EX_ORIGIN_LEFT, 0, 0, 0, 0);
 
     draw_item_window(playerId);
