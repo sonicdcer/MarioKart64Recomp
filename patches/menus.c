@@ -1,6 +1,8 @@
 #include "patches.h"
 
+#if 0
 bool recompDebugSwitch = 0;
+#endif
 
 RECOMP_PATCH void handle_menus_with_pri_arg(s32 priSpecial) {
     s32 j = 0;
@@ -11,8 +13,6 @@ RECOMP_PATCH void handle_menus_with_pri_arg(s32 priSpecial) {
     volatile u8* address;
 
     // gDPSetTextureFilter(gDisplayListHead++, G_TF_POINT);
-    // gEXEnable(gDisplayListHead++); // @recomp
-    // gEXSetRefreshRate(gDisplayListHead++, 60 / 2);
 
     // @recomp: Patch the sequence bug that prevented the whole end results song from playing.
     {
@@ -509,7 +509,7 @@ RECOMP_PATCH void render_menus(MenuItem* arg0) {
 
     if (arg0->visible) {
         gDPPipeSync(gDisplayListHead++);
-        switch (arg0->type) { /* switch 6; irregular */
+        switch (arg0->type) {
             case MENU_ITEM_UI_LOGO_INTRO:
                 func_80094660(gGfxPool, arg0->param1);
                 break;
@@ -657,11 +657,11 @@ RECOMP_PATCH void render_menus(MenuItem* arg0) {
             case MAIN_MENU_TIME_TRIALS_DATA:
                 var_v1 = gGameModeSubMenuColumn[gPlayerCount - 1][gGameModeMenuColumn[gPlayerCount - 1]];
                 var_a1 = gGameModePlayerSelection[gPlayerCount - 1][gGameModeMenuColumn[gPlayerCount - 1]];
-                switch (arg0->type) {        /* switch 5 */
-                    case MAIN_MENU_50CC:     /* switch 5 */
-                    case MAIN_MENU_100CC:    /* switch 5 */
-                    case MAIN_MENU_150CC:    /* switch 5 */
-                    case MAIN_MENU_EXTRA_CC: /* switch 5 */
+                switch (arg0->type) {        
+                    case MAIN_MENU_50CC:     
+                    case MAIN_MENU_100CC:    
+                    case MAIN_MENU_150CC:    
+                    case MAIN_MENU_EXTRA_CC: 
                         switch (var_a1) {
                             case 0:
                             case 2:
@@ -674,8 +674,8 @@ RECOMP_PATCH void render_menus(MenuItem* arg0) {
                         var_a1 = MAIN_MENU_50CC;
                         sp9C = segmented_to_virtual_dupe(D_800E8294[arg0->type - MAIN_MENU_50CC]);
                         break;
-                    case MENU_ITEM_TYPE_016: /* switch 5 */
-                    case MENU_ITEM_TYPE_017: /* switch 5 */
+                    case MENU_ITEM_TYPE_016: 
+                    case MENU_ITEM_TYPE_017: 
                         if (var_a1 != 2) {
                             var_v1 = -1;
                         } else {
@@ -683,8 +683,8 @@ RECOMP_PATCH void render_menus(MenuItem* arg0) {
                             sp9C = segmented_to_virtual_dupe(D_800E82A4[arg0->type - MENU_ITEM_TYPE_016]);
                         }
                         break;
-                    case MAIN_MENU_TIME_TRIALS_BEGIN: /* switch 5 */
-                    case MAIN_MENU_TIME_TRIALS_DATA:  /* switch 5 */
+                    case MAIN_MENU_TIME_TRIALS_BEGIN: 
+                    case MAIN_MENU_TIME_TRIALS_DATA:  
                         if (var_a1 != 1) {
                             var_v1 = -1;
                         } else {
