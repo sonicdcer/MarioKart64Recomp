@@ -19,7 +19,6 @@ RECOMP_PATCH f32 is_within_render_distance(Vec3f cameraPos, Vec3f objectPos, u16
 
     f32 extended_fov = ((f32) fov * 300 * scaleFov); // Sets the Culling for objects on the left and right
 
-
     distanceX = objectPos[0] - cameraPos[0];
     distanceX = distanceX * distanceX;
     if (maxDistance < distanceX) {
@@ -47,7 +46,7 @@ RECOMP_PATCH f32 is_within_render_distance(Vec3f cameraPos, Vec3f objectPos, u16
 
     if (minDistance == 0.0f) {
         if (is_visible_between_angle((orientationY + extended_fov), (orientationY - extended_fov), angleObject) == 1) {
-            if (0){//if (gCurrentCourseId == COURSE_KALAMARI_DESERT) {
+            if (0) {                    // if (gCurrentCourseId == COURSE_KALAMARI_DESERT) {
                 return distance / 6.5f; // set for better DD settings in Desert
             } else {
                 return distance / 10.0f; // Items
@@ -57,7 +56,7 @@ RECOMP_PATCH f32 is_within_render_distance(Vec3f cameraPos, Vec3f objectPos, u16
     }
 
     if (is_visible_between_angle((u16) plus_fov_angle, (u16) minus_fov_angle, angleObject) == 1) {
-        if (0){//if (gCurrentCourseId == COURSE_KALAMARI_DESERT) {
+        if (0) { // if (gCurrentCourseId == COURSE_KALAMARI_DESERT) {
             return distance / 2.0f;
         } else {
             return distance / 10.0f; // DD Vhicles
@@ -206,8 +205,8 @@ RECOMP_PATCH void render_moo_moo_farm(struct UnkStruct_800DC5EC* arg0) {
     gDPSetCombineMode(gDisplayListHead++, G_CC_MODULATEI, G_CC_MODULATEI);
     gDPSetRenderMode(gDisplayListHead++, G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
 
-    // @recomp Always render the barn regardless of section or camera direction angle
-    #if 0
+// @recomp Always render the barn regardless of section or camera direction angle
+#if 0
     if ((temp_s0 >= 16) && (temp_s0 < 24)) {
         if ((playerDirection == 2) || (playerDirection == 3))
             // d_course_moo_moo_farm_packed_dl_5410
@@ -218,10 +217,10 @@ RECOMP_PATCH void render_moo_moo_farm(struct UnkStruct_800DC5EC* arg0) {
             // d_course_moo_moo_farm_packed_dl_5410
             gSPDisplayList(gDisplayListHead++, ((uintptr_t) 0x07005410));
     }
-    #else   
-            gSPDisplayList(gDisplayListHead++, ((uintptr_t) 0x07005410));
-    #endif
-    
+#else
+    gSPDisplayList(gDisplayListHead++, ((uintptr_t) 0x07005410));
+#endif
+
     if (temp_s0 < 4) {
         if (playerDirection != 0)
             gSPDisplayList(gDisplayListHead++, (Gfx*) 0x6014060);
@@ -244,14 +243,18 @@ RECOMP_PATCH void render_moo_moo_farm(struct UnkStruct_800DC5EC* arg0) {
 
 // High/Low poly Pipe in Mario Raceway
 RECOMP_PATCH void func_802911C4(void) {
-    // @recomp: Always render high poly pipe
-    if (1 /*gScreenModeSelection == SCREEN_MODE_1P */) {
+// @recomp: Always render high poly pipe regardless of mode
+#if 1
+    gSPDisplayList(gDisplayListHead++, ((uintptr_t) 0x070008E8));
+#else
+    if (gScreenModeSelection == SCREEN_MODE_1P) {
         // d_course_mario_raceway_packed_dl_8E8
         gSPDisplayList(gDisplayListHead++, ((uintptr_t) 0x070008E8));
     } else {
         // d_course_mario_raceway_packed_dl_2D68
         gSPDisplayList(gDisplayListHead++, ((uintptr_t) 0x07002D68));
     }
+#endif
 }
 
 RECOMP_PATCH void render_actor_box_truck(Camera* arg0, struct Actor* arg1) {
@@ -262,11 +265,8 @@ RECOMP_PATCH void render_actor_box_truck(Camera* arg0, struct Actor* arg1) {
     f32 temp_f0 =
         is_within_render_distance(arg0->pos, arg1->pos, arg0->rot[1], 2500.0f, gCameraZoom[arg0 - camera1], 9000000.0f);
     if (temp_f0 < 0.0f) {
-        // return; // @recomp
+        // return; // @recomp: Disable culling
     }
-
-    // @recomp always draw a high poly version of the truck
-    temp_f0 = 0.0f;
 
     gSPTexture(gDisplayListHead++, 0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON);
     gSPClearGeometryMode(gDisplayListHead++, G_LIGHTING);
@@ -285,7 +285,10 @@ RECOMP_PATCH void render_actor_box_truck(Camera* arg0, struct Actor* arg1) {
                 gSPDisplayList(gDisplayListHead++, (Gfx*) 0x60238E8 /* d_course_toads_turnpike_dl_238E8*/);
                 break;
         }
-
+// @recomp always draw a high poly version regardless of mode
+#if 1
+        gSPDisplayList(gDisplayListHead++, toads_turnpike_dl_0);
+#else
         if (gActiveScreenMode == SCREEN_MODE_1P) {
             if (temp_f0 < 160000.0f) {
                 gSPDisplayList(gDisplayListHead++, toads_turnpike_dl_0);
@@ -299,6 +302,7 @@ RECOMP_PATCH void render_actor_box_truck(Camera* arg0, struct Actor* arg1) {
         } else {
             gSPDisplayList(gDisplayListHead++, toads_turnpike_dl_2);
         }
+#endif
     }
 }
 
@@ -310,11 +314,8 @@ RECOMP_PATCH void render_actor_car(Camera* arg0, struct Actor* arg1) {
         is_within_render_distance(arg0->pos, arg1->pos, arg0->rot[1], 2500.0f, gCameraZoom[arg0 - camera1], 9000000.0f);
 
     if (temp_f0 < 0.0f) {
-        // return; // @recomp
+        // return; // @recomp: Disable culling
     }
-
-    // @recomp always draw a high poly version of the truck
-    temp_f0 = 0.0f;
 
     gSPTexture(gDisplayListHead++, 0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON);
     gSPClearGeometryMode(gDisplayListHead++, G_LIGHTING);
@@ -322,7 +323,10 @@ RECOMP_PATCH void render_actor_car(Camera* arg0, struct Actor* arg1) {
     mtxf_pos_rotation_xyz(spC8, arg1->pos, arg1->rot);
     mtxf_scale(spC8, 0.1f);
     if (render_set_position(spC8, 0) != 0) {
-
+// @recomp always draw a high poly version regardless of mode
+#if 1
+        gSPDisplayList(gDisplayListHead++, toads_turnpike_dl_9);
+#else
         if (gActiveScreenMode == SCREEN_MODE_1P) {
             if (temp_f0 < 160000.0f) {
                 gSPDisplayList(gDisplayListHead++, toads_turnpike_dl_9);
@@ -336,10 +340,10 @@ RECOMP_PATCH void render_actor_car(Camera* arg0, struct Actor* arg1) {
         } else {
             gSPDisplayList(gDisplayListHead++, toads_turnpike_dl_11);
         }
+#endif
     }
 }
 
-#if 1
 RECOMP_PATCH void render_actor_piranha_plant(Camera* arg0, Mat4 arg1, struct PiranhaPlant* arg2) {
     UNUSED s32 pad;
     u8* addr;
@@ -449,4 +453,132 @@ RECOMP_PATCH void render_actor_piranha_plant(Camera* arg0, Mat4 arg1, struct Pir
         gSPDisplayList(gDisplayListHead++, (Gfx*) 0x0600d850 /* d_course_royal_raceway_dl_piranha_plant*/);
     }
 }
-    #endif
+
+RECOMP_PATCH void render_actor_tanker_truck(Camera* camera, struct Actor* arg1) {
+    UNUSED s32 pad[6];
+    Mat4 spC8;
+    UNUSED s32 pad2[32];
+    f32 temp_f0 = is_within_render_distance(camera->pos, arg1->pos, camera->rot[1], 2500.0f,
+                                            gCameraZoom[camera - camera1], 9000000.0f);
+
+    if (temp_f0 < 0.0f) {
+        // return; @recomp: Disable culling
+    }
+
+    gSPTexture(gDisplayListHead++, 0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON);
+    gSPClearGeometryMode(gDisplayListHead++, G_LIGHTING);
+
+    mtxf_pos_rotation_xyz(spC8, arg1->pos, arg1->rot);
+    if (render_set_position(spC8, 0) != 0) {
+// @recomp always draw a high poly version regardless of mode
+#if 1
+        gSPDisplayList(gDisplayListHead++, toads_turnpike_dl_6);
+
+#else
+        if (gActiveScreenMode == SCREEN_MODE_1P) {
+            if (temp_f0 < 160000.0f) {
+
+                gSPDisplayList(gDisplayListHead++, toads_turnpike_dl_6);
+            } else if (temp_f0 < 640000.0f) {
+                gSPDisplayList(gDisplayListHead++, toads_turnpike_dl_7);
+            } else {
+                gSPDisplayList(gDisplayListHead++, toads_turnpike_dl_8);
+            }
+        } else if (temp_f0 < 160000.0f) {
+            gSPDisplayList(gDisplayListHead++, toads_turnpike_dl_7);
+        } else {
+            gSPDisplayList(gDisplayListHead++, toads_turnpike_dl_8);
+        }
+#endif
+    }
+}
+
+RECOMP_PATCH void render_actor_school_bus(Camera* arg0, struct Actor* arg1) {
+    UNUSED s32 pad[6];
+    Mat4 spC8;
+    UNUSED s32 pad2[32];
+    f32 temp_f0;
+
+    temp_f0 =
+        is_within_render_distance(arg0->pos, arg1->pos, arg0->rot[1], 2500.0f, gCameraZoom[arg0 - camera1], 9000000.0f);
+    if (temp_f0 < 0.0f) {
+        // return; //@recomp: Disable culling
+    }
+
+    gSPTexture(gDisplayListHead++, 0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON);
+    gSPClearGeometryMode(gDisplayListHead++, G_LIGHTING);
+
+    mtxf_pos_rotation_xyz(spC8, arg1->pos, arg1->rot);
+    if (render_set_position(spC8, 0) != 0) {
+// @recomp always draw a high poly version regardless of mode
+#if 1
+        gSPDisplayList(gDisplayListHead++, toads_turnpike_dl_3);
+#else
+        if (gActiveScreenMode == SCREEN_MODE_1P) {
+            if (temp_f0 < 160000.0f) {
+                gSPDisplayList(gDisplayListHead++, toads_turnpike_dl_3);
+            } else if (temp_f0 < 640000.0f) {
+                gSPDisplayList(gDisplayListHead++, toads_turnpike_dl_4);
+            } else {
+                gSPDisplayList(gDisplayListHead++, toads_turnpike_dl_5);
+            }
+        } else if (temp_f0 < 160000.0f) {
+            gSPDisplayList(gDisplayListHead++, toads_turnpike_dl_4);
+        } else {
+            gSPDisplayList(gDisplayListHead++, toads_turnpike_dl_5);
+        }
+#endif
+    }
+}
+
+RECOMP_PATCH void render_actor_yoshi_egg(Camera* arg0, Mat4 arg1, struct YoshiValleyEgg* egg, u16 arg3) {
+    Mat4 sp60;
+    Vec3s sp5C;
+    Vec3f sp54;
+    f32 temp_f0;
+
+    if (gGamestate != CREDITS_SEQUENCE) {
+        temp_f0 = is_within_render_distance(arg0->pos, egg->pos, arg0->rot[1], 200.0f, gCameraZoom[arg0 - camera1],
+                                            16000000.0f);
+        if (temp_f0 < 0.0f) {
+            // return; // @recomp: Disable culling
+        }
+    } else {
+        arg3 = 15;
+        temp_f0 = 0.0f;
+    }
+
+    // @recomp always draw a high poly version regardless of mode
+    arg3 = 15;
+    temp_f0 = 0.0f;
+
+    gSPSetGeometryMode(gDisplayListHead++, G_SHADING_SMOOTH);
+    if ((arg3 > 12) && (arg3 < 20)) {
+        if (temp_f0 < 640000.0f) {
+            sp54[0] = egg->pos[0];
+            sp54[1] = 3.0f;
+            sp54[2] = egg->pos[2];
+            func_802976D8(sp5C);
+            func_8029794C(sp54, sp5C, 10.0f);
+        }
+        sp5C[0] = 0;
+        sp5C[1] = egg->eggRot;
+        sp5C[2] = 0;
+        mtxf_pos_rotation_xyz(sp60, egg->pos, sp5C);
+        if (render_set_position(sp60, 0) == 0) {
+            return;
+        }
+
+        gSPSetGeometryMode(gDisplayListHead++, G_LIGHTING);
+        gSPDisplayList(gDisplayListHead++, (Gfx*) 0x6016d70 /* d_course_yoshi_valley_dl_16D70*/ );
+    } else {
+        arg1[3][0] = egg->pos[0];
+        arg1[3][1] = egg->pos[1];
+        arg1[3][2] = egg->pos[2];
+
+        if (render_set_position(arg1, 0) != 0) {
+            gSPClearGeometryMode(gDisplayListHead++, G_LIGHTING);
+            gSPDisplayList(gDisplayListHead++, (Gfx*) 0x6017fa8 /* d_course_yoshi_valley_dl_egg_lod0 */);
+        }
+    }
+}
