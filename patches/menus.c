@@ -101,9 +101,11 @@ RECOMP_PATCH void handle_menus_with_pri_arg(s32 priSpecial) {
                 gDPSetTextureFilter(gDisplayListHead++, G_TF_BILERP);
                 switch (entry->state) {
                     case 0:
+#if DEBUG_MODE == 1
                         if (gControllers[0].button & L_TRIG) {
                             gDebugMenuSelection = 3;
                         }
+#endif
 #if DEBUG_ENDING == 1
                         if (gControllers[0].button & U_CBUTTONS) {
                             gGamestateNext = CREDITS_SEQUENCE;
