@@ -819,5 +819,8 @@ extern Gfx *mario_raceway_dls[];
 extern Gfx toads_turnpike_dl_0[];
 extern Gfx toads_turnpike_dl_1[];
 extern Gfx toads_turnpike_dl_2[];
-
+extern Gfx toads_turnpike_dl_9[];
+extern Gfx toads_turnpike_dl_10[];
+extern Gfx toads_turnpike_dl_11[];
+extern u8 *D_802BA058;
 #endif
