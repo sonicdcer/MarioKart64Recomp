@@ -241,3 +241,15 @@ RECOMP_PATCH void render_moo_moo_farm(struct UnkStruct_800DC5EC* arg0) {
     // d_course_moo_moo_farm_packed_dl_10C0
     gSPDisplayList(gDisplayListHead++, ((uintptr_t) 0x070010C0));
 }
+
+// High/Low poly Pipe in Mario Raceway
+RECOMP_PATCH void func_802911C4(void) {
+    // @recomp: Always render high poly pipe
+    if (1 /*gScreenModeSelection == SCREEN_MODE_1P */) {
+        // d_course_mario_raceway_packed_dl_8E8
+        gSPDisplayList(gDisplayListHead++, ((uintptr_t) 0x070008E8));
+    } else {
+        // d_course_mario_raceway_packed_dl_2D68
+        gSPDisplayList(gDisplayListHead++, ((uintptr_t) 0x07002D68));
+    }
+}

@@ -556,6 +556,8 @@ void render_dks_jungle_parkway(struct UnkStruct_800DC5EC *arg0);
 void render_big_donut(struct UnkStruct_800DC5EC *arg0);
 void func_80005AE8(Player *);
 void func_8028DF00(void);
+void func_802911C4(void);
+void func_80291198(void);
 void func_800C9F90(u8);
 void set_vehicle_pos_waypoint(TrainCarStuff* trainCar, Path2D* posXZ, u16 pathPoint);
 
@@ -813,5 +815,6 @@ extern s16 gTrainSmokeTimer;
 extern s16 D_802B87B0;
 extern s16 D_802B87B4;
 extern Gfx *moo_moo_farm_dls[];
+extern Gfx *mario_raceway_dls[];
 
 #endif
