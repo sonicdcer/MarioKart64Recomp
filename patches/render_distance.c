@@ -218,7 +218,7 @@ RECOMP_PATCH void render_moo_moo_farm(struct UnkStruct_800DC5EC* arg0) {
             // d_course_moo_moo_farm_packed_dl_5410
             gSPDisplayList(gDisplayListHead++, ((uintptr_t) 0x07005410));
     }
-    #else
+    #else   
             gSPDisplayList(gDisplayListHead++, ((uintptr_t) 0x07005410));
     #endif
     
@@ -251,5 +251,53 @@ RECOMP_PATCH void func_802911C4(void) {
     } else {
         // d_course_mario_raceway_packed_dl_2D68
         gSPDisplayList(gDisplayListHead++, ((uintptr_t) 0x07002D68));
+    }
+}
+
+RECOMP_PATCH void render_actor_box_truck(Camera* arg0, struct Actor* arg1) {
+    UNUSED s32 pad[6];
+    Mat4 spD8;
+    UNUSED s32 pad2[32];
+
+    f32 temp_f0 =
+        is_within_render_distance(arg0->pos, arg1->pos, arg0->rot[1], 2500.0f, gCameraZoom[arg0 - camera1], 9000000.0f);
+    if (temp_f0 < 0.0f) {
+        // return; // @recomp
+    }
+
+    // @recomp always draw a high poly version of the truck
+    temp_f0 = 0.0f;
+
+    gSPTexture(gDisplayListHead++, 0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON);
+    gSPClearGeometryMode(gDisplayListHead++, G_LIGHTING);
+
+    mtxf_pos_rotation_xyz(spD8, arg1->pos, arg1->rot);
+    if (render_set_position(spD8, 0) != 0) {
+
+        switch (arg1->state) {
+            case 0:
+                gSPDisplayList(gDisplayListHead++, (Gfx*) 0x6023858 /* d_course_toads_turnpike_dl_23858 */);
+                break;
+            case 1:
+                gSPDisplayList(gDisplayListHead++, (Gfx*) 0x60238A0 /* d_course_toads_turnpike_dl_238A0 */);
+                break;
+            case 2:
+                gSPDisplayList(gDisplayListHead++, (Gfx*) 0x60238E8 /* d_course_toads_turnpike_dl_238E8*/);
+                break;
+        }
+
+        if (gActiveScreenMode == SCREEN_MODE_1P) {
+            if (temp_f0 < 160000.0f) {
+                gSPDisplayList(gDisplayListHead++, toads_turnpike_dl_0);
+            } else if (temp_f0 < 640000.0f) {
+                gSPDisplayList(gDisplayListHead++, toads_turnpike_dl_1);
+            } else {
+                gSPDisplayList(gDisplayListHead++, toads_turnpike_dl_2);
+            }
+        } else if (temp_f0 < 160000.0f) {
+            gSPDisplayList(gDisplayListHead++, toads_turnpike_dl_1);
+        } else {
+            gSPDisplayList(gDisplayListHead++, toads_turnpike_dl_2);
+        }
     }
 }

@@ -816,5 +816,8 @@ extern s16 D_802B87B0;
 extern s16 D_802B87B4;
 extern Gfx *moo_moo_farm_dls[];
 extern Gfx *mario_raceway_dls[];
+extern Gfx toads_turnpike_dl_0[];
+extern Gfx toads_turnpike_dl_1[];
+extern Gfx toads_turnpike_dl_2[];
 
 #endif
