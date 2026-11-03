@@ -81,8 +81,8 @@ RECOMP_PATCH void draw_simplified_lap_count(s32 playerId) {
 }
 #endif
 
-// HUD
-#if 0 // lap counter, Timer for 3P/4P
+// Doesn't work as expected
+#if 0 // lap counter, Item window for 3P/4P
 RECOMP_PATCH void render_hud_lap_3p_4p(s32 playerId) {
     // @recomp
     gEXSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, G_EX_ORIGIN_LEFT, G_EX_ORIGIN_RIGHT, 0, 0, 0, SCREEN_HEIGHT);
@@ -120,7 +120,7 @@ RECOMP_PATCH void render_hud_lap_3p_4p(s32 playerId) {
             }
         }
     }
-    func_8004E6C4(playerId); // Draws the items?
+    func_8004E6C4(playerId); // Draws the items
 }
 #endif
 
