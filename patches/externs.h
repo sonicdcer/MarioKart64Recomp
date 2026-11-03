@@ -829,4 +829,7 @@ extern Gfx toads_turnpike_dl_9[];
 extern Gfx toads_turnpike_dl_10[];
 extern Gfx toads_turnpike_dl_11[];
 extern u8 *D_802BA058;
+extern bool8 D_801657F8;
+extern s32 D_80165608;
+extern Vtx D_0D005AE0[];
 #endif

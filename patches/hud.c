@@ -49,7 +49,7 @@ RECOMP_PATCH void draw_simplified_hud(s32 playerId) {
         render_hud_timer(playerId);
         draw_simplified_lap_count(playerId);
     }
-    
+
     // @recomp
     gEXSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, G_EX_ORIGIN_LEFT, G_EX_ORIGIN_RIGHT, 0, 0, 0, SCREEN_HEIGHT);
     gEXSetRectAlign(gDisplayListHead++, G_EX_ORIGIN_LEFT, G_EX_ORIGIN_LEFT, 0, 0, 0, 0);
@@ -58,7 +58,6 @@ RECOMP_PATCH void draw_simplified_hud(s32 playerId) {
 
     // @recomp
     gEXSetRectAlign(gDisplayListHead++, G_EX_ORIGIN_NONE, G_EX_ORIGIN_NONE, 0, 0, 0, 0);
-
 }
 
 // HUD
@@ -79,6 +78,49 @@ RECOMP_PATCH void draw_simplified_lap_count(s32 playerId) {
 
     // @recomp
     gEXSetRectAlign(gDisplayListHead++, G_EX_ORIGIN_NONE, G_EX_ORIGIN_NONE, 0, 0, 0, 0);
+}
+#endif
+
+// HUD
+#if 0 // lap counter, Timer for 3P/4P
+RECOMP_PATCH void render_hud_lap_3p_4p(s32 playerId) {
+    // @recomp
+    gEXSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, G_EX_ORIGIN_LEFT, G_EX_ORIGIN_RIGHT, 0, 0, 0, SCREEN_HEIGHT);
+
+    if (gModeSelection != BATTLE) {
+        if (D_801657F8 && gIsHUDVisible) {
+            switch (playerId) {
+                case PLAYER_ONE:
+                case PLAYER_THREE:
+                    gEXSetRectAlign(gDisplayListHead++, G_EX_ORIGIN_RIGHT, G_EX_ORIGIN_RIGHT, -(SCREEN_WIDTH) * 4, 0,
+                                    -(SCREEN_WIDTH) * 4, 0);
+                    break;
+
+                case PLAYER_TWO:
+                case PLAYER_FOUR:
+                    // @recomp
+                    gEXSetRectAlign(gDisplayListHead++, G_EX_ORIGIN_LEFT, G_EX_ORIGIN_LEFT, 0, 0, 0, 0);
+                    break;
+            }
+
+            draw_hud_2d_texture_32x8(playerHUD[playerId].lapX, playerHUD[playerId].lapY,
+                                     (u8*) 0x0d00a958 /* common_texture_hud_lap */);
+            draw_lap_count(playerHUD[playerId].lapX - 12, playerHUD[playerId].lapY + 4,
+                           playerHUD[playerId].alsoLapCount);
+
+            // @recomp
+            gEXSetRectAlign(gDisplayListHead++, G_EX_ORIGIN_NONE, G_EX_ORIGIN_NONE, 0, 0, 0, 0);
+        }
+        if (D_801657E4 == 2) {
+            if (playerHUD[playerId].unk_74 && D_80165608) {
+                func_80047910(playerHUD[playerId].unk_6C, playerHUD[playerId].unk_6E, 0, 1.0f,
+                              (u8*) 0x0d01b4d8 /* common_tlut_portrait_bomb_kart_and_question_mark*/,
+                              (u8*) 0xd01d6d8 /* common_texture_portrait_bomb_kart */, (Vtx*) 0x0D005AE0, 0x20, 0x20,
+                              0x20, 0x20);
+            }
+        }
+    }
+    func_8004E6C4(playerId); // Draws the items?
 }
 #endif
 
