@@ -852,6 +852,9 @@ RECOMP_PATCH void render_player_one_3p_4p_screen(void) {
     sp9C = gScreenAspect * 1.2f;
 #endif
 
+    // @recomp: set screen area
+    gEXSetScreenArea(gDisplayListHead++, 0, 0, 160, 120);
+
     bool bigJump = !should_interpolate_perspective(camera->pos, camera->lookAt, 0);
 
     if (bigJump) {
@@ -916,6 +919,8 @@ RECOMP_PATCH void render_player_one_3p_4p_screen(void) {
         render_hud(RENDER_SCREEN_MODE_3P_4P_PLAYER_ONE);
     }
     D_8015F788 += 1;
+
+    gEXSetScreenArea(gDisplayListHead++, 0, 0, 0, 0);
 }
 #endif
 
@@ -929,6 +934,9 @@ RECOMP_PATCH void render_player_two_3p_4p_screen(void) {
     f32 sp9C;
     sp9C = gScreenAspect * 1.2f;
 #endif
+
+    // @recomp: set screen area
+    gEXSetScreenArea(gDisplayListHead++, 160, 0, 320, 120);
 
     bool bigJump = !should_interpolate_perspective(camera->pos, camera->lookAt, 1);
 
@@ -994,6 +1002,9 @@ RECOMP_PATCH void render_player_two_3p_4p_screen(void) {
         render_hud(RENDER_SCREEN_MODE_3P_4P_PLAYER_TWO);
     }
     D_8015F788 += 1;
+
+    // @recomp: reset screen area
+    gEXSetScreenArea(gDisplayListHead++, 0, 0, 0, 0);
 }
 #endif
 
@@ -1003,6 +1014,9 @@ RECOMP_PATCH void render_player_three_3p_4p_screen(void) {
     UNUSED s32 pad[2];
     u16 perspNorm;
     Mat4 matrix;
+
+    // @recomp: set screen area
+    gEXSetScreenArea(gDisplayListHead++, 0, 120, 160, 240);
 
     bool bigJump = !should_interpolate_perspective(camera->pos, camera->lookAt, 2);
 
@@ -1067,6 +1081,9 @@ RECOMP_PATCH void render_player_three_3p_4p_screen(void) {
         render_hud(RENDER_SCREEN_MODE_3P_4P_PLAYER_THREE);
     }
     D_8015F788 += 1;
+
+    // @recomp: reset screen area
+    gEXSetScreenArea(gDisplayListHead++, 0, 0, 0, 0);
 }
 #endif
 
@@ -1076,6 +1093,9 @@ RECOMP_PATCH void render_player_four_3p_4p_screen(void) {
     UNUSED s32 pad[2];
     u16 perspNorm;
     Mat4 matrix;
+
+    // @recomp: set screen area
+    gEXSetScreenArea(gDisplayListHead++, 160, 120, 320, 240);
 
     bool bigJump = !should_interpolate_perspective(camera->pos, camera->lookAt, 3);
 
@@ -1147,6 +1167,9 @@ RECOMP_PATCH void render_player_four_3p_4p_screen(void) {
         render_hud(RENDER_SCREEN_MODE_3P_4P_PLAYER_FOUR);
     }
     D_8015F788 += 1;
+
+    // @recomp: reset screen area
+    gEXSetScreenArea(gDisplayListHead++, 0, 0, 0, 0);
 }
 #endif
 
