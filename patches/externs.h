@@ -561,6 +561,20 @@ void func_80291198(void);
 void func_800C9F90(u8);
 void set_vehicle_pos_waypoint(TrainCarStuff* trainCar, Path2D* posXZ, u16 pathPoint);
 
+void func_800C9018(u8 arg0, u32 soundBits);
+void func_800C5578(Vec3f *arg0, u32 soundBits);
+void func_800C9060(u8 playerId, u32 soundBits);
+void func_800C3448(u32 arg0);
+void func_800C5278(u8 bankId);
+void func_800C97C4(u8 arg0);
+void func_800C9A88(u8 playerId);
+void func_800CA414(u16 arg0, u16 arg1);
+u16 func_800C3508(u8 player);
+void func_800C8EF8(u16 arg0);
+u16 func_800C3508(u8 player);
+void func_800C90F4(u8 playerId, u32 soundBits);
+void func_800C9D0C(u8 playerId);
+
 extern u8 *D_802BA050;
 extern u8 *D_802BA054;
 extern u8 D_0D0293D8[];
@@ -832,4 +846,14 @@ extern u8 *D_802BA058;
 extern bool8 D_801657F8;
 extern s32 D_80165608;
 extern Vtx D_0D005AE0[];
+extern s32 D_800E9EA4[4];
+extern struct Unk_800E9F7C D_800E9F7C[4];
+extern u32 D_800E9E94[4];
+extern s32 D_800E9E74[4];
+extern u8 D_800EA0EC[4];
+extern u8 D_800EA1C0;
+extern u8 D_800EA0F0;
+extern u8 D_800EA104;
+extern f32 D_800EA130[8];
+
 #endif
