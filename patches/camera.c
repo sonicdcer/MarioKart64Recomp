@@ -439,6 +439,34 @@ bool should_interpolate_perspective(Vec3f eye, Vec3f at, int cameraId) {
     return true;
 }
 
+void mk64recomp_set_viewport_area(struct UnkStruct_800DC5EC* screen) {
+    s32 ulx = screen->screenStartX - (screen->screenWidth / 2);
+    s32 uly = screen->screenStartY - (screen->screenHeight / 2);
+    s32 lrx = screen->screenStartX + (screen->screenWidth / 2);
+    s32 lry = screen->screenStartY + (screen->screenHeight / 2);
+
+    if (ulx < 0) {
+        ulx = 0;
+    }
+    if (uly < 0) {
+        uly = 0;
+    }
+    if (lrx > SCREEN_WIDTH) {
+        lrx = SCREEN_WIDTH;
+    }
+    if (lry > SCREEN_HEIGHT) {
+        lry = SCREEN_HEIGHT;
+    }
+    if (ulx >= lrx) {
+        lrx = ulx + 2;
+    }
+    if (uly >= lry) {
+        lry = uly + 2;
+    }
+
+    gEXSetScreenArea(gDisplayListHead++, ulx, uly, lrx, lry);
+}
+
 s32 gCamera1Skipped = 0;
 s32 gCamera2Skipped = 0;
 s32 gCamera3Skipped = 0;
@@ -853,7 +881,7 @@ RECOMP_PATCH void render_player_one_3p_4p_screen(void) {
 #endif
 
     // @recomp: set screen area
-    gEXSetScreenArea(gDisplayListHead++, 0, 0, 160, 120);
+    mk64recomp_set_viewport_area(D_800DC5EC);
 
     bool bigJump = !should_interpolate_perspective(camera->pos, camera->lookAt, 0);
 
@@ -936,7 +964,7 @@ RECOMP_PATCH void render_player_two_3p_4p_screen(void) {
 #endif
 
     // @recomp: set screen area
-    gEXSetScreenArea(gDisplayListHead++, 160, 0, 320, 120);
+    mk64recomp_set_viewport_area(D_800DC5F0);
 
     bool bigJump = !should_interpolate_perspective(camera->pos, camera->lookAt, 1);
 
@@ -1016,7 +1044,7 @@ RECOMP_PATCH void render_player_three_3p_4p_screen(void) {
     Mat4 matrix;
 
     // @recomp: set screen area
-    gEXSetScreenArea(gDisplayListHead++, 0, 120, 160, 240);
+    mk64recomp_set_viewport_area(D_800DC5F4);
 
     bool bigJump = !should_interpolate_perspective(camera->pos, camera->lookAt, 2);
 
@@ -1095,7 +1123,7 @@ RECOMP_PATCH void render_player_four_3p_4p_screen(void) {
     Mat4 matrix;
 
     // @recomp: set screen area
-    gEXSetScreenArea(gDisplayListHead++, 160, 120, 320, 240);
+    mk64recomp_set_viewport_area(D_800DC5F8);
 
     bool bigJump = !should_interpolate_perspective(camera->pos, camera->lookAt, 3);
 
