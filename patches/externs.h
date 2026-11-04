@@ -856,5 +856,6 @@ extern u8 D_800EA0F0;
 extern u8 D_800EA104;
 extern f32 D_800EA130[8];
 extern s32 D_8018D2A4;
-
+extern s32 D_800E5618[];
+extern s32 gGPCurrentRaceRankByPlayerId[];
 #endif

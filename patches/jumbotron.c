@@ -1,9 +1,25 @@
 #include "patches.h"
 
-#if 1
+typedef struct JumbotronScreenPos {
+    u16 screenPosX;
+    u16 screenPosY;
+} JumbotronScreenPos;
+
+static JumbotronScreenPos sJumboScreenTable2P[2] = {
+    /* Player 1 */ { 93, 13 },
+    /* Player 2 */ { 93, 132 },
+};
+
+static JumbotronScreenPos sJumboScreenTable4P[4] = {
+    /* Player 1 */ { 29, 0 },
+    /* Player 2 */ { 160, 0 },
+    /* Player 3 */ { 29, 122 },
+    /* Player 4 */ { 160, 122 },
+};
 
 s16 sCurrentScreenSection = 0;
 
+#if 1
 RECOMP_PATCH void render_luigi_raceway(struct UnkStruct_800DC5EC* arg0) {
     u16 sp22 = (u16) arg0->pathCounter;
     s16 prevFrame;
@@ -30,8 +46,28 @@ RECOMP_PATCH void render_luigi_raceway(struct UnkStruct_800DC5EC* arg0) {
     // d_course_luigi_raceway_packed_dl_68
     gSPDisplayList(gDisplayListHead++, ((Gfx*) 0x07000068));
 
-    D_800DC5DC = 88;
-    D_800DC5E0 = 72;
+    // @recomp: display the screen of the current player in the 1st position
+    int playerIndex;
+    if (gScreenModeSelection == SCREEN_MODE_2P_SPLITSCREEN_HORIZONTAL) {
+        for (playerIndex = 0; playerIndex < 2; playerIndex++) {
+            if (gGPCurrentRaceRankByPlayerId[playerIndex] == 0) {
+                break;
+            }
+        }
+        D_800DC5DC = sJumboScreenTable2P[playerIndex].screenPosX;
+        D_800DC5E0 = sJumboScreenTable2P[playerIndex].screenPosY;
+    } else if (gScreenModeSelection == SCREEN_MODE_3P_4P_SPLITSCREEN) {
+        for (playerIndex = 0; playerIndex < 4; playerIndex++) {
+            if (gGPCurrentRaceRankByPlayerId[playerIndex] == 0) {
+                break;
+            }
+        }
+        D_800DC5DC = sJumboScreenTable4P[playerIndex].screenPosX;
+        D_800DC5E0 = sJumboScreenTable4P[playerIndex].screenPosY;
+    } else { // SCREEN_MODE_1P
+        D_800DC5DC = 88;
+        D_800DC5E0 = 72;
+    }
 
     // @ Recomp: Render Jumbotron to all screens
     if (/* (gActiveScreenMode == SCREEN_MODE_1P) && */ (sp22 >= 10) && (sp22 < 17)) {
@@ -81,7 +117,6 @@ RECOMP_PATCH void render_luigi_raceway(struct UnkStruct_800DC5EC* arg0) {
         }
     }
 }
-
 #endif
 
 #if 1
@@ -113,8 +148,58 @@ RECOMP_PATCH void render_wario_stadium(struct UnkStruct_800DC5EC* arg0) {
     gSPDisplayList(gDisplayListHead++, ((Gfx*) 0x07000A88));
     gSPSetGeometryMode(gDisplayListHead++, G_CULL_BACK);
 
-    D_800DC5DC = 88;
-    D_800DC5E0 = 72;
+    // @recomp: display the screen of the current player in the 1st position
+    int playerIndex;
+    if (gScreenModeSelection == SCREEN_MODE_2P_SPLITSCREEN_HORIZONTAL) {
+        for (playerIndex = 0; playerIndex < 2; playerIndex++) {
+            if (gGPCurrentRaceRankByPlayerId[playerIndex] == 0) {
+                break;
+            }
+        }
+        D_800DC5DC = sJumboScreenTable2P[playerIndex].screenPosX;
+        D_800DC5E0 = sJumboScreenTable2P[playerIndex].screenPosY;
+    } else if (gScreenModeSelection == SCREEN_MODE_3P_4P_SPLITSCREEN) {
+        for (playerIndex = 0; playerIndex < 4; playerIndex++) {
+            if (gGPCurrentRaceRankByPlayerId[playerIndex] == 0) {
+                break;
+            }
+        }
+        D_800DC5DC = sJumboScreenTable4P[playerIndex].screenPosX;
+        D_800DC5E0 = sJumboScreenTable4P[playerIndex].screenPosY;
+    } else { // SCREEN_MODE_1P
+        D_800DC5DC = 88;
+        D_800DC5E0 = 72;
+    }
+
+    // @recomp: Debug
+#if 0
+    static s32 x = 0;
+    static s32 y = 0;
+    static s32 prevX = 0;
+    static s32 prevY = 0;
+
+    if (arg0->player->characterId == 6) { // Peach
+        if (gControllerOne->buttonPressed & L_JPAD) {
+            x--;
+        } else if (gControllerOne->buttonPressed & R_JPAD) {
+            x++;
+        } else if (gControllerOne->buttonPressed & U_JPAD) {
+            y--;
+        } else if (gControllerOne->buttonPressed & D_JPAD) {
+            y++;
+        }
+    }
+
+    D_800DC5DC = 88 + x;
+    D_800DC5E0 = 72 + y;
+
+    if (prevX != D_800DC5DC || prevY != D_800DC5E0) {
+        recomp_printf("X: %d Y: %d\n", D_800DC5DC, D_800DC5E0);
+    }
+
+    prevX = D_800DC5DC;
+    prevY = D_800DC5E0;
+#endif
 
     // @ Recomp: Render Jumbotron to all screens
     if (1 /* gActiveScreenMode == SCREEN_MODE_1P */) {
