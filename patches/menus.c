@@ -104,6 +104,7 @@ RECOMP_PATCH void handle_menus_with_pri_arg(s32 priSpecial) {
 #if DEBUG_MODE == 1
                         if (gControllers[0].button & L_TRIG) {
                             gDebugMenuSelection = 3;
+                            gEnableDebugMode = true;
                         }
 #endif
 #if DEBUG_ENDING == 1
