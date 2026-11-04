@@ -82,7 +82,7 @@ RECOMP_PATCH void draw_simplified_lap_count(s32 playerId) {
 #endif
 
 // Doesn't work as expected
-#if 0 // lap counter, Item window for 3P/4P
+#if 1 // lap counter, Item window for 3P/4P
 RECOMP_PATCH void render_hud_lap_3p_4p(s32 playerId) {
     // @recomp
     gEXSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, G_EX_ORIGIN_LEFT, G_EX_ORIGIN_RIGHT, 0, 0, 0, SCREEN_HEIGHT);
@@ -92,14 +92,13 @@ RECOMP_PATCH void render_hud_lap_3p_4p(s32 playerId) {
             switch (playerId) {
                 case PLAYER_ONE:
                 case PLAYER_THREE:
-                    gEXSetRectAlign(gDisplayListHead++, G_EX_ORIGIN_RIGHT, G_EX_ORIGIN_RIGHT, -(SCREEN_WIDTH) * 4, 0,
-                                    -(SCREEN_WIDTH) * 4, 0);
+                    gEXSetRectAlign(gDisplayListHead++, G_EX_ORIGIN_RIGHT, G_EX_ORIGIN_RIGHT, -(SCREEN_WIDTH) * 2, 0, -(SCREEN_WIDTH) * 2, 0);
                     break;
 
                 case PLAYER_TWO:
                 case PLAYER_FOUR:
                     // @recomp
-                    gEXSetRectAlign(gDisplayListHead++, G_EX_ORIGIN_LEFT, G_EX_ORIGIN_LEFT, 0, 0, 0, 0);
+                    gEXSetRectAlign(gDisplayListHead++, G_EX_ORIGIN_LEFT, G_EX_ORIGIN_LEFT, -(SCREEN_WIDTH) * 2, 0, -(SCREEN_WIDTH) * 2, 0);
                     break;
             }
 
