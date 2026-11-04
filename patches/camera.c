@@ -498,7 +498,7 @@ RECOMP_PATCH void render_player_one_1p_screen(void) {
         gEXMatrixGroupSimple(gDisplayListHead++, 0xFFFFAAAA, G_EX_NOPUSH, G_MTX_PROJECTION, G_EX_COMPONENT_SKIP,
                              G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE,
                              G_EX_ORDER_LINEAR, G_EX_EDIT_NONE, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP);
-        recomp_printf("CAMERA 1 SKIPED: %d\n", bigJump);
+        recomp_printf("CAMERA 1 SKIPPED!\n");
         gCamera1Skipped = true;
     } else {
         // Simple interpolation works much better for cameras because they orbit around a focus.
@@ -571,7 +571,7 @@ RECOMP_PATCH void render_player_one_2p_screen_vertical(void) {
         gEXMatrixGroupSimple(gDisplayListHead++, 0xFFFFAAAB, G_EX_NOPUSH, G_MTX_PROJECTION, G_EX_COMPONENT_SKIP,
                              G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE,
                              G_EX_ORDER_LINEAR, G_EX_EDIT_NONE, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP);
-        recomp_printf("CAMERA 1 SKIPED: %d\n", bigJump);
+        recomp_printf("CAMERA 1 SKIPPED!\n");
         gCamera1Skipped = true;
     } else {
         gEXMatrixGroupSimple(gDisplayListHead++, 0xFFFFAAAB, G_EX_NOPUSH, G_MTX_PROJECTION, G_EX_COMPONENT_INTERPOLATE,
@@ -646,7 +646,7 @@ RECOMP_PATCH void render_player_two_2p_screen_vertical(void) {
         gEXMatrixGroupSimple(gDisplayListHead++, 0xFFFFAAAC, G_EX_NOPUSH, G_MTX_PROJECTION, G_EX_COMPONENT_SKIP,
                              G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE,
                              G_EX_ORDER_LINEAR, G_EX_EDIT_NONE, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP);
-        recomp_printf("CAMERA 2 SKIPED: %d\n", bigJump);
+        recomp_printf("CAMERA 2 SKIPPED!\n");
         gCamera2Skipped = true;
     } else {
         gEXMatrixGroupSimple(gDisplayListHead++, 0xFFFFAAAC, G_EX_NOPUSH, G_MTX_PROJECTION, G_EX_COMPONENT_INTERPOLATE,
@@ -722,7 +722,7 @@ RECOMP_PATCH void render_player_one_2p_screen_horizontal(void) {
         gEXMatrixGroupSimple(gDisplayListHead++, 0xFFFFAAAD, G_EX_NOPUSH, G_MTX_PROJECTION, G_EX_COMPONENT_SKIP,
                              G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE,
                              G_EX_ORDER_LINEAR, G_EX_EDIT_NONE, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP);
-        recomp_printf("CAMERA 1 SKIPED: %d\n", bigJump);
+        recomp_printf("CAMERA 1 SKIPPED!\n");
         gCamera1Skipped = true;
     } else {
         gEXMatrixGroupSimple(gDisplayListHead++, 0xFFFFAAAD, G_EX_NOPUSH, G_MTX_PROJECTION, G_EX_COMPONENT_INTERPOLATE,
@@ -804,7 +804,7 @@ RECOMP_PATCH void render_player_two_2p_screen_horizontal(void) {
         gEXMatrixGroupSimple(gDisplayListHead++, 0xFFFFAAAE, G_EX_NOPUSH, G_MTX_PROJECTION, G_EX_COMPONENT_SKIP,
                              G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE,
                              G_EX_ORDER_LINEAR, G_EX_EDIT_NONE, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP);
-        recomp_printf("CAMERA 2 SKIPED: %d\n", bigJump);
+        recomp_printf("CAMERA 2 SKIPPED!\n");
         gCamera2Skipped = true;
     } else {
         gEXMatrixGroupSimple(gDisplayListHead++, 0xFFFFAAAE, G_EX_NOPUSH, G_MTX_PROJECTION, G_EX_COMPONENT_INTERPOLATE,
@@ -889,7 +889,7 @@ RECOMP_PATCH void render_player_one_3p_4p_screen(void) {
         gEXMatrixGroupSimple(gDisplayListHead++, 0xFFFFAAAF, G_EX_NOPUSH, G_MTX_PROJECTION, G_EX_COMPONENT_SKIP,
                              G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE,
                              G_EX_ORDER_LINEAR, G_EX_EDIT_NONE, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP);
-        recomp_printf("CAMERA 1 SKIPED: %d\n", bigJump);
+        recomp_printf("CAMERA 1 SKIPPED!\n");
         gCamera1Skipped = true;
     } else {
         gEXMatrixGroupSimple(gDisplayListHead++, 0xFFFFAAAF, G_EX_NOPUSH, G_MTX_PROJECTION, G_EX_COMPONENT_INTERPOLATE,
@@ -972,7 +972,7 @@ RECOMP_PATCH void render_player_two_3p_4p_screen(void) {
         gEXMatrixGroupSimple(gDisplayListHead++, 0xFFFFAAB0, G_EX_NOPUSH, G_MTX_PROJECTION, G_EX_COMPONENT_SKIP,
                              G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE,
                              G_EX_ORDER_LINEAR, G_EX_EDIT_NONE, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP);
-        recomp_printf("CAMERA 2 SKIPED: %d\n", bigJump);
+        recomp_printf("CAMERA 2 SKIPPED!\n");
         gCamera2Skipped = true;
     } else {
         gEXMatrixGroupSimple(gDisplayListHead++, 0xFFFFAAB0, G_EX_NOPUSH, G_MTX_PROJECTION, G_EX_COMPONENT_INTERPOLATE,
@@ -1052,7 +1052,7 @@ RECOMP_PATCH void render_player_three_3p_4p_screen(void) {
         gEXMatrixGroupSimple(gDisplayListHead++, 0xFFFFAAB1, G_EX_NOPUSH, G_MTX_PROJECTION, G_EX_COMPONENT_SKIP,
                              G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE,
                              G_EX_ORDER_LINEAR, G_EX_EDIT_NONE, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP);
-        recomp_printf("CAMERA 3 SKIPED: %d\n", bigJump);
+        recomp_printf("CAMERA 3 SKIPPED!\n");
         gCamera3Skipped = true;
     } else {
         gEXMatrixGroupSimple(gDisplayListHead++, 0xFFFFAAB1, G_EX_NOPUSH, G_MTX_PROJECTION, G_EX_COMPONENT_INTERPOLATE,
@@ -1131,7 +1131,7 @@ RECOMP_PATCH void render_player_four_3p_4p_screen(void) {
         gEXMatrixGroupSimple(gDisplayListHead++, 0xFFFFAAB2, G_EX_NOPUSH, G_MTX_PROJECTION, G_EX_COMPONENT_SKIP,
                              G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE,
                              G_EX_ORDER_LINEAR, G_EX_EDIT_NONE, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP);
-        recomp_printf("CAMERA 4 SKIPED: %d\n", bigJump);
+        recomp_printf("CAMERA 4 SKIPPED!\n");
         gCamera4Skipped = true;
     } else {
         gEXMatrixGroupSimple(gDisplayListHead++, 0xFFFFAAB2, G_EX_NOPUSH, G_MTX_PROJECTION, G_EX_COMPONENT_INTERPOLATE,
