@@ -92,13 +92,15 @@ RECOMP_PATCH void render_hud_lap_3p_4p(s32 playerId) {
             switch (playerId) {
                 case PLAYER_ONE:
                 case PLAYER_THREE:
-                    gEXSetRectAlign(gDisplayListHead++, G_EX_ORIGIN_RIGHT, G_EX_ORIGIN_RIGHT, -(SCREEN_WIDTH) * 2, 0, -(SCREEN_WIDTH) * 2, 0);
+                    gEXSetRectAlign(gDisplayListHead++, G_EX_ORIGIN_RIGHT, G_EX_ORIGIN_RIGHT, -(SCREEN_WIDTH) * 2, 0,
+                                    -(SCREEN_WIDTH) * 2, 0);
                     break;
 
                 case PLAYER_TWO:
                 case PLAYER_FOUR:
                     // @recomp
-                    gEXSetRectAlign(gDisplayListHead++, G_EX_ORIGIN_LEFT, G_EX_ORIGIN_LEFT, -(SCREEN_WIDTH) * 2, 0, -(SCREEN_WIDTH) * 2, 0);
+                    gEXSetRectAlign(gDisplayListHead++, G_EX_ORIGIN_LEFT, G_EX_ORIGIN_LEFT, -(SCREEN_WIDTH) * 2, 0,
+                                    -(SCREEN_WIDTH) * 2, 0);
                     break;
             }
 
@@ -278,6 +280,74 @@ RECOMP_PATCH void func_800591B4(void) {
     // @recomp
     if (gScreenModeSelection < SCREEN_MODE_3P_4P_SPLITSCREEN) {
         gEXSetViewportAlign(gDisplayListHead++, G_EX_ORIGIN_NONE, 0, 0);
+    }
+}
+#endif
+
+#if 0
+extern s32 D_8018D2A4;
+RECOMP_PATCH void func_800590D4(void) {
+    if (D_8018D2A4 != 0) {
+        if (gModeSelection != BATTLE) {
+            gEXSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, G_EX_ORIGIN_LEFT, G_EX_ORIGIN_RIGHT, 0, 0, 0,
+                          SCREEN_HEIGHT);
+            switch (gPlayerCountSelection1) {
+                case 1:
+                    if (gModeSelection != TIME_TRIALS) {
+                        func_8004E800(PLAYER_ONE);
+                        break;
+                    }
+                    break;
+                case 2:
+                    func_8004E800(PLAYER_ONE);
+                    func_8004E800(PLAYER_TWO);
+                    break;
+                case 3:
+                    gEXSetScreenArea(gDisplayListHead++, 0, 0, 160, 120);
+                    gEXSetViewportAlign(gDisplayListHead++, G_EX_ORIGIN_LEFT, 0, 0);
+                    
+                    func_8004E998(PLAYER_ONE);
+
+                    gEXSetScreenArea(gDisplayListHead++, 160, 0, 320, 120);
+                    gEXSetViewportAlign(gDisplayListHead++, G_EX_ORIGIN_RIGHT, -(SCREEN_WIDTH) * 2, 0);
+
+                    func_8004E998(PLAYER_TWO);
+
+                    gEXSetScreenArea(gDisplayListHead++, 0, 120, 160, 240);
+                    gEXSetViewportAlign(gDisplayListHead++, G_EX_ORIGIN_LEFT, 0, 0);
+
+                    func_8004E998(PLAYER_THREE);
+
+                    // reset
+                    gEXSetScreenArea(gDisplayListHead++, 0, 0, 0, 0);
+                    gEXSetViewportAlign(gDisplayListHead++, G_EX_ORIGIN_NONE, 0, 0);
+                    break;
+                case 4:
+                    gEXSetScreenArea(gDisplayListHead++, 0, 0, 160, 120);
+                    gEXSetViewportAlign(gDisplayListHead++, G_EX_ORIGIN_LEFT, 0, 0);
+                    
+                    func_8004E998(PLAYER_ONE);
+
+                    gEXSetScreenArea(gDisplayListHead++, 160, 0, 320, 120);
+                    gEXSetViewportAlign(gDisplayListHead++, G_EX_ORIGIN_RIGHT, -(SCREEN_WIDTH) * 2, 0);
+
+                    func_8004E998(PLAYER_TWO);
+
+                    gEXSetScreenArea(gDisplayListHead++, 0, 120, 160, 240);
+                    gEXSetViewportAlign(gDisplayListHead++, G_EX_ORIGIN_LEFT, 0, 0);
+
+                    func_8004E998(PLAYER_THREE);
+
+                    gEXSetScreenArea(gDisplayListHead++, 160, 120, 320, 240);
+                    gEXSetViewportAlign(gDisplayListHead++, G_EX_ORIGIN_RIGHT, -(SCREEN_WIDTH) * 2, 0);
+                    func_8004E998(PLAYER_FOUR);
+                    
+                    // reset
+                    gEXSetScreenArea(gDisplayListHead++, 0, 0, 0, 0);
+                    gEXSetViewportAlign(gDisplayListHead++, G_EX_ORIGIN_NONE, 0, 0);
+                    break;
+            }
+        }
     }
 }
 #endif
