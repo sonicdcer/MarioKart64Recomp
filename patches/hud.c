@@ -121,7 +121,8 @@ RECOMP_PATCH void render_hud_lap_3p_4p(s32 playerId) {
             }
         }
     }
-    func_8004E6C4(playerId); // Draws the items
+
+    func_8004E6C4(playerId); // Draws the items (orthographic)
 }
 #endif
 
@@ -285,7 +286,8 @@ RECOMP_PATCH void func_800591B4(void) {
 #endif
 
 #if 0
-extern s32 D_8018D2A4;
+
+// 3P/4P Position (orthographic)
 RECOMP_PATCH void func_800590D4(void) {
     if (D_8018D2A4 != 0) {
         if (gModeSelection != BATTLE) {
