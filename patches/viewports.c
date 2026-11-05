@@ -1,6 +1,6 @@
 #include "patches.h"
 
-#if 0 // GLOBAL
+#if 1 // GLOBAL
 
 #if 1
 RECOMP_PATCH void func_802A3730(struct UnkStruct_800DC5EC* arg0) {
@@ -24,7 +24,8 @@ RECOMP_PATCH void func_802A3730(struct UnkStruct_800DC5EC* arg0) {
     arg0->viewport.vp.vtrans[3] = 0;
 
     // gSPViewport(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&arg0->viewport));
-    gEXViewport(gDisplayListHead++, G_EX_ORIGIN_CENTER, VIRTUAL_TO_PHYSICAL(&arg0->viewport));
+
+    gEXViewport(gDisplayListHead++, G_EX_ORIGIN_NONE, VIRTUAL_TO_PHYSICAL(&arg0->viewport));
 
     screenWidth /= 4;
     screenHeight /= 4;
@@ -47,11 +48,12 @@ RECOMP_PATCH void func_802A3730(struct UnkStruct_800DC5EC* arg0) {
     // arg0->viewport.vp.vtrans[0] -= screenWidth / 2;
 
     //gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, ulx, uly, lrx, lry);
-    gEXSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, G_EX_ORIGIN_LEFT, G_EX_ORIGIN_RIGHT, 0, 0, 0, 240);
+    gEXSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, G_EX_ORIGIN_LEFT, G_EX_ORIGIN_RIGHT, 0, 0, 0, SCREEN_HEIGHT);
+    gEXSetViewportAspect(gDisplayListHead++, G_EX_ASPECT_STRETCH);
 }
 #endif
 
-#if 1
+#if 0
 RECOMP_PATCH void func_802A4300(void) {
 
     if (gActiveScreenMode == SCREEN_MODE_1P) {
@@ -87,7 +89,7 @@ RECOMP_PATCH void func_802A4300(void) {
 }
 #endif
 
-#if 1
+#if 0
 RECOMP_PATCH void select_framebuffer(void) {
     gDPSetColorImage(gDisplayListHead++, G_IM_FMT_RGBA, G_IM_SIZ_16b, SCREEN_WIDTH,
                      VIRTUAL_TO_PHYSICAL(gPhysicalFramebuffers[sRenderingFramebuffer]));
@@ -101,7 +103,7 @@ RECOMP_PATCH void select_framebuffer(void) {
 }
 #endif
 
-#if 1
+#if 0
 RECOMP_PATCH void init_rdp(void) {
     gDPPipeSync(gDisplayListHead++);
     gDPPipelineMode(gDisplayListHead++, G_PM_1PRIMITIVE);
@@ -123,7 +125,7 @@ RECOMP_PATCH void init_rdp(void) {
 }
 #endif
 
-#if 1
+#if 0
 RECOMP_PATCH void init_z_buffer(void) {
     gDPPipeSync(gDisplayListHead++);
     gDPSetCycleType(gDisplayListHead++, G_CYC_FILL);
