@@ -581,6 +581,8 @@ RECOMP_PATCH void render_player_one_2p_screen_vertical(void) {
         gCamera1Skipped = false;
     }
 
+    gEXSetViewportAspect(gDisplayListHead++, G_EX_ASPECT_STRETCH);
+
     func_802A50EC();
 
     init_rdp();
@@ -655,6 +657,8 @@ RECOMP_PATCH void render_player_two_2p_screen_vertical(void) {
                              G_EX_COMPONENT_SKIP);
         gCamera2Skipped = false;
     }
+
+    gEXSetViewportAspect(gDisplayListHead++, G_EX_ASPECT_STRETCH);
 
     func_802A5004();
     init_rdp();

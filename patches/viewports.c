@@ -2,7 +2,7 @@
 
 #if 1 // GLOBAL
 
-#if 1
+#if 0
 RECOMP_PATCH void func_802A3730(struct UnkStruct_800DC5EC* arg0) {
     s32 ulx;
     s32 uly;
