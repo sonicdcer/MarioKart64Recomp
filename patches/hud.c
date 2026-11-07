@@ -285,7 +285,7 @@ RECOMP_PATCH void func_800591B4(void) {
 }
 #endif
 
-#if 0
+#if 1
 
 // 3P/4P Position (orthographic)
 RECOMP_PATCH void func_800590D4(void) {
@@ -305,13 +305,14 @@ RECOMP_PATCH void func_800590D4(void) {
                     func_8004E800(PLAYER_TWO);
                     break;
                 case 3:
+                    gEXSetViewportAspect(gDisplayListHead++, G_EX_ASPECT_AUTO);
                     gEXSetScreenArea(gDisplayListHead++, 0, 0, 160, 120);
                     gEXSetViewportAlign(gDisplayListHead++, G_EX_ORIGIN_LEFT, 0, 0);
-                    
+
                     func_8004E998(PLAYER_ONE);
 
                     gEXSetScreenArea(gDisplayListHead++, 160, 0, 320, 120);
-                    gEXSetViewportAlign(gDisplayListHead++, G_EX_ORIGIN_RIGHT, -(SCREEN_WIDTH) * 2, 0);
+                    gEXSetViewportAlign(gDisplayListHead++, G_EX_ORIGIN_RIGHT, -SCREEN_WIDTH * 4, 0);
 
                     func_8004E998(PLAYER_TWO);
 
@@ -325,13 +326,14 @@ RECOMP_PATCH void func_800590D4(void) {
                     gEXSetViewportAlign(gDisplayListHead++, G_EX_ORIGIN_NONE, 0, 0);
                     break;
                 case 4:
+                    gEXSetViewportAspect(gDisplayListHead++, G_EX_ASPECT_AUTO);
                     gEXSetScreenArea(gDisplayListHead++, 0, 0, 160, 120);
                     gEXSetViewportAlign(gDisplayListHead++, G_EX_ORIGIN_LEFT, 0, 0);
                     
                     func_8004E998(PLAYER_ONE);
 
                     gEXSetScreenArea(gDisplayListHead++, 160, 0, 320, 120);
-                    gEXSetViewportAlign(gDisplayListHead++, G_EX_ORIGIN_RIGHT, -(SCREEN_WIDTH) * 2, 0);
+                    gEXSetViewportAlign(gDisplayListHead++, G_EX_ORIGIN_RIGHT, -SCREEN_WIDTH * 4, 0);
 
                     func_8004E998(PLAYER_TWO);
 
@@ -341,7 +343,7 @@ RECOMP_PATCH void func_800590D4(void) {
                     func_8004E998(PLAYER_THREE);
 
                     gEXSetScreenArea(gDisplayListHead++, 160, 120, 320, 240);
-                    gEXSetViewportAlign(gDisplayListHead++, G_EX_ORIGIN_RIGHT, -(SCREEN_WIDTH) * 2, 0);
+                    gEXSetViewportAlign(gDisplayListHead++, G_EX_ORIGIN_RIGHT, -SCREEN_WIDTH * 4, 0);
                     func_8004E998(PLAYER_FOUR);
                     
                     // reset
@@ -352,6 +354,32 @@ RECOMP_PATCH void func_800590D4(void) {
         }
     }
 }
+#endif
+
+#if 1
+
+RECOMP_PATCH void render_pause_menu(MenuItem* arg0) {
+    // @recomp: stretch transparent rect to the full width of the viewport
+    gEXSetRectAspect(gDisplayListHead++, G_EX_ASPECT_STRETCH);
+
+    if (gIsGamePaused != 0) {
+        switch (gModeSelection) {
+            case TIME_TRIALS:
+                render_pause_menu_time_trials(arg0);
+                break;
+            case VERSUS:
+                render_pause_menu_versus(arg0);
+                break;
+            case GRAND_PRIX:
+                render_pause_grand_prix(arg0);
+                break;
+            case BATTLE:
+                render_pause_battle(arg0);
+                break;
+        }
+    }
+}
+
 #endif
 
 #endif // GLOBAL
