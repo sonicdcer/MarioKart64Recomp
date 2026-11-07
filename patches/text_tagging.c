@@ -6,7 +6,7 @@ RECOMP_PATCH void print_text_mode_1(s32 column, s32 row, char* text, s32 trackin
     gEXMatrixGroupDecomposed(gDisplayListHead++, (u32) text << 16 | column << 8 | row, G_EX_PUSH, G_MTX_MODELVIEW,
                              G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_INTERPOLATE,
                              G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE,
-                             G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
+                             G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP);
 
     print_text0(column, row, text, tracking, scaleX, scaleY, 1);
 
@@ -27,7 +27,8 @@ RECOMP_PATCH void print_text0(s32 column, s32 row, char* text, s32 tracking, f32
             gEXMatrixGroupDecomposed(gDisplayListHead++, TAG_LETTER(text), G_EX_PUSH, G_MTX_MODELVIEW,
                                      G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO,
                                      G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP,
-                                     G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_LINEAR, G_EX_EDIT_ALLOW);
+                                     G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_LINEAR, G_EX_EDIT_ALLOW,
+                                     G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP);
 
             glyphIndex = char_to_glyph_index(text);
             if (glyphIndex >= 0) {
@@ -108,7 +109,7 @@ RECOMP_PATCH void print_text1(s32 column, s32 row, char* text, s32 tracking, f32
         gEXMatrixGroupDecomposed(gDisplayListHead++, TAG_LETTER(text), G_EX_PUSH, G_MTX_MODELVIEW, G_EX_COMPONENT_AUTO,
                                  G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_INTERPOLATE,
                                  G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE,
-                                 G_EX_ORDER_LINEAR, G_EX_EDIT_ALLOW);
+                                 G_EX_ORDER_LINEAR, G_EX_EDIT_ALLOW, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP);
 
         glyphIndex = char_to_glyph_index(text);
         if (glyphIndex >= 0) {
@@ -146,7 +147,8 @@ RECOMP_PATCH void print_text2(s32 column, s32 row, char* text, s32 tracking, f32
             gEXMatrixGroupDecomposed(gDisplayListHead++, TAG_LETTER(text), G_EX_PUSH, G_MTX_MODELVIEW,
                                      G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO,
                                      G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP,
-                                     G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_LINEAR, G_EX_EDIT_ALLOW);
+                                     G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_LINEAR, G_EX_EDIT_ALLOW,
+                                     G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP);
 
             glyphIndex = char_to_glyph_index(text);
             if (glyphIndex >= 0) {

@@ -1,54 +1,128 @@
+#if 1 // GLOBAL
+
 #include "patches.h"
 
-// HUD
-#if 1 // lap counter, Timer
-RECOMP_PATCH void draw_simplified_lap_count(s32 playerId) {
-    gEXSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, G_EX_ORIGIN_LEFT, G_EX_ORIGIN_RIGHT, 0, 0, 0,
-                  SCREEN_HEIGHT); // @recomp
-    gEXSetRectAlign(gDisplayListHead++, G_EX_ORIGIN_LEFT, G_EX_ORIGIN_LEFT, 0, 0, 0, 0);
-    draw_hud_2d_texture_32x8((s32) playerHUD[playerId].lapX, playerHUD[playerId].lapY + 3, (u8*) 0x000000000d00a958);
-    draw_hud_2d_texture_32x16(playerHUD[playerId].lapX + 0x1C, (s32) playerHUD[playerId].lapY,
-                              (u8*) gHudLapTextures[playerHUD[playerId].alsoLapCount]);
-    gEXSetRectAlign(gDisplayListHead++, G_EX_ORIGIN_NONE, G_EX_ORIGIN_NONE, 0, 0, 0, 0);
-}
-
+// Widescreen alignment of start race animation for lap Counter and Timer (Single Player)
 RECOMP_PATCH void func_8004EB38(s32 playerId) {
-    hud_player* temp_s0;
+    hud_player* temp_s0 = &playerHUD[playerId];
 
+    // @recomp
+    gEXSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, G_EX_ORIGIN_LEFT, G_EX_ORIGIN_RIGHT, 0, 0, 0, SCREEN_HEIGHT);
     gEXSetRectAlign(gDisplayListHead++, G_EX_ORIGIN_RIGHT, G_EX_ORIGIN_RIGHT, -(SCREEN_WIDTH) * 4, 0,
-                    -(SCREEN_WIDTH) * 4, 0); // @recomp
+                    -(SCREEN_WIDTH) * 4, 0);
 
-    temp_s0 = &playerHUD[playerId];
-
+    // TIMER
     if ((u8) temp_s0->unk_7B != 0) {
-        func_8004C9D8(temp_s0->lap1CompletionTimeX - 0x13, temp_s0->timerY + 8, 0x00000080, (u8*) 0x000000000d00c158,
-                      0x00000020, 0x00000010, 0x00000020, 0x00000010);
+        func_8004C9D8(temp_s0->lap1CompletionTimeX - 0x13, temp_s0->timerY + 8, 0x00000080,
+                      (u8*) 0x0d00c158 /* common_texture_hud_time*/, 0x00000020, 0x00000010, 0x00000020, 0x00000010);
         func_8004F950((s32) temp_s0->lap1CompletionTimeX, (s32) temp_s0->timerY, 0x00000080, (s32) temp_s0->someTimer);
     }
-
     if ((u8) temp_s0->unk_7C != 0) {
-        func_8004C9D8(temp_s0->lap2CompletionTimeX - 0x13, temp_s0->timerY + 8, 0x00000050, (u8*) 0x000000000d00c158,
-                      0x00000020, 0x00000010, 0x00000020, 0x00000010);
+        func_8004C9D8(temp_s0->lap2CompletionTimeX - 0x13, temp_s0->timerY + 8, 0x00000050,
+                      (u8*) 0x0d00c158 /* common_texture_hud_time*/, 0x00000020, 0x00000010, 0x00000020, 0x00000010);
         func_8004F950((s32) temp_s0->lap2CompletionTimeX, (s32) temp_s0->timerY, 0x00000050, (s32) temp_s0->someTimer);
     }
 
-    gEXSetRectAlign(gDisplayListHead++, G_EX_ORIGIN_LEFT, G_EX_ORIGIN_LEFT, 0, 0, 0, 0); // @recomp
+    // @recomp
+    gEXSetRectAlign(gDisplayListHead++, G_EX_ORIGIN_LEFT, G_EX_ORIGIN_LEFT, 0, 0, 0, 0);
 
+    // LAP COUNTER
     if ((u8) temp_s0->unk_7E != 0) {
-        func_8004C9D8((s32) temp_s0->lapAfterImage1X, temp_s0->lapY + 3, 0x00000080, (u8*) 0x000000000d00a958,
-                      0x00000020, 8, 0x00000020, 8);
+        func_8004C9D8((s32) temp_s0->lapAfterImage1X, temp_s0->lapY + 3, 0x00000080,
+                      (u8*) 0x0d00a958 /* common_texture_hud_lap */, 0x00000020, 8, 0x00000020, 8);
         func_8004C9D8(temp_s0->lapAfterImage1X + 0x1C, (s32) temp_s0->lapY, 0x00000080,
                       (u8*) gHudLapTextures[temp_s0->alsoLapCount], 0x00000020, 0x00000010, 0x00000020, 0x00000010);
     }
-
     if ((u8) temp_s0->unk_7F != 0) {
-        func_8004C9D8((s32) temp_s0->lapAfterImage2X, temp_s0->lapY + 3, 0x00000050, (u8*) 0x000000000d00a958,
-                      0x00000020, 8, 0x00000020, 8);
+        func_8004C9D8((s32) temp_s0->lapAfterImage2X, temp_s0->lapY + 3, 0x00000050,
+                      (u8*) 0x0d00a958 /* common_texture_hud_lap */, 0x00000020, 8, 0x00000020, 8);
         func_8004C9D8(temp_s0->lapAfterImage2X + 0x1C, (s32) temp_s0->lapY, 0x00000050,
                       (u8*) gHudLapTextures[temp_s0->alsoLapCount], 0x00000020, 0x00000010, 0x00000020, 0x00000010);
     }
 
-    gEXSetRectAlign(gDisplayListHead++, G_EX_ORIGIN_NONE, G_EX_ORIGIN_NONE, 0, 0, 0, 0); // @recomp
+    gEXSetRectAlign(gDisplayListHead++, G_EX_ORIGIN_NONE, G_EX_ORIGIN_NONE, 0, 0, 0, 0);
+}
+
+// HUD FOR 2P
+RECOMP_PATCH void draw_simplified_hud(s32 playerId) {
+    if ((gModeSelection != BATTLE) && (D_80165800[playerId] == 0) && (gIsHUDVisible != 0)) {
+        render_hud_timer(playerId);
+        draw_simplified_lap_count(playerId);
+    }
+
+    // @recomp
+    gEXSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, G_EX_ORIGIN_LEFT, G_EX_ORIGIN_RIGHT, 0, 0, 0, SCREEN_HEIGHT);
+    gEXSetRectAlign(gDisplayListHead++, G_EX_ORIGIN_LEFT, G_EX_ORIGIN_LEFT, 0, 0, 0, 0);
+
+    draw_item_window(playerId);
+
+    // @recomp
+    gEXSetRectAlign(gDisplayListHead++, G_EX_ORIGIN_NONE, G_EX_ORIGIN_NONE, 0, 0, 0, 0);
+}
+
+// HUD
+#if 1 // lap counter, Timer for 2P
+RECOMP_PATCH void draw_simplified_lap_count(s32 playerId) {
+    // @recomp
+    gEXSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, G_EX_ORIGIN_LEFT, G_EX_ORIGIN_RIGHT, 0, 0, 0, SCREEN_HEIGHT);
+    if (gPlayerCount == 1) {
+        gEXSetRectAlign(gDisplayListHead++, G_EX_ORIGIN_LEFT, G_EX_ORIGIN_LEFT, 0, 0, 0, 0);
+    } else {
+        gEXSetRectAlign(gDisplayListHead++, G_EX_ORIGIN_RIGHT, G_EX_ORIGIN_RIGHT, -(SCREEN_WIDTH) * 4, 0,
+                        -(SCREEN_WIDTH) * 4, 0);
+    }
+
+    draw_hud_2d_texture_32x8((s32) playerHUD[playerId].lapX, playerHUD[playerId].lapY + 3, (u8*) 0x000000000d00a958);
+    draw_hud_2d_texture_32x16(playerHUD[playerId].lapX + 0x1C, (s32) playerHUD[playerId].lapY,
+                              (u8*) gHudLapTextures[playerHUD[playerId].alsoLapCount]);
+
+    // @recomp
+    gEXSetRectAlign(gDisplayListHead++, G_EX_ORIGIN_NONE, G_EX_ORIGIN_NONE, 0, 0, 0, 0);
+}
+#endif
+
+// Doesn't work as expected
+#if 1 // lap counter, Item window for 3P/4P
+RECOMP_PATCH void render_hud_lap_3p_4p(s32 playerId) {
+    // @recomp
+    gEXSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, G_EX_ORIGIN_LEFT, G_EX_ORIGIN_RIGHT, 0, 0, 0, SCREEN_HEIGHT);
+
+    if (gModeSelection != BATTLE) {
+        if (D_801657F8 && gIsHUDVisible) {
+            switch (playerId) {
+                case PLAYER_ONE:
+                case PLAYER_THREE:
+                    gEXSetRectAlign(gDisplayListHead++, G_EX_ORIGIN_RIGHT, G_EX_ORIGIN_RIGHT, -(SCREEN_WIDTH) * 2, 0,
+                                    -(SCREEN_WIDTH) * 2, 0);
+                    break;
+
+                case PLAYER_TWO:
+                case PLAYER_FOUR:
+                    // @recomp
+                    gEXSetRectAlign(gDisplayListHead++, G_EX_ORIGIN_LEFT, G_EX_ORIGIN_LEFT, -(SCREEN_WIDTH) * 2, 0,
+                                    -(SCREEN_WIDTH) * 2, 0);
+                    break;
+            }
+
+            draw_hud_2d_texture_32x8(playerHUD[playerId].lapX, playerHUD[playerId].lapY,
+                                     (u8*) 0x0d00a958 /* common_texture_hud_lap */);
+            draw_lap_count(playerHUD[playerId].lapX - 12, playerHUD[playerId].lapY + 4,
+                           playerHUD[playerId].alsoLapCount);
+
+            // @recomp
+            gEXSetRectAlign(gDisplayListHead++, G_EX_ORIGIN_NONE, G_EX_ORIGIN_NONE, 0, 0, 0, 0);
+        }
+        if (D_801657E4 == 2) {
+            if (playerHUD[playerId].unk_74 && D_80165608) {
+                func_80047910(playerHUD[playerId].unk_6C, playerHUD[playerId].unk_6E, 0, 1.0f,
+                              (u8*) 0x0d01b4d8 /* common_tlut_portrait_bomb_kart_and_question_mark*/,
+                              (u8*) 0xd01d6d8 /* common_texture_portrait_bomb_kart */, (Vtx*) 0x0D005AE0, 0x20, 0x20,
+                              0x20, 0x20);
+            }
+        }
+    }
+
+    func_8004E6C4(playerId); // Draws the items (orthographic)
 }
 #endif
 
@@ -133,36 +207,27 @@ RECOMP_PATCH void func_800591B4(void) {
         if (gIsHUDVisible != 0) {
             if (D_801657D8 == 0) {
                 if (D_801657F0 != false) {
-                    func_800514BC();
+                    func_800514BC(); // Racers progress
                 }
 
                 if ((!gDemoMode) && (D_801657E8 != false)) {
+                    // @recomp
+                    if (gScreenModeSelection < SCREEN_MODE_3P_4P_SPLITSCREEN) {
+                        gEXSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, G_EX_ORIGIN_LEFT, G_EX_ORIGIN_RIGHT, 0, 0,
+                                      0, SCREEN_HEIGHT);
+
+                        gEXSetRectAlign(gDisplayListHead++, G_EX_ORIGIN_RIGHT, G_EX_ORIGIN_RIGHT, -(SCREEN_WIDTH) * 4,
+                                        0, -(SCREEN_WIDTH) * 4, 0);
+                        gEXSetViewportAlign(gDisplayListHead++, G_EX_ORIGIN_RIGHT, -(SCREEN_WIDTH) * 4, 0);
+                        gSPViewport(gDisplayListHead++, VIRTUAL_TO_PHYSICAL((void*) 0x802B8880));
+                    }
+
                     if (D_80165800[0] != 0) {
-                        if (gScreenModeSelection < SCREEN_MODE_3P_4P_SPLITSCREEN) {
-                            gEXSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, G_EX_ORIGIN_LEFT, G_EX_ORIGIN_RIGHT,
-                                          0, 0, 0, SCREEN_HEIGHT); // @recomp
-
-                            gEXSetRectAlign(gDisplayListHead++, G_EX_ORIGIN_RIGHT, G_EX_ORIGIN_RIGHT,
-                                            -(SCREEN_WIDTH) * 4, 0, -(SCREEN_WIDTH) * 4, 0); // @recomp
-                        }
-
                         func_8004EE54(0); // map
                         if (gModeSelection != BATTLE) {
                             render_mini_map_finish_line(0);
                         }
-
-                        if (gScreenModeSelection < SCREEN_MODE_3P_4P_SPLITSCREEN) {
-                            gEXSetViewportAlign(gDisplayListHead++, G_EX_ORIGIN_RIGHT, -(SCREEN_WIDTH) * 4, 0);
-                            gSPViewport(gDisplayListHead++, VIRTUAL_TO_PHYSICAL((void*) 0x802B8880));
-                        }
-
                         func_8004F3E4(0); // racers on the map, including the player.
-
-                        if (gScreenModeSelection < SCREEN_MODE_3P_4P_SPLITSCREEN) {
-                            gEXSetViewportAlign(gDisplayListHead++, G_EX_ORIGIN_NONE, 0, 0);
-                            gEXSetRectAlign(gDisplayListHead++, G_EX_ORIGIN_NONE, G_EX_ORIGIN_NONE, 0, 0, 0,
-                                            0); // @recomp
-                        }
                     }
 
                     if ((gScreenModeSelection == SCREEN_MODE_2P_SPLITSCREEN_HORIZONTAL) && (D_80165800[1] != 0)) {
@@ -172,12 +237,19 @@ RECOMP_PATCH void func_800591B4(void) {
                         }
                         func_8004F3E4(1); // player splitscreen
                     }
+
+                    // @recomp
+                    if (gScreenModeSelection < SCREEN_MODE_3P_4P_SPLITSCREEN) {
+                        gEXSetViewportAlign(gDisplayListHead++, G_EX_ORIGIN_NONE, 0, 0);
+                        gEXSetRectAlign(gDisplayListHead++, G_EX_ORIGIN_NONE, G_EX_ORIGIN_NONE, 0, 0, 0, 0);
+                    }
                 }
             }
 
+            // @recomp
             if (gScreenModeSelection < SCREEN_MODE_3P_4P_SPLITSCREEN) {
                 gEXSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, G_EX_ORIGIN_LEFT, G_EX_ORIGIN_RIGHT, 0, 0, 0,
-                              SCREEN_HEIGHT); // @recomp
+                              SCREEN_HEIGHT);
 
                 if (D_801657E2 == 0) {
                     gEXSetViewportAlign(gDisplayListHead++, G_EX_ORIGIN_LEFT, 0, 0);
@@ -194,6 +266,7 @@ RECOMP_PATCH void func_800591B4(void) {
 
             func_800590D4(); // Player Ranking position (ex. 1st, 2nd, etc)
 
+            // @recomp
             if (gScreenModeSelection < SCREEN_MODE_3P_4P_SPLITSCREEN) {
                 gEXSetViewportAlign(gDisplayListHead++, G_EX_ORIGIN_NONE, 0, 0);
                 gEXSetRectAlign(gDisplayListHead++, G_EX_ORIGIN_NONE, G_EX_ORIGIN_NONE, 0, 0, 0, 0); // @recomp
@@ -205,8 +278,108 @@ RECOMP_PATCH void func_800591B4(void) {
         func_80057CE4();
     }
 
+    // @recomp
     if (gScreenModeSelection < SCREEN_MODE_3P_4P_SPLITSCREEN) {
         gEXSetViewportAlign(gDisplayListHead++, G_EX_ORIGIN_NONE, 0, 0);
     }
 }
 #endif
+
+#if 1
+
+// 3P/4P Position (orthographic)
+RECOMP_PATCH void func_800590D4(void) {
+    if (D_8018D2A4 != 0) {
+        if (gModeSelection != BATTLE) {
+            gEXSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, G_EX_ORIGIN_LEFT, G_EX_ORIGIN_RIGHT, 0, 0, 0,
+                          SCREEN_HEIGHT);
+            switch (gPlayerCountSelection1) {
+                case 1:
+                    if (gModeSelection != TIME_TRIALS) {
+                        func_8004E800(PLAYER_ONE);
+                        break;
+                    }
+                    break;
+                case 2:
+                    func_8004E800(PLAYER_ONE);
+                    func_8004E800(PLAYER_TWO);
+                    break;
+                case 3:
+                    gEXSetViewportAspect(gDisplayListHead++, G_EX_ASPECT_AUTO);
+                    gEXSetScreenArea(gDisplayListHead++, 0, 0, 160, 120);
+                    gEXSetViewportAlign(gDisplayListHead++, G_EX_ORIGIN_LEFT, 0, 0);
+
+                    func_8004E998(PLAYER_ONE);
+
+                    gEXSetScreenArea(gDisplayListHead++, 160, 0, 320, 120);
+                    gEXSetViewportAlign(gDisplayListHead++, G_EX_ORIGIN_RIGHT, -SCREEN_WIDTH * 4, 0);
+
+                    func_8004E998(PLAYER_TWO);
+
+                    gEXSetScreenArea(gDisplayListHead++, 0, 120, 160, 240);
+                    gEXSetViewportAlign(gDisplayListHead++, G_EX_ORIGIN_LEFT, 0, 0);
+
+                    func_8004E998(PLAYER_THREE);
+
+                    // reset
+                    gEXSetScreenArea(gDisplayListHead++, 0, 0, 0, 0);
+                    gEXSetViewportAlign(gDisplayListHead++, G_EX_ORIGIN_NONE, 0, 0);
+                    break;
+                case 4:
+                    gEXSetViewportAspect(gDisplayListHead++, G_EX_ASPECT_AUTO);
+                    gEXSetScreenArea(gDisplayListHead++, 0, 0, 160, 120);
+                    gEXSetViewportAlign(gDisplayListHead++, G_EX_ORIGIN_LEFT, 0, 0);
+                    
+                    func_8004E998(PLAYER_ONE);
+
+                    gEXSetScreenArea(gDisplayListHead++, 160, 0, 320, 120);
+                    gEXSetViewportAlign(gDisplayListHead++, G_EX_ORIGIN_RIGHT, -SCREEN_WIDTH * 4, 0);
+
+                    func_8004E998(PLAYER_TWO);
+
+                    gEXSetScreenArea(gDisplayListHead++, 0, 120, 160, 240);
+                    gEXSetViewportAlign(gDisplayListHead++, G_EX_ORIGIN_LEFT, 0, 0);
+
+                    func_8004E998(PLAYER_THREE);
+
+                    gEXSetScreenArea(gDisplayListHead++, 160, 120, 320, 240);
+                    gEXSetViewportAlign(gDisplayListHead++, G_EX_ORIGIN_RIGHT, -SCREEN_WIDTH * 4, 0);
+                    func_8004E998(PLAYER_FOUR);
+                    
+                    // reset
+                    gEXSetScreenArea(gDisplayListHead++, 0, 0, 0, 0);
+                    gEXSetViewportAlign(gDisplayListHead++, G_EX_ORIGIN_NONE, 0, 0);
+                    break;
+            }
+        }
+    }
+}
+#endif
+
+#if 1
+
+RECOMP_PATCH void render_pause_menu(MenuItem* arg0) {
+    // @recomp: stretch transparent rect to the full width of the viewport
+    gEXSetRectAspect(gDisplayListHead++, G_EX_ASPECT_STRETCH);
+
+    if (gIsGamePaused != 0) {
+        switch (gModeSelection) {
+            case TIME_TRIALS:
+                render_pause_menu_time_trials(arg0);
+                break;
+            case VERSUS:
+                render_pause_menu_versus(arg0);
+                break;
+            case GRAND_PRIX:
+                render_pause_grand_prix(arg0);
+                break;
+            case BATTLE:
+                render_pause_battle(arg0);
+                break;
+        }
+    }
+}
+
+#endif
+
+#endif // GLOBAL

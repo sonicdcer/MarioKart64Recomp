@@ -16,7 +16,7 @@ RECOMP_PATCH void func_802A4A0C(Vtx* vtx, struct UnkStruct_800DC5EC* arg1, UNUSE
 
     {
         // 4:3 baseline
-        float baseAspect = 1.33133334f;
+        float baseAspect = 1.32f; // It is supposed to be 4/3 but let's use a bigger and even number to avoid precision problems
         float scaleX = aspect / baseAspect;
         float translateX = (1.0f - scaleX) * 160.0f;
 

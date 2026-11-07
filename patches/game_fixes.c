@@ -140,6 +140,8 @@ RECOMP_PATCH void race_logic_loop(void) {
 
         case SCREEN_MODE_2P_SPLITSCREEN_VERTICAL:
             if (gCurrentCourseId == COURSE_DK_JUNGLE) {
+                // @recomp: tick rate of 2 in 2P mode
+                // gTickSpeed = 3;
                 gTickSpeed = 2;
             } else {
                 gTickSpeed = 2;
@@ -185,6 +187,8 @@ RECOMP_PATCH void race_logic_loop(void) {
         case SCREEN_MODE_2P_SPLITSCREEN_HORIZONTAL:
 
             if (gCurrentCourseId == COURSE_DK_JUNGLE) {
+                // @recomp: tick rate of 2 in 2P mode
+                // gTickSpeed = 3;
                 gTickSpeed = 2;
             } else {
                 gTickSpeed = 2;
@@ -236,6 +240,8 @@ RECOMP_PATCH void race_logic_loop(void) {
                     case COURSE_MOO_MOO_FARM:
                     case COURSE_SKYSCRAPER:
                     case COURSE_DK_JUNGLE:
+                        // @recomp: tick rate of 2 in 2P mode
+                        // gTickSpeed = 3;
                         gTickSpeed = 2;
                         break;
                     default:
@@ -251,6 +257,8 @@ RECOMP_PATCH void race_logic_loop(void) {
                         gTickSpeed = 2;
                         break;
                     case COURSE_DK_JUNGLE:
+                        // @recomp: tick rate of 2 in 2P mode
+                        // gTickSpeed = 4;
                         gTickSpeed = 2;
                         break;
                     default:
@@ -411,3 +419,73 @@ RECOMP_PATCH void func_8028EC98(s32 track) {
     }
 }
 #endif
+
+// recomp: Full train for multiplayer modes
+RECOMP_PATCH void init_vehicles_trains(void) {
+    u16 pathPointOffset;
+    TrainCarStuff* ptr1;
+    Path2D* pos;
+    s32 i;
+    s32 j;
+
+    for (i = 0; i < NUM_TRAINS; i++) {
+        // outputs 160 or 392 depending on the train.
+        // Wraps the value around to always output a valid pathPoint.
+        pathPointOffset = (((i * gVehicle2DWaypointLength) / NUM_TRAINS) + 160) % gVehicle2DWaypointLength;
+
+        // 120.0f is about the maximum usable value
+        gTrainList[i].speed = 5.0f;
+        for (j = 0; j < NUM_PASSENGER_CAR_ENTRIES; j++) {
+            pathPointOffset += 4;
+            ptr1 = &gTrainList[i].passengerCars[j];
+            pos = &gVehicle2DWaypoint[pathPointOffset];
+            set_vehicle_pos_waypoint(ptr1, pos, pathPointOffset);
+        }
+        // Smaller offset for the tender
+        pathPointOffset += 3;
+        ptr1 = &gTrainList[i].tender;
+        pos = &gVehicle2DWaypoint[pathPointOffset];
+        set_vehicle_pos_waypoint(ptr1, pos, pathPointOffset);
+
+        pathPointOffset += 4;
+        ptr1 = &gTrainList[i].locomotive;
+        pos = &gVehicle2DWaypoint[pathPointOffset];
+        set_vehicle_pos_waypoint(ptr1, pos, pathPointOffset);
+
+        // Only use locomotive unless overwritten below.
+        gTrainList[i].numCars = LOCOMOTIVE_ONLY;
+    }
+
+    // @recomp: enable full train for all game modes
+
+    // Spawn all rolling stock in single player mode.
+    // switch (gScreenModeSelection) {
+    //     case SCREEN_MODE_1P: // single player
+            for (i = 0; i < NUM_TRAINS; i++) {
+                gTrainList[i].tender.isActive = 1;
+
+                // clang-format off
+                // Same line required for matching...
+                for (j = 0; j < NUM_PASSENGER_CAR_ENTRIES; j++) { gTrainList[i].passengerCars[j].isActive = 1; }
+                // clang-format on
+
+                gTrainList[i].numCars = NUM_TENDERS + NUM_PASSENGER_CAR_ENTRIES;
+            }
+        //     break;
+
+        // Spawn locomotive, tender, and one passenger car in versus 2/3 player mode.
+        // case SCREEN_MODE_2P_SPLITSCREEN_HORIZONTAL: // multiplayer fall-through
+        // case SCREEN_MODE_2P_SPLITSCREEN_VERTICAL:
+        //     if (gModeSelection != GRAND_PRIX) {
+        //         for (i = 0; i < NUM_TRAINS; i++) {
+        //             gTrainList[i].tender.isActive = 1;
+        //             gTrainList[i].passengerCars[4].isActive = 1;
+        //             gTrainList[i].numCars = NUM_TENDERS + NUM_2P_PASSENGER_CARS;
+        //         }
+        //     }
+        //     break;
+    // }
+ 
+
+    gTrainSmokeTimer = 0;
+}

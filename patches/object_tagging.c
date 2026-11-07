@@ -58,16 +58,18 @@ RECOMP_PATCH void render_player(Player* player, s8 playerId, s8 screenId) {
         (gCamera3Skipped && (screenId == 2)) || (gCamera4Skipped && (screenId == 3))) {
         // Skip
         // @recomp Tag the transform
-        gEXMatrixGroupDecomposed(gDisplayListHead++, (TAG_OBJECT(player) << 16) | playerId << 8 | screenId, G_EX_PUSH, G_MTX_MODELVIEW,
-                                 G_EX_COMPONENT_AUTO, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_AUTO,
+        gEXMatrixGroupDecomposed(gDisplayListHead++, (TAG_OBJECT(player) << 16) | playerId << 8 | screenId, G_EX_PUSH,
+                                 G_MTX_MODELVIEW, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_AUTO,
                                  G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP,
-                                 G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
+                                 G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW, G_EX_COMPONENT_SKIP,
+                                 G_EX_COMPONENT_SKIP);
     } else {
         // @recomp Tag the transform
-        gEXMatrixGroupDecomposed(gDisplayListHead++, (TAG_OBJECT(player) << 16) | playerId << 8 | screenId, G_EX_PUSH, G_MTX_MODELVIEW,
-                                 G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO,
+        gEXMatrixGroupDecomposed(gDisplayListHead++, (TAG_OBJECT(player) << 16) | playerId << 8 | screenId, G_EX_PUSH,
+                                 G_MTX_MODELVIEW, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO,
                                  G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP,
-                                 G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
+                                 G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW, G_EX_COMPONENT_SKIP,
+                                 G_EX_COMPONENT_SKIP);
     }
 
     update_wheel_palette(player, playerId, screenId, D_801651D0[screenId][playerId]);
@@ -84,17 +86,17 @@ RECOMP_PATCH void render_player(Player* player, s8 playerId, s8 screenId) {
             (gCamera3Skipped && (screenId == 2)) || (gCamera4Skipped && (screenId == 3))) {
             // Skip
             // @recomp Tag the transform
-            gEXMatrixGroupDecomposed(gDisplayListHead++,
-                                     (TAG_OBJECT(player) << 16) & 0xFFFF0000 | playerId << 8 | screenId, G_EX_PUSH,
-                                     G_MTX_MODELVIEW, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_AUTO,
-                                     G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP,
-                                     G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
+            gEXMatrixGroupDecomposed(
+                gDisplayListHead++, (TAG_OBJECT(player) << 16) & 0xFFFF0000 | playerId << 8 | screenId, G_EX_PUSH,
+                G_MTX_MODELVIEW, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_AUTO,
+                G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE,
+                G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP);
         } else {
-            gEXMatrixGroupDecomposed(gDisplayListHead++,
-                                     (TAG_OBJECT(player) << 16) & 0xFFFF0000 | playerId << 8 | screenId, G_EX_PUSH,
-                                     G_MTX_MODELVIEW, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO,
-                                     G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP,
-                                     G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
+            gEXMatrixGroupDecomposed(
+                gDisplayListHead++, (TAG_OBJECT(player) << 16) & 0xFFFF0000 | playerId << 8 | screenId, G_EX_PUSH,
+                G_MTX_MODELVIEW, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO,
+                G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE,
+                G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP);
         }
         if ((player->effects & BOO_EFFECT) == BOO_EFFECT) {
             if (playerId == screenId) {
@@ -111,17 +113,17 @@ RECOMP_PATCH void render_player(Player* player, s8 playerId, s8 screenId) {
             (gCamera3Skipped && (screenId == 2)) || (gCamera4Skipped && (screenId == 3))) {
             // Skip
             // @recomp Tag the transform
-            gEXMatrixGroupDecomposed(gDisplayListHead++,
-                                     (TAG_OBJECT(player) << 16) & 0xFFFF0000 | playerId << 8 | screenId, G_EX_PUSH,
-                                     G_MTX_MODELVIEW, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_AUTO,
-                                     G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP,
-                                     G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
+            gEXMatrixGroupDecomposed(
+                gDisplayListHead++, (TAG_OBJECT(player) << 16) & 0xFFFF0000 | playerId << 8 | screenId, G_EX_PUSH,
+                G_MTX_MODELVIEW, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_AUTO,
+                G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE,
+                G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP);
         } else {
-            gEXMatrixGroupDecomposed(gDisplayListHead++,
-                                     (TAG_OBJECT(player) << 16) & 0xFFFF0000 | playerId << 8 | screenId, G_EX_PUSH,
-                                     G_MTX_MODELVIEW, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO,
-                                     G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP,
-                                     G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
+            gEXMatrixGroupDecomposed(
+                gDisplayListHead++, (TAG_OBJECT(player) << 16) & 0xFFFF0000 | playerId << 8 | screenId, G_EX_PUSH,
+                G_MTX_MODELVIEW, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO,
+                G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE,
+                G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP);
         }
         render_kart(player, playerId, screenId, var_v1);
 
@@ -132,17 +134,17 @@ RECOMP_PATCH void render_player(Player* player, s8 playerId, s8 screenId) {
             (gCamera3Skipped && (screenId == 2)) || (gCamera4Skipped && (screenId == 3))) {
             // Skip
             // @recomp Tag the transform
-            gEXMatrixGroupDecomposed(gDisplayListHead++,
-                                     (TAG_OBJECT(player) << 16) & 0xFFFF0000 | playerId << 8 | screenId, G_EX_PUSH,
-                                     G_MTX_MODELVIEW, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_AUTO,
-                                     G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP,
-                                     G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
+            gEXMatrixGroupDecomposed(
+                gDisplayListHead++, (TAG_OBJECT(player) << 16) & 0xFFFF0000 | playerId << 8 | screenId, G_EX_PUSH,
+                G_MTX_MODELVIEW, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_AUTO,
+                G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE,
+                G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP);
         } else {
-            gEXMatrixGroupDecomposed(gDisplayListHead++,
-                                     (TAG_OBJECT(player) << 16) & 0xFFFF0000 | playerId << 8 | screenId, G_EX_PUSH,
-                                     G_MTX_MODELVIEW, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO,
-                                     G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP,
-                                     G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
+            gEXMatrixGroupDecomposed(
+                gDisplayListHead++, (TAG_OBJECT(player) << 16) & 0xFFFF0000 | playerId << 8 | screenId, G_EX_PUSH,
+                G_MTX_MODELVIEW, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO,
+                G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE,
+                G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP);
         }
         render_ghost(player, playerId, screenId, var_v1);
 
@@ -156,17 +158,17 @@ RECOMP_PATCH void render_player(Player* player, s8 playerId, s8 screenId) {
             (gCamera3Skipped && (screenId == 2)) || (gCamera4Skipped && (screenId == 3))) {
             // Skip
             // @recomp Tag the transform
-            gEXMatrixGroupDecomposed(gDisplayListHead++,
-                                     (TAG_OBJECT(player) << 16) & 0xFFFF0000 | playerId << 8 | screenId, G_EX_PUSH,
-                                     G_MTX_MODELVIEW, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_AUTO,
-                                     G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP,
-                                     G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
+            gEXMatrixGroupDecomposed(
+                gDisplayListHead++, (TAG_OBJECT(player) << 16) & 0xFFFF0000 | playerId << 8 | screenId, G_EX_PUSH,
+                G_MTX_MODELVIEW, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_AUTO,
+                G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE,
+                G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP);
         } else {
-            gEXMatrixGroupDecomposed(gDisplayListHead++,
-                                     (TAG_OBJECT(player) << 16) & 0xFFFF0000 | playerId << 8 | screenId, G_EX_PUSH,
-                                     G_MTX_MODELVIEW, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO,
-                                     G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP,
-                                     G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
+            gEXMatrixGroupDecomposed(
+                gDisplayListHead++, (TAG_OBJECT(player) << 16) & 0xFFFF0000 | playerId << 8 | screenId, G_EX_PUSH,
+                G_MTX_MODELVIEW, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO,
+                G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE,
+                G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP);
         }
         render_player_ice_reflection(player, playerId, screenId, var_v1);
 
@@ -178,17 +180,17 @@ RECOMP_PATCH void render_player(Player* player, s8 playerId, s8 screenId) {
             (gCamera3Skipped && (screenId == 2)) || (gCamera4Skipped && (screenId == 3))) {
             // Skip
             // @recomp Tag the transform
-            gEXMatrixGroupDecomposed(gDisplayListHead++,
-                                     (TAG_OBJECT(player) << 16) & 0xFFFF0000 | playerId << 8 | screenId, G_EX_PUSH,
-                                     G_MTX_MODELVIEW, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_AUTO,
-                                     G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP,
-                                     G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
+            gEXMatrixGroupDecomposed(
+                gDisplayListHead++, (TAG_OBJECT(player) << 16) & 0xFFFF0000 | playerId << 8 | screenId, G_EX_PUSH,
+                G_MTX_MODELVIEW, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_AUTO,
+                G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE,
+                G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP);
         } else {
-            gEXMatrixGroupDecomposed(gDisplayListHead++,
-                                     (TAG_OBJECT(player) << 16) & 0xFFFF0000 | playerId << 8 | screenId, G_EX_PUSH,
-                                     G_MTX_MODELVIEW, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO,
-                                     G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP,
-                                     G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
+            gEXMatrixGroupDecomposed(
+                gDisplayListHead++, (TAG_OBJECT(player) << 16) & 0xFFFF0000 | playerId << 8 | screenId, G_EX_PUSH,
+                G_MTX_MODELVIEW, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO,
+                G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE,
+                G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP);
         }
         func_80025DE8(player, playerId, screenId, var_v1);
 
@@ -354,7 +356,8 @@ RECOMP_PATCH void func_800691B8(Player* player, s8 arg1, s16 arg2, s8 arg3) {
         gEXMatrixGroupDecomposed(gDisplayListHead++, TAG_OBJECT(arg2) | OBJECT_10 << 16, G_EX_PUSH, G_MTX_MODELVIEW,
                                  G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO,
                                  G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP,
-                                 G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
+                                 G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW, G_EX_COMPONENT_SKIP,
+                                 G_EX_COMPONENT_SKIP);
 
         func_800652D4(sp5C, sp54, player->size * 0.5);
         gSPDisplayList(gDisplayListHead++, (Gfx*) 0x0D008D58);
@@ -393,7 +396,8 @@ RECOMP_PATCH void func_800696CC(Player* player, UNUSED s8 arg1, s16 arg2, s8 arg
         gEXMatrixGroupDecomposed(gDisplayListHead++, TAG_OBJECT(arg2) | OBJECT_11 << 16, G_EX_PUSH, G_MTX_MODELVIEW,
                                  G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO,
                                  G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP,
-                                 G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
+                                 G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW, G_EX_COMPONENT_SKIP,
+                                 G_EX_COMPONENT_SKIP);
 
         func_800652D4(sp5C, sp54, player->size * arg4);
         gSPDisplayList(gDisplayListHead++, (Gfx*) 0x0D008D58);
@@ -432,7 +436,8 @@ RECOMP_PATCH void func_80069938(Player* player, UNUSED s8 arg1, s16 arg2, s8 arg
         gEXMatrixGroupDecomposed(gDisplayListHead++, TAG_OBJECT(arg2) | OBJECT_12 << 16, G_EX_PUSH, G_MTX_MODELVIEW,
                                  G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO,
                                  G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP,
-                                 G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
+                                 G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW, G_EX_COMPONENT_SKIP,
+                                 G_EX_COMPONENT_SKIP);
 
         func_800652D4(sp5C, sp54, player->unk_258[30 + arg2].unk_00C * player->size);
         gSPDisplayList(gDisplayListHead++, (Gfx*) 0x0D008D58);
@@ -493,7 +498,8 @@ RECOMP_PATCH void func_80065AB0(Player* player, UNUSED s8 arg1, s16 arg2, s8 arg
         gEXMatrixGroupDecomposed(gDisplayListHead++, player->type << 8 | arg2 | var_s0 << 16, G_EX_PUSH,
                                  G_MTX_MODELVIEW, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO,
                                  G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP,
-                                 G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
+                                 G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW, G_EX_COMPONENT_SKIP,
+                                 G_EX_COMPONENT_SKIP);
 
         func_800652D4(spB4, spAC, player->unk_258[10 + arg2].unk_00C * player->size);
 
@@ -533,7 +539,7 @@ RECOMP_PATCH void func_8006D474(Player* player, s8 playerId, s8 screenId) {
     if ((player->unk_002 & (8 << (screenId * 4))) == (8 << (screenId * 4))) {
         for (i = 0; i < 10; i++) {
             // @recomp Tag the transform.
-            gEXMatrixGroupDecomposedNormal(gDisplayListHead++, TAG_SMOKE_DUST((playerId << 8) + i), G_EX_PUSH,
+            gEXMatrixGroupDecomposedNormal(gDisplayListHead++, TAG_SMOKE_DUST((playerId << 8) | (screenId << 16) + i), G_EX_PUSH,
                                            G_MTX_MODELVIEW, G_EX_EDIT_ALLOW);
             switch (player->unk_258[i].unk_012) {
                 case 1:
@@ -560,7 +566,7 @@ RECOMP_PATCH void func_8006D474(Player* player, s8 playerId, s8 screenId) {
             gEXPopMatrixGroup(gDisplayListHead++, G_MTX_MODELVIEW);
 
             // @recomp Tag the transform.
-            gEXMatrixGroupDecomposedNormal(gDisplayListHead++, TAG_SMOKE_DUST((playerId << 8) + i + 30), G_EX_PUSH,
+            gEXMatrixGroupDecomposedNormal(gDisplayListHead++, TAG_SMOKE_DUST((playerId << 8) | (screenId << 16) + i + 30), G_EX_PUSH,
                                            G_MTX_MODELVIEW, G_EX_EDIT_ALLOW);
 
             switch (player->unk_258[i + 30].unk_012) {
@@ -626,7 +632,7 @@ RECOMP_PATCH void func_8006D474(Player* player, s8 playerId, s8 screenId) {
             gEXPopMatrixGroup(gDisplayListHead++, G_MTX_MODELVIEW);
 
             // @recomp Tag the transform.
-            gEXMatrixGroupDecomposedNormal(gDisplayListHead++, TAG_SMOKE_DUST((playerId << 8) + i + 10), G_EX_PUSH,
+            gEXMatrixGroupDecomposedNormal(gDisplayListHead++, TAG_SMOKE_DUST((playerId << 8) | (screenId << 16) + i + 10), G_EX_PUSH,
                                            G_MTX_MODELVIEW, G_EX_EDIT_ALLOW);
             switch (player->unk_258[i + 10].unk_012) {
                 case 1:
@@ -679,142 +685,6 @@ RECOMP_PATCH void func_8006D474(Player* player, s8 playerId, s8 screenId) {
 }
 #endif
 
-#if 1
-RECOMP_PATCH void func_80051ABC(s16 arg0, s32 arg1) {
-    s32 i;
-    s32 objectIndex;
-    Object* object;
-    u32 margin = 0;
-
-    D_8018D228 = 0xFF;
-    gSPDisplayList(gDisplayListHead++, (Gfx*) 0x0D007A60);
-    if ((u8) D_8018D230 != 0) {
-        func_8004B414(255, 255, 255, 255);
-        for (i = 0; i < D_8018D1F0; i++) {
-            objectIndex = D_8018CC80[arg1 + i];
-            object = &gObjectList[objectIndex];
-            func_800519D4(objectIndex, object->unk_09C, arg0 - object->unk_09E);
-        }
-    } else {
-        func_8004B6C4(255, 255, 255);
-        for (i = 0; i < D_8018D1F0; i++) {
-            objectIndex = D_8018CC80[arg1 + i];
-            object = &gObjectList[objectIndex];
-            gEXMatrixGroupDecomposed(gDisplayListHead++, TAG_OBJECT(object), G_EX_PUSH, G_MTX_MODELVIEW,
-                                     G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO,
-                                     G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP,
-                                     G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_LINEAR, G_EX_EDIT_ALLOW);
-
-            gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, 0 + margin, 0 + margin, SCREEN_WIDTH - margin,
-                          SCREEN_HEIGHT - margin);
-
-            func_800518F8(objectIndex, object->unk_09C, arg0 - object->unk_09E);
-
-            // @recomp Pop the transform id.
-            gEXPopMatrixGroup(gDisplayListHead++, G_MTX_MODELVIEW);
-        }
-    }
-}
-#endif
-
-// Farm Moles
-#if 0
-RECOMP_PATCH void func_80054D00(s32 objectIndex, s32 cameraId) {
-    Camera* camera;
-
-    camera = &camera1[cameraId];
-    if (gObjectList[objectIndex].state >= 3) {
-        func_8008A364(objectIndex, cameraId, 0x2AABU, 0x0000012C);
-        if (is_obj_flag_status_active(objectIndex, VISIBLE) != 0) {
-            gEXMatrixGroupDecomposed(gDisplayListHead++, TAG_OBJECT(&gObjectList[objectIndex]), G_EX_PUSH,
-                                     G_MTX_MODELVIEW, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO,
-                                     G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP,
-                                     G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_LINEAR, G_EX_EDIT_ALLOW);
-
-            D_80183E80[0] = (s16) gObjectList[objectIndex].orientation[0];
-            D_80183E80[1] =
-                func_800418AC(gObjectList[objectIndex].pos[0], gObjectList[objectIndex].pos[2], camera->pos);
-            D_80183E80[2] = (u16) gObjectList[objectIndex].orientation[2];
-            func_80048130(gObjectList[objectIndex].pos, (u16*) D_80183E80, gObjectList[objectIndex].sizeScaling,
-                          (u8*) gObjectList[objectIndex].activeTLUT, gObjectList[objectIndex].activeTexture,
-                          (Vtx*) 0x0D0062B0, 32, 64, 32, 64, 5);
-
-            // @recomp Pop the transform id.
-            gEXPopMatrixGroup(gDisplayListHead++, G_MTX_MODELVIEW);
-        }
-    }
-}
-
-RECOMP_PATCH void func_80054E10(s32 objectIndex) {
-    if (gObjectList[objectIndex].state > 0) {
-        if (is_obj_flag_status_active(objectIndex, 0x00800000) != 0) {
-            gEXMatrixGroupDecomposed(gDisplayListHead++, TAG_OBJECT(&gObjectList[objectIndex]), G_EX_PUSH,
-                                     G_MTX_MODELVIEW, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO,
-                                     G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP,
-                                     G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_LINEAR, G_EX_EDIT_ALLOW);
-
-            D_80183E50[0] = gObjectList[objectIndex].pos[0];
-            D_80183E50[1] = gObjectList[objectIndex].surfaceHeight + 0.8;
-            D_80183E50[2] = gObjectList[objectIndex].pos[2];
-            D_80183E70[0] = gObjectList[objectIndex].velocity[0];
-            D_80183E70[1] = gObjectList[objectIndex].velocity[1];
-            D_80183E70[2] = gObjectList[objectIndex].velocity[2];
-            func_8004A9B8(gObjectList[objectIndex].sizeScaling);
-
-            // @recomp Pop the transform id.
-            gEXPopMatrixGroup(gDisplayListHead++, G_MTX_MODELVIEW);
-        }
-    }
-}
-
-RECOMP_PATCH void func_80054F04(s32 cameraId) {
-    s32 i;
-    s32 objectIndex;
-    Camera* camera = &camera1[cameraId];
-    Object* object;
-
-    gSPDisplayList(gDisplayListHead++, (Gfx*) 0x0D0079C8);
-    load_texture_block_rgba16_mirror((u8*) 0x6013670, 16, 16);
-
-    for (i = 0; i < gObjectParticle2_SIZE; i++) {
-        objectIndex = gObjectParticle2[i];
-        object = &gObjectList[objectIndex];
-
-        if (object->state > 0) {
-            func_8008A364(objectIndex, cameraId, 0x2AABU, 200);
-            if ((is_obj_flag_status_active(objectIndex, VISIBLE) != 0) && (gMatrixHudCount <= MTX_HUD_POOL_SIZE_MAX)) {
-                gEXMatrixGroupDecomposed(gDisplayListHead++, TAG_OBJECT(object) | (i << 16), G_EX_PUSH, G_MTX_MODELVIEW,
-                                         G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO,
-                                         G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP,
-                                         G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_LINEAR, G_EX_EDIT_ALLOW);
-
-                object->orientation[1] = func_800418AC(object->pos[0], object->pos[2], camera->pos);
-                rsp_set_matrix_gObjectList(objectIndex);
-                gSPDisplayList(gDisplayListHead++, (Gfx*) 0x0D006980);
-
-                // @recomp Pop the transform id.
-                gEXPopMatrixGroup(gDisplayListHead++, G_MTX_MODELVIEW);
-            }
-        }
-    }
-    gSPTexture(gDisplayListHead++, 1, 1, 0, G_TX_RENDERTILE, G_OFF);
-}
-#endif
-
-// 0x21CA8
-Vtx d_course_kalimari_desert_unknown_model1[] = {
-    { { { 0, 12, 12 }, 0, { 0, 0 }, { 0xFF, 0xFF, 0xFF, 0xFF } } },
-    { { { 0, -12, 12 }, 0, { 0, 2048 }, { 0xFF, 0xFF, 0xFF, 0xFF } } },
-    { { { 0, -12, -12 }, 0, { 2048, 2048 }, { 0xFF, 0xFF, 0xFF, 0xFF } } },
-    { { { 0, 12, -12 }, 0, { 2048, 0 }, { 0xFF, 0xFF, 0xFF, 0xFF } } },
-};
-Vtx d_course_kalimari_desert_unknown_model2[] = {
-    { { { 0, 6, 6 }, 0, { 0, 0 }, { 0xFF, 0xFF, 0xFF, 0xFF } } },
-    { { { 0, -6, 6 }, 0, { 0, 2048 }, { 0xFF, 0xFF, 0xFF, 0xFF } } },
-    { { { 0, -6, -6 }, 0, { 2048, 2048 }, { 0xFF, 0xFF, 0xFF, 0xFF } } },
-    { { { 0, 6, -6 }, 0, { 2048, 0 }, { 0xFF, 0xFF, 0xFF, 0xFF } } },
-};
-
 // @recomp there's absolutely zero reason for the train wheels to be using decals
 // I'm commenting them out since they cause performance issues in accurate renderers for nothing.
 Gfx d_course_kalimari_desert_dl_22D70[] = {
@@ -822,7 +692,7 @@ Gfx d_course_kalimari_desert_dl_22D70[] = {
     gsDPPipeSync(),
     gsDPSetCombineMode(G_CC_MODULATEIDECALA, G_CC_MODULATEIDECALA),
     gsDPSetRenderMode(G_RM_AA_ZB_TEX_EDGE, G_RM_AA_ZB_TEX_EDGE2),
-    gsSPVertex(d_course_kalimari_desert_unknown_model1, 4, 0),
+    gsSPVertex((Vtx*) 0x06021ca8 /* d_course_kalimari_desert_unknown_model1 */, 4, 0),
     gsSP2Triangles(0, 1, 2, 0, 0, 2, 3, 0),
     // gsDPSetRenderMode(G_RM_AA_ZB_XLU_DECAL, G_RM_AA_ZB_XLU_DECAL2),
     // gsSP2Triangles(0, 1, 2, 0, 0, 2, 3, 0),
@@ -834,7 +704,7 @@ Gfx d_course_kalimari_desert_dl_22DB8[] = {
     gsDPPipeSync(),
     gsDPSetCombineMode(G_CC_MODULATEIDECALA, G_CC_MODULATEIDECALA),
     gsDPSetRenderMode(G_RM_AA_ZB_TEX_EDGE, G_RM_AA_ZB_TEX_EDGE2),
-    gsSPVertex(d_course_kalimari_desert_unknown_model2, 4, 0),
+    gsSPVertex((Vtx*) 0x06021ce8 /* d_course_kalimari_desert_unknown_model2 */, 4, 0),
     gsSP2Triangles(0, 1, 2, 0, 0, 2, 3, 0),
     // gsDPSetRenderMode(G_RM_AA_ZB_XLU_DECAL, G_RM_AA_ZB_XLU_DECAL2),
     // gsSP2Triangles(0, 1, 2, 0, 0, 2, 3, 0),
@@ -875,7 +745,7 @@ RECOMP_PATCH void render_actor_train_engine(Camera* camera, struct TrainCar* act
     gEXMatrixGroupDecomposed(gDisplayListHead++, TAG_OBJECT(sLocomotive) & 0xFFFFFFF0 | 1, G_EX_PUSH, G_MTX_MODELVIEW,
                              G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_INTERPOLATE,
                              G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE,
-                             G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
+                             G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP);
 
     if (maxObjectsReached) {
         return;
@@ -911,7 +781,7 @@ RECOMP_PATCH void render_actor_train_engine(Camera* camera, struct TrainCar* act
     gEXMatrixGroupDecomposed(gDisplayListHead++, TAG_OBJECT(sLocomotive) & 0xFFFFFFF0 | 2, G_EX_PUSH, G_MTX_MODELVIEW,
                              G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_INTERPOLATE,
                              G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE,
-                             G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
+                             G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP);
 
     maxObjectsReached = render_set_position(spA0, 3) == 0;
     if (maxObjectsReached) {
@@ -932,7 +802,7 @@ RECOMP_PATCH void render_actor_train_engine(Camera* camera, struct TrainCar* act
     gEXMatrixGroupDecomposed(gDisplayListHead++, TAG_OBJECT(sLocomotive) & 0xFFFFFFF0 | 3, G_EX_PUSH, G_MTX_MODELVIEW,
                              G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_INTERPOLATE,
                              G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE,
-                             G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
+                             G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP);
 
     maxObjectsReached = render_set_position(spA0, 3) == 0;
     if (maxObjectsReached) {
@@ -953,7 +823,7 @@ RECOMP_PATCH void render_actor_train_engine(Camera* camera, struct TrainCar* act
     gEXMatrixGroupDecomposed(gDisplayListHead++, TAG_OBJECT(sLocomotive) & 0xFFFFFFF0 | 4, G_EX_PUSH, G_MTX_MODELVIEW,
                              G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_INTERPOLATE,
                              G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE,
-                             G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
+                             G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP);
 
     maxObjectsReached = render_set_position(spA0, 3) == 0;
     if (maxObjectsReached) {
@@ -974,14 +844,14 @@ RECOMP_PATCH void render_actor_train_engine(Camera* camera, struct TrainCar* act
     gEXMatrixGroupDecomposed(gDisplayListHead++, TAG_OBJECT(sLocomotive) & 0xFFFFFFF0 | 5, G_EX_PUSH, G_MTX_MODELVIEW,
                              G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_INTERPOLATE,
                              G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE,
-                             G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
+                             G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP);
 
     maxObjectsReached = render_set_position(spA0, 3) == 0;
     if (maxObjectsReached) {
         return;
     }
 
-    gSPDisplayList(gDisplayListHead++, d_course_kalimari_desert_dl_22DB8 /* d_course_kalimari_desert_dl_22DB8 */);
+    gSPDisplayList(gDisplayListHead++, d_course_kalimari_desert_dl_22DB8);
     gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
 
     mtxf_rotate_x(sp120, (s16) (actor->wheelRot + 0x444));
@@ -995,7 +865,7 @@ RECOMP_PATCH void render_actor_train_engine(Camera* camera, struct TrainCar* act
     gEXMatrixGroupDecomposed(gDisplayListHead++, TAG_OBJECT(sLocomotive) & 0xFFFFFFF0 | 6, G_EX_PUSH, G_MTX_MODELVIEW,
                              G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_INTERPOLATE,
                              G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE,
-                             G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
+                             G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP);
 
     maxObjectsReached = render_set_position(spA0, 3) == 0;
     if (maxObjectsReached) {
@@ -1016,7 +886,7 @@ RECOMP_PATCH void render_actor_train_engine(Camera* camera, struct TrainCar* act
     gEXMatrixGroupDecomposed(gDisplayListHead++, TAG_OBJECT(sLocomotive) & 0xFFFFFFF0 | 7, G_EX_PUSH, G_MTX_MODELVIEW,
                              G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_INTERPOLATE,
                              G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE,
-                             G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
+                             G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP);
 
     maxObjectsReached = render_set_position(spA0, 3) == 0;
     if (maxObjectsReached) {
@@ -1037,7 +907,7 @@ RECOMP_PATCH void render_actor_train_engine(Camera* camera, struct TrainCar* act
     gEXMatrixGroupDecomposed(gDisplayListHead++, TAG_OBJECT(sLocomotive) & 0xFFFFFFF0 | 8, G_EX_PUSH, G_MTX_MODELVIEW,
                              G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_INTERPOLATE,
                              G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE,
-                             G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
+                             G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP);
 
     maxObjectsReached = render_set_position(spA0, 3) == 0;
     if (maxObjectsReached) {
@@ -1058,7 +928,7 @@ RECOMP_PATCH void render_actor_train_engine(Camera* camera, struct TrainCar* act
     gEXMatrixGroupDecomposed(gDisplayListHead++, TAG_OBJECT(sLocomotive) & 0xFFFFFFF0 | 9, G_EX_PUSH, G_MTX_MODELVIEW,
                              G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_INTERPOLATE,
                              G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE,
-                             G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
+                             G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP);
 
     maxObjectsReached = render_set_position(spA0, 3) == 0;
     if (maxObjectsReached) {
@@ -1096,7 +966,7 @@ RECOMP_PATCH void render_actor_train_tender(Camera* camera, struct TrainCar* act
     gEXMatrixGroupDecomposed(gDisplayListHead++, TAG_OBJECT(sTender) & 0xFFFFFFF0 | 0, G_EX_PUSH, G_MTX_MODELVIEW,
                              G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_INTERPOLATE,
                              G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE,
-                             G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
+                             G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP);
 
     mtxf_pos_rotation_xyz(sp120, actor->pos, actor->rot);
     if (render_set_position(sp120, 0) == 0) {
@@ -1131,7 +1001,7 @@ RECOMP_PATCH void render_actor_train_tender(Camera* camera, struct TrainCar* act
     gEXMatrixGroupDecomposed(gDisplayListHead++, TAG_OBJECT(sTender) & 0xFFFFFFF0 | 1, G_EX_PUSH, G_MTX_MODELVIEW,
                              G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_INTERPOLATE,
                              G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE,
-                             G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
+                             G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP);
 
     if (render_set_position(spA0, 3) == 0) {
         return;
@@ -1152,7 +1022,7 @@ RECOMP_PATCH void render_actor_train_tender(Camera* camera, struct TrainCar* act
     gEXMatrixGroupDecomposed(gDisplayListHead++, TAG_OBJECT(sTender) & 0xFFFFFFF0 | 2, G_EX_PUSH, G_MTX_MODELVIEW,
                              G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_INTERPOLATE,
                              G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE,
-                             G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
+                             G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP);
 
     if (render_set_position(spA0, 3) == 0) {
         return;
@@ -1167,7 +1037,7 @@ RECOMP_PATCH void render_actor_train_tender(Camera* camera, struct TrainCar* act
     gEXMatrixGroupDecomposed(gDisplayListHead++, TAG_OBJECT(sTender) & 0xFFFFFFF0 | 3, G_EX_PUSH, G_MTX_MODELVIEW,
                              G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_INTERPOLATE,
                              G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE,
-                             G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
+                             G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP);
 
     gSPDisplayList(gDisplayListHead++, d_course_kalimari_desert_dl_22DB8 /* d_course_kalimari_desert_dl_22DB8 */);
 
@@ -1183,7 +1053,7 @@ RECOMP_PATCH void render_actor_train_tender(Camera* camera, struct TrainCar* act
     gEXMatrixGroupDecomposed(gDisplayListHead++, TAG_OBJECT(sTender) & 0xFFFFFFF0 | 4, G_EX_PUSH, G_MTX_MODELVIEW,
                              G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_INTERPOLATE,
                              G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE,
-                             G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
+                             G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP);
 
     if (render_set_position(spA0, 3) == 0) {
         return;
@@ -1204,7 +1074,7 @@ RECOMP_PATCH void render_actor_train_tender(Camera* camera, struct TrainCar* act
     gEXMatrixGroupDecomposed(gDisplayListHead++, TAG_OBJECT(sTender) & 0xFFFFFFF0 | 5, G_EX_PUSH, G_MTX_MODELVIEW,
                              G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_INTERPOLATE,
                              G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE,
-                             G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
+                             G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP);
 
     if (render_set_position(spA0, 3) == 0) {
         return;
@@ -1243,7 +1113,7 @@ RECOMP_PATCH void render_actor_train_passenger_car(Camera* camera, struct TrainC
     gEXMatrixGroupDecomposed(gDisplayListHead++, (TAG_OBJECT(actor) << 16) & 0xFFFF0000 | 0, G_EX_PUSH, G_MTX_MODELVIEW,
                              G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_INTERPOLATE,
                              G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE,
-                             G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
+                             G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP);
 
     if (render_set_position(sp120, 0) == 0) {
         return;
@@ -1282,7 +1152,7 @@ RECOMP_PATCH void render_actor_train_passenger_car(Camera* camera, struct TrainC
     gEXMatrixGroupDecomposed(gDisplayListHead++, (TAG_OBJECT(actor) << 16) & 0xFFFF0000 | 1, G_EX_PUSH, G_MTX_MODELVIEW,
                              G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_INTERPOLATE,
                              G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE,
-                             G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
+                             G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP);
 
     if (render_set_position(spA0, 3) == 0) {
         return;
@@ -1303,7 +1173,7 @@ RECOMP_PATCH void render_actor_train_passenger_car(Camera* camera, struct TrainC
     gEXMatrixGroupDecomposed(gDisplayListHead++, (TAG_OBJECT(actor) << 16) & 0xFFFF0000 | 2, G_EX_PUSH, G_MTX_MODELVIEW,
                              G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_INTERPOLATE,
                              G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE,
-                             G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
+                             G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP);
 
     if (render_set_position(spA0, 3) == 0) {
         return;
@@ -1324,7 +1194,7 @@ RECOMP_PATCH void render_actor_train_passenger_car(Camera* camera, struct TrainC
     gEXMatrixGroupDecomposed(gDisplayListHead++, (TAG_OBJECT(actor) << 16) & 0xFFFF0000 | 3, G_EX_PUSH, G_MTX_MODELVIEW,
                              G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_INTERPOLATE,
                              G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE,
-                             G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
+                             G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP);
 
     if (render_set_position(spA0, 3) == 0) {
         return;
@@ -1345,7 +1215,7 @@ RECOMP_PATCH void render_actor_train_passenger_car(Camera* camera, struct TrainC
     gEXMatrixGroupDecomposed(gDisplayListHead++, (TAG_OBJECT(actor) << 16) & 0xFFFF0000 | 4, G_EX_PUSH, G_MTX_MODELVIEW,
                              G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_INTERPOLATE,
                              G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE,
-                             G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
+                             G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP);
 
     if (render_set_position(spA0, 3) == 0) {
         return;
@@ -1366,7 +1236,7 @@ RECOMP_PATCH void render_actor_train_passenger_car(Camera* camera, struct TrainC
     gEXMatrixGroupDecomposed(gDisplayListHead++, (TAG_OBJECT(actor) << 16) & 0xFFFF0000 | 5, G_EX_PUSH, G_MTX_MODELVIEW,
                              G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_INTERPOLATE,
                              G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE,
-                             G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
+                             G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP);
 
     if (render_set_position(spA0, 3) == 0) {
         return;
@@ -1387,7 +1257,7 @@ RECOMP_PATCH void render_actor_train_passenger_car(Camera* camera, struct TrainC
     gEXMatrixGroupDecomposed(gDisplayListHead++, (TAG_OBJECT(actor) << 16) & 0xFFFF0000 | 6, G_EX_PUSH, G_MTX_MODELVIEW,
                              G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_INTERPOLATE,
                              G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE,
-                             G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
+                             G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP);
 
     if (render_set_position(spA0, 3) == 0) {
         return;
@@ -1408,7 +1278,7 @@ RECOMP_PATCH void render_actor_train_passenger_car(Camera* camera, struct TrainC
     gEXMatrixGroupDecomposed(gDisplayListHead++, (TAG_OBJECT(actor) << 16) & 0xFFFF0000 | 7, G_EX_PUSH, G_MTX_MODELVIEW,
                              G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_INTERPOLATE,
                              G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE,
-                             G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
+                             G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP);
 
     if (render_set_position(spA0, 3) == 0) {
         return;
@@ -1429,7 +1299,7 @@ RECOMP_PATCH void render_actor_train_passenger_car(Camera* camera, struct TrainC
     gEXMatrixGroupDecomposed(gDisplayListHead++, (TAG_OBJECT(actor) << 16) & 0xFFFF0000 | 8, G_EX_PUSH, G_MTX_MODELVIEW,
                              G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_INTERPOLATE,
                              G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE,
-                             G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
+                             G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP);
 
     if (render_set_position(spA0, 3) == 0) {
         return;
@@ -1466,7 +1336,8 @@ RECOMP_PATCH void render_object_trains_smoke_particles(s32 cameraId) {
             gEXMatrixGroupDecomposed(gDisplayListHead++, (TAG_OBJECT(&gTrainList[0]) << 16) & 0xFFFF0000 | i, G_EX_PUSH,
                                      G_MTX_MODELVIEW, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO,
                                      G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP,
-                                     G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
+                                     G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW, G_EX_COMPONENT_SKIP,
+                                     G_EX_COMPONENT_SKIP);
 
             render_object_train_smoke_particle(gObjectParticle2[i], cameraId);
 
@@ -1482,7 +1353,8 @@ RECOMP_PATCH void render_object_trains_smoke_particles(s32 cameraId) {
             gEXMatrixGroupDecomposed(gDisplayListHead++, (TAG_OBJECT(&gTrainList[1]) << 16) & 0xFFFF0000 | i, G_EX_PUSH,
                                      G_MTX_MODELVIEW, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO,
                                      G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP,
-                                     G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
+                                     G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW, G_EX_COMPONENT_SKIP,
+                                     G_EX_COMPONENT_SKIP);
 
             render_object_train_smoke_particle(gObjectParticle3[i], cameraId);
 
@@ -1542,10 +1414,11 @@ RECOMP_PATCH void render_course_actors(struct UnkStruct_800DC5EC* arg0) {
             (gCamera3Skipped && (camera->playerId == 2)) || (gCamera4Skipped && (camera->playerId == 3))) {
             // Skip
             // @recomp Tag the transform
-            gEXMatrixGroupDecomposed(gDisplayListHead++, TAG_OBJECT((u32) actor << 16) | 0x01000000, G_EX_PUSH,
-                                     G_MTX_MODELVIEW, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP,
+            gEXMatrixGroupDecomposed(gDisplayListHead++, TAG_OBJECT((u32) actor << 16) | 0x01000000 | camera->playerId,
+                                     G_EX_PUSH, G_MTX_MODELVIEW, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP,
                                      G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP,
-                                     G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
+                                     G_EX_COMPONENT_SKIP, G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW, G_EX_COMPONENT_SKIP,
+                                     G_EX_COMPONENT_SKIP);
 
 #if 0
             recomp_printf("render_course_actors: actor->type %d Camera %d skipped \n", actor->type, camera->playerId);
@@ -1565,8 +1438,9 @@ RECOMP_PATCH void render_course_actors(struct UnkStruct_800DC5EC* arg0) {
 #endif
         } else {
             // @recomp Tag the transform.
-            gEXMatrixGroupDecomposedNormal(gDisplayListHead++, TAG_OBJECT(actor), G_EX_PUSH, G_MTX_MODELVIEW,
-                                           G_EX_EDIT_ALLOW);
+            gEXMatrixGroupDecomposedNormal(gDisplayListHead++,
+                                           TAG_OBJECT((u32) actor << 16) | 0x01000000 | camera->playerId, G_EX_PUSH,
+                                           G_MTX_MODELVIEW, G_EX_EDIT_ALLOW);
         }
 
         switch (actor->type) {
@@ -1605,10 +1479,12 @@ RECOMP_PATCH void render_course_actors(struct UnkStruct_800DC5EC* arg0) {
                 break;
             case ACTOR_FALLING_ROCK:
                 // @recomp Tag the transform
-                gEXMatrixGroupDecomposed(gDisplayListHead++, TAG_OBJECT((u32) actor << 16) | 0x01000000, G_EX_PUSH,
+                gEXMatrixGroupDecomposed(gDisplayListHead++,
+                                         TAG_OBJECT((u32) actor << 16) | 0x01000000 | camera->playerId, G_EX_PUSH,
                                          G_MTX_MODELVIEW, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO,
                                          G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP,
-                                         G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
+                                         G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW,
+                                         G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP);
 
                 render_actor_falling_rock(camera, (struct FallingRock*) actor);
 
@@ -1687,17 +1563,18 @@ RECOMP_PATCH void render_course_actors(struct UnkStruct_800DC5EC* arg0) {
         (gCamera3Skipped && (camera->playerId == 3)) || (gCamera4Skipped && (camera->playerId == 4))) {
         // Skip
         // @recomp Tag the transform
-        gEXMatrixGroupDecomposed(gDisplayListHead++, TAG_OBJECT((u32) actor << 16) | 0x01000000, G_EX_PUSH,
+        gEXMatrixGroupDecomposed(gDisplayListHead++, TAG_OBJECT((u32) actor << 16) | 0x01000000 | camera->playerId, G_EX_PUSH,
                                  G_MTX_MODELVIEW, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP,
                                  G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP,
-                                 G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
+                                 G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP);
         // recomp_printf("render_course_actors: Camera %d skipped \n", camera->playerId);
     } else {
         // @recomp Tag the transform
-        gEXMatrixGroupDecomposed(gDisplayListHead++, TAG_OBJECT((u32) actor << 16) | 0x01000000, G_EX_PUSH,
+        gEXMatrixGroupDecomposed(gDisplayListHead++, TAG_OBJECT((u32) actor << 16) | 0x01000000 | camera->playerId, G_EX_PUSH,
                                  G_MTX_MODELVIEW, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO,
                                  G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP,
-                                 G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
+                                 G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW, G_EX_COMPONENT_SKIP,
+                                 G_EX_COMPONENT_SKIP);
     }
 
     switch (gCurrentCourseId) {
@@ -1960,7 +1837,8 @@ RECOMP_PATCH void render_object_smoke_particles(s32 cameraId) {
         gEXMatrixGroupDecomposed(gDisplayListHead++, (TAG_OBJECT(gObjectParticle4[i]) << 16) & 0xFFFF0000 | i,
                                  G_EX_PUSH, G_MTX_MODELVIEW, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO,
                                  G_EX_COMPONENT_AUTO, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE,
-                                 G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
+                                 G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW,
+                                 G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP);
 
         if (objectIndex != NULL_OBJECT_ID) {
             object = &gObjectList[objectIndex];
@@ -2001,7 +1879,8 @@ RECOMP_PATCH void render_object_paddle_boat_smoke_particles(s32 cameraId) {
             gEXMatrixGroupDecomposed(gDisplayListHead++, (TAG_OBJECT(gObjectParticle2[i]) << 16) & 0xFFFF0000 | i,
                                      G_EX_PUSH, G_MTX_MODELVIEW, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO,
                                      G_EX_COMPONENT_AUTO, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE,
-                                     G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
+                                     G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW,
+                                     G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP);
 
             render_object_paddle_boat_smoke_particle(gObjectParticle2[i], cameraId);
 
@@ -2015,7 +1894,8 @@ RECOMP_PATCH void render_object_paddle_boat_smoke_particles(s32 cameraId) {
             gEXMatrixGroupDecomposed(gDisplayListHead++, (TAG_OBJECT(gObjectParticle3[i]) << 16) & 0xFFFF0000 | i,
                                      G_EX_PUSH, G_MTX_MODELVIEW, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO,
                                      G_EX_COMPONENT_AUTO, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE,
-                                     G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
+                                     G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW,
+                                     G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP);
 
             render_object_paddle_boat_smoke_particle(gObjectParticle3[i], cameraId);
 
@@ -2083,7 +1963,8 @@ RECOMP_PATCH void render_object_train_penguins(s32 cameraId) {
         gEXMatrixGroupDecomposed(gDisplayListHead++, TAG_OBJECT(&indexObjectList1[i]) | cameraId, G_EX_PUSH,
                                  G_MTX_MODELVIEW, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO,
                                  G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP,
-                                 G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW);
+                                 G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_AUTO, G_EX_EDIT_ALLOW, G_EX_COMPONENT_SKIP,
+                                 G_EX_COMPONENT_SKIP);
 
         if (gObjectList[objectIndex].state >= 2) {
             if (gPlayerCountSelection1 == 1) {
@@ -2204,7 +2085,8 @@ RECOMP_PATCH void render_object_seagulls(s32 arg0) {
         gEXMatrixGroupDecomposed(gDisplayListHead++, TAG_OBJECT(&indexObjectList1[i]) | arg0, G_EX_PUSH,
                                  G_MTX_MODELVIEW, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO,
                                  G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP,
-                                 G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_LINEAR, G_EX_EDIT_ALLOW);
+                                 G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_LINEAR, G_EX_EDIT_ALLOW, G_EX_COMPONENT_SKIP,
+                                 G_EX_COMPONENT_SKIP);
 
         if (func_8008A364(var_s1, arg0, 0x5555U, 0x000005DC) < 0x9C401) {
             D_80165908 = 1;
@@ -2233,7 +2115,8 @@ RECOMP_PATCH void render_object_crabs(s32 cameraId) {
         gEXMatrixGroupDecomposed(gDisplayListHead++, TAG_OBJECT(&indexObjectList1[i]) | cameraId, G_EX_PUSH,
                                  G_MTX_MODELVIEW, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO,
                                  G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP,
-                                 G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_LINEAR, G_EX_EDIT_ALLOW);
+                                 G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_LINEAR, G_EX_EDIT_ALLOW, G_EX_COMPONENT_SKIP,
+                                 G_EX_COMPONENT_SKIP);
         func_8008A364(objId, cameraId, 0x2AABU, 800);
         if (1 /* is_obj_flag_status_active(objId, VISIBLE) != 0*/) {
             draw_crabs(objId, cameraId);
@@ -2429,7 +2312,8 @@ RECOMP_PATCH void render_object_bat(s32 cameraId) {
                 gEXMatrixGroupDecomposed(gDisplayListHead++, transformTag, G_EX_PUSH, G_MTX_MODELVIEW,
                                          G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO,
                                          G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP,
-                                         G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_LINEAR, G_EX_EDIT_ALLOW);
+                                         G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_LINEAR, G_EX_EDIT_ALLOW,
+                                         G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP);
 
                 func_800431B0(gObjectList[objectIndex].pos, D_80183E80, gObjectList[objectIndex].sizeScaling,
                               (Vtx*) 0x0D0062B0);
@@ -2456,7 +2340,8 @@ RECOMP_PATCH void render_object_bat(s32 cameraId) {
                 gEXMatrixGroupDecomposed(gDisplayListHead++, transformTag, G_EX_PUSH, G_MTX_MODELVIEW,
                                          G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO,
                                          G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP,
-                                         G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_LINEAR, G_EX_EDIT_ALLOW);
+                                         G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_LINEAR, G_EX_EDIT_ALLOW,
+                                         G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP);
 
                 func_800431B0(gObjectList[objectIndex].pos, D_80183E80, gObjectList[objectIndex].sizeScaling,
                               (Vtx*) 0x0D0062B0);
@@ -2715,7 +2600,7 @@ RECOMP_PATCH void func_800942D0(void) {
             gEXMatrixGroupDecomposed(gDisplayListHead++, motionTag, G_EX_PUSH, G_MTX_MODELVIEW, G_EX_COMPONENT_AUTO,
                                      G_EX_COMPONENT_AUTO, G_EX_COMPONENT_AUTO, G_EX_COMPONENT_INTERPOLATE,
                                      G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE,
-                                     G_EX_ORDER_LINEAR, G_EX_EDIT_ALLOW);
+                                     G_EX_ORDER_LINEAR, G_EX_EDIT_ALLOW, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_SKIP);
 
             guRotate(test, 0.0f, 1.0f, 0.0f, 0.0f);
             guRotate(test + 1, (var_s2 + 1) * sIntroModelMotionSpeed * var_f26, 0.0f, 1.0f, 0.0f);
@@ -2783,160 +2668,14 @@ RECOMP_PATCH void render_lakitu(s32 cameraId) {
 }
 #endif
 
-#define ABS(x) ((x) >= 0 ? (x) : -(x))
-#define ABSF(x) ((x) >= 0.0f ? (x) : -(x))
-
-// Snowflakes in the background
-#if 1
-struct ObjectInterpData {
-    s32 objectIndex;
-    s16 x, y;
-};
-struct ObjectInterpData prevObject[OBJECT_LIST_SIZE] = { 0 };
-
-RECOMP_PATCH void func_800518F8(s32 objectIndex, s16 x, s16 y) {
-    // Search all recorded objects for the one we're drawing
-    for (size_t i = 140; i < 190; i++) {
-        if (objectIndex == prevObject[i].objectIndex) {
-            // recomp_printf("Object coincidence: %d\n", objectIndex);
-            //  Coincidence!
-            //  Skip drawing the object this frame if it warped to the other side of the screen
-            if ((ABS(x - prevObject[i].x) > SCREEN_WIDTH / 2) || (ABS(y - prevObject[i].y) > SCREEN_HEIGHT / 2)) {
-                prevObject[objectIndex].x = x;
-                prevObject[objectIndex].y = y;
-                prevObject[objectIndex].objectIndex = objectIndex;
-                return;
-            }
-        }
-    }
-
-    if (gObjectList[objectIndex].status & 0x10) {
-        // @recomp Tag the transform.
-        gEXMatrixGroupDecomposedNormal(gDisplayListHead++, TAG_OBJECT(&gObjectList[objectIndex]), G_EX_PUSH,
-                                       G_MTX_MODELVIEW, G_EX_EDIT_ALLOW);
-
-        if (D_8018D228 != gObjectList[objectIndex].unk_0D5) {
-            D_8018D228 = gObjectList[objectIndex].unk_0D5;
-            func_80044DA0(gObjectList[objectIndex].activeTexture, gObjectList[objectIndex].textureWidth,
-                          gObjectList[objectIndex].textureHeight);
-        }
-        func_80042330(x, y, 0, gObjectList[objectIndex].sizeScaling);
-        gSPVertex(gDisplayListHead++, gObjectList[objectIndex].vertex, 4, 0);
-        gSPDisplayList(gDisplayListHead++, (Gfx*) 0x0d006940 /* common_rectangle_display */);
-
-        // @recomp Pop the transform id.
-        gEXPopMatrixGroup(gDisplayListHead++, G_MTX_MODELVIEW);
-    }
-
-    // Save current cloud index and x position
-    prevObject[objectIndex].x = x;
-    prevObject[objectIndex].y = y;
-    prevObject[objectIndex].objectIndex = objectIndex;
-}
-#endif
 
 #if 1
-struct ObjectInterpData2 {
-    s32 objectIndex;
-    f32 x, y;
-};
-struct ObjectInterpData2 prevObject2[OBJECT_LIST_SIZE] = { 0 };
 
-s32 mtxf_set_matrix_gObjectList_snowflakes(s32 objectIndex, Mat4 transformMatrix) {
-    f32 sinX;
-    Object* object = &gObjectList[objectIndex];
-    f32 sinY;
-    f32 cosY;
-    f32 sinZ;
-    f32 cosZ;
-    f32 cosX;
 
-    sinX = sins(object->orientation[0]);
-    cosX = coss(object->orientation[0]);
-    sinY = sins(object->orientation[1]);
-    cosY = coss(object->orientation[1]);
-    sinZ = sins(object->orientation[2]);
-    cosZ = coss(object->orientation[2]);
-
-    transformMatrix[0][0] = object->sizeScaling * ((cosY * cosZ) + (sinX * sinY * sinZ));
-    transformMatrix[1][0] = object->sizeScaling * ((-cosY * sinZ) + sinX * sinY * cosZ);
-    transformMatrix[2][0] = object->sizeScaling * (cosX * sinY);
-    transformMatrix[3][0] = object->pos[0];
-    transformMatrix[0][1] = object->sizeScaling * (cosX * sinZ);
-    transformMatrix[1][1] = object->sizeScaling * (cosX * cosZ);
-    transformMatrix[2][1] = object->sizeScaling * -sinX;
-    transformMatrix[3][1] = object->pos[1];
-    transformMatrix[0][2] = object->sizeScaling * ((-sinY * cosZ) + (sinX * cosY * sinZ));
-    transformMatrix[1][2] = object->sizeScaling * ((sinY * sinZ) + (sinX * cosY * cosZ));
-    transformMatrix[2][2] = object->sizeScaling * (cosX * cosY);
-    transformMatrix[3][2] = object->pos[2];
-    transformMatrix[0][3] = 0.0f;
-    transformMatrix[1][3] = 0.0f;
-    transformMatrix[2][3] = 0.0f;
-    transformMatrix[3][3] = 1.0f;
-
-    // Search all recorded objects for the one we're drawing
-    for (int i = 240; i < 290; i++) {
-        if (objectIndex == prevObject2[i].objectIndex) {
-            // recomp_printf("Object coincidence: %d\n", objectIndex);
-            // Coincidence!
-            // Skip drawing the object this frame if it warped to the other side of the screen
-            if ((ABSF(object->pos[0] - prevObject2[i].x) > 10) || (ABSF(object->pos[1] - prevObject2[i].y) > 10)) {
-                prevObject2[objectIndex].x = object->pos[0];
-                prevObject2[objectIndex].y = object->pos[1];
-                prevObject2[objectIndex].objectIndex = objectIndex;
-                // recomp_printf("IDX: %d X: %f Y: %f Z: ", objectIndex, object->pos[0], object->pos[1],
-                // object->pos[2]); recomp_printf("%f DX: %f DY %f \n", ABSF(object->pos[0] - prevObject2[i].x),
-                //               ABSF(object->pos[1] - prevObject2[i].y));
-                return 1;
-            }
-        }
-    }
-    prevObject2[objectIndex].x = object->pos[0];
-    prevObject2[objectIndex].y = object->pos[1];
-    prevObject2[objectIndex].objectIndex = objectIndex;
-
-    return 0;
-}
 #endif
 
-#if 1
-void rsp_set_matrix_gObjectList_snowflakes(s32 transformIndex) {
-    Mat4 matrix;
 
-    if (mtxf_set_matrix_gObjectList_snowflakes(transformIndex, matrix))
-        return;
-    ;
-    convert_to_fixed_point_matrix(&gGfxPool->mtxHud[gMatrixHudCount], matrix);
 
-    gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxHud[gMatrixHudCount++]),
-              G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-}
-#endif
 
-// Snowflakes
-#if 1
-RECOMP_PATCH void render_object_snowflakes_particles(void) {
-    s32 i;
-    s32 snowflakeIndex;
-
-    gSPDisplayList(gDisplayListHead++, (Gfx*) 0x0D007AE0);
-    gDPSetCombineLERP(gDisplayListHead++, 1, 0, SHADE, 0, 0, 0, 0, TEXEL0, 1, 0, SHADE, 0, 0, 0, 0, TEXEL0);
-    func_80044F34((u8*) 0x0D0293D8, 0x10, 0x10);
-    for (i = 0; i < NUM_SNOWFLAKES; i++) {
-        snowflakeIndex = gObjectParticle1[i];
-        // @recomp Tag the transform.
-        gEXMatrixGroupDecomposedNormal(gDisplayListHead++, TAG_OBJECT(&gObjectParticle1[i]), G_EX_PUSH, G_MTX_MODELVIEW,
-                                       G_EX_EDIT_ALLOW);
-        if (gObjectList[snowflakeIndex].state >= 2) {
-            rsp_set_matrix_gObjectList_snowflakes(snowflakeIndex);
-            gSPDisplayList(gDisplayListHead++, (Gfx*) 0x0D006980);
-        }
-        // @recomp Pop the transform id.
-        gEXPopMatrixGroup(gDisplayListHead++, G_MTX_MODELVIEW);
-    }
-    gSPTexture(gDisplayListHead++, 1, 1, 0, G_TX_RENDERTILE, G_OFF);
-}
-#endif
 
 #endif // GLOBAL
