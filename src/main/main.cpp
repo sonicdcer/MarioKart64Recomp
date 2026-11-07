@@ -689,6 +689,11 @@ int main(int argc, char** argv) {
     REGISTER_FUNC(recomp_get_bgm_volume);
     REGISTER_FUNC(recomp_get_gyro_deltas);
     REGISTER_FUNC(recomp_get_mouse_deltas);
+    // The input's player mode, for mods that start a game with several players on this PC without the player-count menu.
+    REGISTER_FUNC(recomp_set_singleplayer_mode);
+    REGISTER_FUNC(recomp_set_multiplayer_min_max_two_players);
+    REGISTER_FUNC(recomp_set_multiplayer_min_max_three_players);
+    REGISTER_FUNC(recomp_set_multiplayer_min_max_four_players);
 
     recompui::register_ui_exports();
     recomputil::register_data_api_exports();

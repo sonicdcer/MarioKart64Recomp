@@ -13,6 +13,7 @@ namespace zelda64 {
     namespace configkeys {
         namespace general {
             inline const std::string debug_mode = "debug_mode";
+            inline const std::string keyboard_players = "keyboard_players";
             #if 0
             inline const std::string autosave_mode = "autosave_mode";
             inline const std::string camera_invert_mode = "camera_invert_mode";
@@ -38,6 +39,17 @@ namespace zelda64 {
     void init_config();
     
     bool get_debug_mode_enabled();
+    bool get_keyboard_players_enabled();
+
+    // Keyboard players (src/game/keyboard_players.cpp). Several players can share one keyboard, each with keys of their own.
+    // At startup, after the config loads: default keys for the keyboard profiles, and the Assign Players key handling.
+    void init_keyboard_players();
+    // Before the config loads: each player's keys as the frontend's per-player defaults (new profiles, Reset to defaults), when it has them.
+    void register_keyboard_player_defaults();
+    // Gives every multiplayer keyboard profile (players 1 to 4) its default keys when it has none bound yet.
+    void set_keyboard_player_defaults();
+    // Called whenever the game switches to a 2 to 4 player mode: with the Keyboard Players option on, every player is assigned the keyboard.
+    void on_multiplayer_mode(size_t players);
 
     enum class AutosaveMode {
         Off,

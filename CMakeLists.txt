@@ -157,6 +157,7 @@ set (SOURCES
 
     ${CMAKE_SOURCE_DIR}/src/game/config.cpp
     ${CMAKE_SOURCE_DIR}/src/game/recomp_api.cpp
+    ${CMAKE_SOURCE_DIR}/src/game/keyboard_players.cpp
     ${CMAKE_SOURCE_DIR}/src/game/recomp_data_api.cpp
     #${CMAKE_SOURCE_DIR}/src/game/rom_decompression.cpp
 

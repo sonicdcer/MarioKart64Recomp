@@ -68,6 +68,19 @@ static void add_general_options(recomp::config::Config &config) {
         true
     );
 
+    // keyboard_players
+    config.add_bool_option(
+        zelda64::configkeys::general::keyboard_players,
+        "Keyboard Players",
+        "Several players can use the keyboard, each with their own keys. A 2, 3 or 4 player game starts with every player on the keyboard, "
+        "and in Assign Players each key press adds the next keyboard player, so gamepads and keyboard players can mix "
+        "(for example: A on a gamepad for player 1, then any key three times for players 2 to 4). "
+        "Player 1: WASD, Space, Left Shift (the usual keys). Player 2: the numpad (8 4 5 6, A 0, B ., Z Enter). "
+        "Player 3: G V B N (A M, B comma, Z period). Player 4: Home Delete End Page Down (A Right Ctrl, B Right Shift, Z Insert). "
+        "Each player's keys can be changed in the Controls tab.",
+        false
+    );
+
     #if 0
 
     // Film Grain
@@ -183,6 +196,10 @@ static void add_general_options(recomp::config::Config &config) {
 
 bool zelda64::get_debug_mode_enabled() {
     return get_general_config_bool_value(zelda64::configkeys::general::debug_mode);
+}
+
+bool zelda64::get_keyboard_players_enabled() {
+    return get_general_config_bool_value(zelda64::configkeys::general::keyboard_players);
 }
 
 #if 0
@@ -388,6 +405,7 @@ void zelda64::init_config() {
     add_general_options(general_config);
 
     set_control_defaults();
+    zelda64::register_keyboard_player_defaults();
     set_control_descriptions();
     recompui::config::create_controls_tab();
 
@@ -408,6 +426,9 @@ void zelda64::init_config() {
     );
 
     recompui::config::finalize();
+
+    // After finalize, which loads controls.json: keyboard profiles the player has not bound yet get default keys.
+    zelda64::init_keyboard_players();
 
     recompui::config::set_tab_visible(zelda64::debug::tab_id, get_debug_mode_enabled());
 }

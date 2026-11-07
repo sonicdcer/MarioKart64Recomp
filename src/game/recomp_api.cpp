@@ -89,19 +89,26 @@ extern "C" void recomp_get_window_resolution(uint8_t* rdram, recomp_context* ctx
     MEM_W(0, height_out) = (u32) height;
 }
 
-extern "C" void recomp_set_multiplayer_min_max_two_players(uint8_t* rdram, recomp_context* ctx) {
-    recompinput::players::set_player_count_range(2, 2);
+static void set_multiplayer_mode(size_t players) {
+    // Keyboard players are assigned before the count changes: the UI opens Assign Players whenever a game has fewer players than it needs,
+    // and assigning them after would let it see that for a moment and open the window.
+    zelda64::on_multiplayer_mode(players);
+    recompinput::players::set_player_count_range(players, players);
     recompinput::players::set_single_player_mode(false);
+}
+
+// The game's player-count menu item calls these (patches/menus.c), and they are base exports (main.cpp), so a mod that starts a 2 to 4
+// player game without that menu (an online lobby, for example) puts the game's input in the same mode.
+extern "C" void recomp_set_multiplayer_min_max_two_players(uint8_t* rdram, recomp_context* ctx) {
+    set_multiplayer_mode(2);
 }
 
 extern "C" void recomp_set_multiplayer_min_max_three_players(uint8_t* rdram, recomp_context* ctx) {
-    recompinput::players::set_player_count_range(3, 3);
-    recompinput::players::set_single_player_mode(false);
+    set_multiplayer_mode(3);
 }
 
 extern "C" void recomp_set_multiplayer_min_max_four_players(uint8_t* rdram, recomp_context* ctx) {
-    recompinput::players::set_player_count_range(4, 4);
-    recompinput::players::set_single_player_mode(false);
+    set_multiplayer_mode(4);
 }
 
 extern "C" void recomp_set_singleplayer_mode(uint8_t* rdram, recomp_context* ctx) {
