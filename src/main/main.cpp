@@ -674,6 +674,7 @@ int main(int argc, char** argv) {
     // Register fonts.
     recompui::register_primary_font("LatoLatin-Regular.ttf", "LatoLatin");
     recompui::register_extra_font("LatoLatin-Bold.ttf");
+    recompui::register_extra_font("MayroKartRetro-Regular.ttf");
 
     recomp::register_config_path(recompui::file::get_app_folder_path());
 
