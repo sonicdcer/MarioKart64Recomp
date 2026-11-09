@@ -6,6 +6,7 @@
 #include "recompinput/recompinput.h"
 #include "recompui/recompui.h"
 #include "recompui/renderer.h"
+#include "composites/ui_assign_players_modal.h"
 #include "zelda_sound.h"
 #include "librecomp/helpers.hpp"
 // #include "../patches/input.h"
@@ -106,6 +107,20 @@ extern "C" void recomp_set_multiplayer_min_max_four_players(uint8_t* rdram, reco
 
 extern "C" void recomp_set_singleplayer_mode(uint8_t* rdram, recomp_context* ctx) {
     recompinput::players::set_single_player_mode(true);
+}
+
+extern "C" void recomp_check_player_assignment_cancelled(uint8_t* rdram, recomp_context* ctx) {
+    bool cancelled =
+        recompui::AssignPlayersModal::check_is_open() &&
+        !recompinput::playerassignment::is_active() &&
+        !recompinput::players::has_enough_players_assigned();
+
+    if (cancelled) {
+        recompinput::players::set_single_player_mode(true);
+        recompinput::playerassignment::stop_and_close_modal();
+    }
+
+    _return(ctx, static_cast<s32>(cancelled ? 1 : 0));
 }
 
 extern "C" void recomp_get_aspect_ratio(uint8_t* rdram, recomp_context* ctx) {

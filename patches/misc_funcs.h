@@ -16,5 +16,6 @@ DECLARE_FUNC(void, recomp_set_singleplayer_mode, void);
 DECLARE_FUNC(void, recomp_set_multiplayer_min_max_two_players, void);
 DECLARE_FUNC(void, recomp_set_multiplayer_min_max_three_players, void);
 DECLARE_FUNC(void, recomp_set_multiplayer_min_max_four_players, void);
+DECLARE_FUNC(s32, recomp_check_player_assignment_cancelled, void);
 
 #endif
