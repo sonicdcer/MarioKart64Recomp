@@ -76,3 +76,4 @@ recomp_set_singleplayer_mode = 0x8F000100;
 recomp_set_multiplayer_min_max_two_players = 0x8F000104;
 recomp_set_multiplayer_min_max_three_players = 0x8F000108;
 recomp_set_multiplayer_min_max_four_players = 0x8F00010C;
+recomp_check_player_assignment_cancelled = 0x8F000110;

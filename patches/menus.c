@@ -1134,6 +1134,13 @@ RECOMP_PATCH void func_800A9C40(MenuItem* arg0) {
 
     // recomp_printf(" gPlayerCount: %d\n", gPlayerCount);
 
+    if (recomp_check_player_assignment_cancelled()) {
+        gMainMenuSelection = MAIN_MENU_PLAYER_SELECT;
+        play_sound2(SOUND_MENU_GO_BACK);
+        recomp_set_singleplayer_mode();
+        return;
+    }
+
     switch (gPlayerCount) {
         case 1:
             recomp_set_singleplayer_mode();
