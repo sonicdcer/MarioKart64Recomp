@@ -122,7 +122,23 @@ RECOMP_PATCH void render_hud_lap_3p_4p(s32 playerId) {
         }
     }
 
-    func_8004E6C4(playerId); // Draws the items (orthographic)
+    // @recomp
+    switch (playerId) {
+        case PLAYER_ONE:
+        case PLAYER_THREE:
+            gEXSetViewportAlign(gDisplayListHead++, G_EX_ORIGIN_LEFT, 0, 0);
+            break;
+
+        case PLAYER_TWO:
+        case PLAYER_FOUR:
+            gEXSetViewportAlign(gDisplayListHead++, G_EX_ORIGIN_RIGHT, -SCREEN_WIDTH * 4, 0);
+            break;
+    }
+
+    func_8004E6C4(playerId); // Draws the item window (orthographic)
+
+    // @recomp
+    gEXSetViewportAlign(gDisplayListHead++, G_EX_ORIGIN_NONE, 0, 0);
 }
 #endif
 
@@ -197,7 +213,7 @@ RECOMP_PATCH void func_8004ED40(s32 arg0) {
 }
 #endif
 
-// Theboy181: Temp fix for HUD in MP (until proper widescreen is made for MP modes)
+// HUD in MP
 #if 1
 RECOMP_PATCH void func_800591B4(void) {
     if ((gHUDDisable == 0) && (D_800DC5B8 != 0)) {
@@ -329,7 +345,7 @@ RECOMP_PATCH void func_800590D4(void) {
                     gEXSetViewportAspect(gDisplayListHead++, G_EX_ASPECT_AUTO);
                     gEXSetScreenArea(gDisplayListHead++, 0, 0, 160, 120);
                     gEXSetViewportAlign(gDisplayListHead++, G_EX_ORIGIN_LEFT, 0, 0);
-                    
+
                     func_8004E998(PLAYER_ONE);
 
                     gEXSetScreenArea(gDisplayListHead++, 160, 0, 320, 120);
@@ -345,7 +361,7 @@ RECOMP_PATCH void func_800590D4(void) {
                     gEXSetScreenArea(gDisplayListHead++, 160, 120, 320, 240);
                     gEXSetViewportAlign(gDisplayListHead++, G_EX_ORIGIN_RIGHT, -SCREEN_WIDTH * 4, 0);
                     func_8004E998(PLAYER_FOUR);
-                    
+
                     // reset
                     gEXSetScreenArea(gDisplayListHead++, 0, 0, 0, 0);
                     gEXSetViewportAlign(gDisplayListHead++, G_EX_ORIGIN_NONE, 0, 0);

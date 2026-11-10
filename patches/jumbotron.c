@@ -17,7 +17,7 @@ static JumbotronScreenPos sJumboScreenTable4P[4] = {
     /* Player 4 */ { 160, 122 },
 };
 
-s16 sCurrentScreenSection = 0;
+static s16 sCurrentScreenSection = 0;
 
 #if 1
 RECOMP_PATCH void render_luigi_raceway(struct UnkStruct_800DC5EC* arg0) {
