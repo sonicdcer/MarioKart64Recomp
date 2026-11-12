@@ -3,7 +3,7 @@
 // Background Extended for Widescreen
 #if 1
 
-Mtx D_0D008E98;
+Mtx gSkyboxWidescreenMtx;
 
 RECOMP_PATCH void func_802A4A0C(Vtx* vtx, struct UnkStruct_800DC5EC* arg1, UNUSED s32 arg2, UNUSED s32 arg3,
                                 UNUSED f32* arg4) {
@@ -16,12 +16,12 @@ RECOMP_PATCH void func_802A4A0C(Vtx* vtx, struct UnkStruct_800DC5EC* arg1, UNUSE
 
     {
         // 4:3 baseline
-        float baseAspect = 1.33133334f;
+        float baseAspect = 1.32f; // It is supposed to be 4/3 but let's use a bigger and even number to avoid precision problems
         float scaleX = aspect / baseAspect;
         float translateX = (1.0f - scaleX) * 160.0f;
 
         // Build your matrix at runtime
-        D_0D008E98 = (Mtx){ toFixedPointMatrix(scaleX, 0.0f, 0.0f, 0.0f,    // X scale
+        gSkyboxWidescreenMtx = (Mtx){ toFixedPointMatrix(scaleX, 0.0f, 0.0f, 0.0f,    // X scale
                                                0.0f, 1.0f, 0.0f, 0.0f,      // Y scale = 1.0
                                                0.0f, 0.0f, 1.0f, 0.0f,      // Z scale = 1.0
                                                translateX, 0.0f, 0.0f, 1.0f // Shift left/right
@@ -72,7 +72,8 @@ RECOMP_PATCH void func_802A4A0C(Vtx* vtx, struct UnkStruct_800DC5EC* arg1, UNUSE
 
         gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxScreen),
                   G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
-        gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&D_0D008E98), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+        // @recomp: use custom widescreen matrix
+        gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gSkyboxWidescreenMtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
 
         // Top half
         gSPVertex(gDisplayListHead++, &vtx[0], 4, 0);
@@ -83,6 +84,26 @@ RECOMP_PATCH void func_802A4A0C(Vtx* vtx, struct UnkStruct_800DC5EC* arg1, UNUSE
         gSP2Triangles(gDisplayListHead++, 0, 3, 1, 0, 1, 3, 2, 0);
     }
 }
+
+// @recomp: sky background squad (e.g. in Koopa Troopa Beach)
+RECOMP_PATCH void func_802A487C(Vtx* arg0, UNUSED struct UnkStruct_800DC5EC* arg1, UNUSED s32 arg2, UNUSED s32 arg3,
+                   UNUSED f32* arg4) {
+    init_rdp();
+    if (gCurrentCourseId != COURSE_RAINBOW_ROAD) {
+
+        gDPSetRenderMode(gDisplayListHead++, G_RM_OPA_SURF, G_RM_OPA_SURF2);
+        gSPClearGeometryMode(gDisplayListHead++, G_ZBUFFER | G_LIGHTING);
+        guOrtho(&gGfxPool->mtxScreen, 0.0f, SCREEN_WIDTH, 0.0f, SCREEN_HEIGHT, 0.0f, 5.0f, 1.0f);
+        gSPPerspNormalize(gDisplayListHead++, 0xFFFF);
+        gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxScreen),
+                  G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
+        // @recomp: do not use 0xD-segmented matrix but custom one instead
+        gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gSkyboxWidescreenMtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+        gSPVertex(gDisplayListHead++, &arg0[4], 4, 0);
+        gSP2Triangles(gDisplayListHead++, 0, 3, 1, 0, 1, 3, 2, 0);
+    }
+}
+
 #endif
 
 #include "patches.h"

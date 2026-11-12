@@ -7,7 +7,10 @@
       "project": "CMakeLists.txt",
       "projectTarget": "MarioKart64Recompiled.exe",
       "name": "MarioKart64Recompiled.exe",
-      "currentDir": "${workspaceRoot}"
+      "currentDir": "${workspaceRoot}",
+      "args": [
+        "--show-console"
+      ]
     },
     {
       "type": "default",

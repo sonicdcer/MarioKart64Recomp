@@ -1,9 +1,27 @@
 #include "patches.h"
 
+typedef struct JumbotronScreenPos {
+    u16 screenPosX;
+    u16 screenPosY;
+} JumbotronScreenPos;
+
+static JumbotronScreenPos sJumboScreenTable2P[2] = {
+    /* Player 1 */ { 93, 13 },
+    /* Player 2 */ { 93, 132 },
+};
+
+static JumbotronScreenPos sJumboScreenTable4P[4] = {
+    /* Player 1 */ { 29, 0 },
+    /* Player 2 */ { 160, 0 },
+    /* Player 3 */ { 29, 122 },
+    /* Player 4 */ { 160, 122 },
+};
+
+static s16 sCurrentScreenSection = 0;
+
+extern int gCurrentScreenIndex;
+
 #if 1
-
-s16 currentScreenSection = 0;
-
 RECOMP_PATCH void render_luigi_raceway(struct UnkStruct_800DC5EC* arg0) {
     u16 sp22 = (u16) arg0->pathCounter;
     s16 prevFrame;
@@ -15,8 +33,7 @@ RECOMP_PATCH void render_luigi_raceway(struct UnkStruct_800DC5EC* arg0) {
     if (func_80290C20(arg0->camera) == 1) {
         gDPSetCombineMode(gDisplayListHead++, G_CC_SHADE, G_CC_SHADE);
         gDPSetRenderMode(gDisplayListHead++, G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
-        // d_course_luigi_raceway_packed_dl_9EC0
-        gSPDisplayList(gDisplayListHead++, ((uintptr_t) 0x07009EC0));
+        gSPDisplayList(gDisplayListHead++, (Gfx*) 0x07009EC0 /* d_course_luigi_raceway_packed_dl_9EC0 */);
     }
 
     gDPSetCombineMode(gDisplayListHead++, G_CC_MODULATEIA, G_CC_MODULATEIA);
@@ -27,15 +44,53 @@ RECOMP_PATCH void render_luigi_raceway(struct UnkStruct_800DC5EC* arg0) {
     gDPSetCombineMode(gDisplayListHead++, G_CC_MODULATEIDECALA, G_CC_MODULATEIDECALA);
     gDPSetRenderMode(gDisplayListHead++, G_RM_AA_ZB_TEX_EDGE, G_RM_AA_ZB_TEX_EDGE2);
     // d_course_luigi_raceway_packed_dl_E0
-    gSPDisplayList(gDisplayListHead++, ((uintptr_t) 0x070000E0));
+    gSPDisplayList(gDisplayListHead++, ((Gfx*) 0x070000E0));
     // d_course_luigi_raceway_packed_dl_68
-    gSPDisplayList(gDisplayListHead++, ((uintptr_t) 0x07000068));
+    gSPDisplayList(gDisplayListHead++, ((Gfx*) 0x07000068));
 
-    D_800DC5DC = 88;
-    D_800DC5E0 = 72;
+    // @recomp: display the screen of the current player in the 1st position
+    int playerIndex;
+    if (gScreenModeSelection == SCREEN_MODE_2P_SPLITSCREEN_HORIZONTAL) {
+        for (playerIndex = 0; playerIndex < ARRAY_COUNT(sJumboScreenTable2P); playerIndex++) {
+            if (gGPCurrentRaceRankByPlayerId[playerIndex] == 0) {
+                break;
+            }
+        }
 
-    // Render only the first player camera onto the television billboard. Screen agnostic screens of other players).
-    if ((gActiveScreenMode == SCREEN_MODE_1P) && (sp22 >= 10) && (sp22 < 17)) {
+        // For 2P GP Mode
+        if (playerIndex == ARRAY_COUNT(sJumboScreenTable2P)) {
+            // Default to timed screens
+            playerIndex = gCurrentScreenIndex;
+
+            // recomp_printf("Default to timed screens, playerIndex: %d\n", playerIndex);
+
+            switch (playerIndex) {
+                case 2:
+                    playerIndex = 0;
+                    break;
+                case 3:
+                    playerIndex = 1;
+                    break;
+            }
+        }
+
+        D_800DC5DC = sJumboScreenTable2P[playerIndex].screenPosX;
+        D_800DC5E0 = sJumboScreenTable2P[playerIndex].screenPosY;
+    } else if (gScreenModeSelection == SCREEN_MODE_3P_4P_SPLITSCREEN) {
+        for (playerIndex = 0; playerIndex < ARRAY_COUNT(sJumboScreenTable4P); playerIndex++) {
+            if (gGPCurrentRaceRankByPlayerId[playerIndex] == 0) {
+                break;
+            }
+        }
+        D_800DC5DC = sJumboScreenTable4P[playerIndex].screenPosX;
+        D_800DC5E0 = sJumboScreenTable4P[playerIndex].screenPosY;
+    } else { // SCREEN_MODE_1P
+        D_800DC5DC = 88;
+        D_800DC5E0 = 72;
+    }
+
+    // @ Recomp: Render Jumbotron to all screens
+    if (/* (gActiveScreenMode == SCREEN_MODE_1P) && */ (sp22 >= 10) && (sp22 < 17)) {
 
         prevFrame = (s16) sRenderedFramebuffer - 1;
 
@@ -46,8 +101,8 @@ RECOMP_PATCH void render_luigi_raceway(struct UnkStruct_800DC5EC* arg0) {
         }
 
         // Loop through all six sections and render them in the same frame
-        for (currentScreenSection = 0; currentScreenSection < 6; currentScreenSection++) {
-            switch (currentScreenSection) {
+        for (sCurrentScreenSection = 0; sCurrentScreenSection < 6; sCurrentScreenSection++) {
+            switch (sCurrentScreenSection) {
                 case 0:
                     copy_framebuffer(D_800DC5DC, D_800DC5E0, 64, 32,
                                      (u16*) PHYSICAL_TO_VIRTUAL(gPhysicalFramebuffers[prevFrame]),
@@ -82,7 +137,6 @@ RECOMP_PATCH void render_luigi_raceway(struct UnkStruct_800DC5EC* arg0) {
         }
     }
 }
-
 #endif
 
 #if 1
@@ -94,11 +148,10 @@ RECOMP_PATCH void render_wario_stadium(struct UnkStruct_800DC5EC* arg0) {
     gSPClearGeometryMode(gDisplayListHead++, G_LIGHTING);
 
     if (func_80290C20(arg0->camera) == 1) {
-
         gDPSetCombineMode(gDisplayListHead++, G_CC_SHADE, G_CC_SHADE);
         gDPSetRenderMode(gDisplayListHead++, G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
         // d_course_wario_stadium_packed_dl_A0C8
-        gSPDisplayList(gDisplayListHead++, ((uintptr_t) 0x0700A0C8));
+        gSPDisplayList(gDisplayListHead++, ((Gfx*) 0x0700A0C8));
     }
     gDPSetCombineMode(gDisplayListHead++, G_CC_MODULATERGBA, G_CC_MODULATERGBA);
     gDPSetRenderMode(gDisplayListHead++, G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
@@ -106,17 +159,78 @@ RECOMP_PATCH void render_wario_stadium(struct UnkStruct_800DC5EC* arg0) {
     render_course_segments((uintptr_t) wario_stadium_dls, arg0);
 
     // d_course_wario_stadium_packed_dl_A228
-    gSPDisplayList(gDisplayListHead++, ((uintptr_t) 0x0700A228));
+    gSPDisplayList(gDisplayListHead++, ((Gfx*) 0x0700A228));
     gDPSetCombineMode(gDisplayListHead++, G_CC_MODULATEIDECALA, G_CC_MODULATEIDECALA);
     gDPSetRenderMode(gDisplayListHead++, G_RM_AA_ZB_TEX_EDGE, G_RM_AA_ZB_TEX_EDGE2);
     gSPClearGeometryMode(gDisplayListHead++, G_CULL_BACK);
     // d_course_wario_stadium_packed_dl_A88
-    gSPDisplayList(gDisplayListHead++, ((uintptr_t) 0x07000A88));
+    gSPDisplayList(gDisplayListHead++, ((Gfx*) 0x07000A88));
     gSPSetGeometryMode(gDisplayListHead++, G_CULL_BACK);
 
-    D_800DC5DC = 88;
-    D_800DC5E0 = 72;
-    if (gActiveScreenMode == SCREEN_MODE_1P) {
+    // @recomp: display the screen of the current player in the 1st position if it's a human player
+    int playerIndex;
+    if (gScreenModeSelection == SCREEN_MODE_2P_SPLITSCREEN_HORIZONTAL) {
+        for (playerIndex = 0; playerIndex < ARRAY_COUNT(sJumboScreenTable2P); playerIndex++) {
+            if (gGPCurrentRaceRankByPlayerId[playerIndex] == 0) {
+                break;
+            }
+        }
+
+        // For 2P GP Mode
+        if (playerIndex == ARRAY_COUNT(sJumboScreenTable2P)) {
+            // Default to timed screens
+            playerIndex = gCurrentScreenIndex;
+
+            // recomp_printf("Default to timed screens, playerIndex: %d\n", playerIndex);
+        }
+
+        D_800DC5DC = sJumboScreenTable2P[playerIndex].screenPosX;
+        D_800DC5E0 = sJumboScreenTable2P[playerIndex].screenPosY;
+    } else if (gScreenModeSelection == SCREEN_MODE_3P_4P_SPLITSCREEN) {
+        for (playerIndex = 0; playerIndex < ARRAY_COUNT(sJumboScreenTable4P); playerIndex++) {
+            if (gGPCurrentRaceRankByPlayerId[playerIndex] == 0) {
+                break;
+            }
+        }
+        D_800DC5DC = sJumboScreenTable4P[playerIndex].screenPosX;
+        D_800DC5E0 = sJumboScreenTable4P[playerIndex].screenPosY;
+    } else { // SCREEN_MODE_1P
+        D_800DC5DC = 88;
+        D_800DC5E0 = 72;
+    }
+
+    // @recomp: Debug
+#if 0
+    static s32 x = 0;
+    static s32 y = 0;
+    static s32 prevX = 0;
+    static s32 prevY = 0;
+
+    if (arg0->player->characterId == 6) { // Peach
+        if (gControllerOne->buttonPressed & L_JPAD) {
+            x--;
+        } else if (gControllerOne->buttonPressed & R_JPAD) {
+            x++;
+        } else if (gControllerOne->buttonPressed & U_JPAD) {
+            y--;
+        } else if (gControllerOne->buttonPressed & D_JPAD) {
+            y++;
+        }
+    }
+
+    D_800DC5DC = 88 + x;
+    D_800DC5E0 = 72 + y;
+
+    if (prevX != D_800DC5DC || prevY != D_800DC5E0) {
+        recomp_printf("X: %d Y: %d\n", D_800DC5DC, D_800DC5E0);
+    }
+
+    prevX = D_800DC5DC;
+    prevY = D_800DC5E0;
+#endif
+
+    // @ Recomp: Render Jumbotron to all screens
+    if (1 /* gActiveScreenMode == SCREEN_MODE_1P */) {
         prevFrame = (s16) sRenderedFramebuffer - 1;
         if (prevFrame < 0) {
             prevFrame = 2;
@@ -125,8 +239,8 @@ RECOMP_PATCH void render_wario_stadium(struct UnkStruct_800DC5EC* arg0) {
         }
 
         // Loop through all six sections and render them in the same frame
-        for (currentScreenSection = 0; currentScreenSection < 6; currentScreenSection++) {
-            switch (currentScreenSection) {
+        for (sCurrentScreenSection = 0; sCurrentScreenSection < 6; sCurrentScreenSection++) {
+            switch (sCurrentScreenSection) {
                 case 0:
                     copy_framebuffer(D_800DC5DC, D_800DC5E0, 64, 32,
                                      (u16*) PHYSICAL_TO_VIRTUAL(gPhysicalFramebuffers[prevFrame]),
