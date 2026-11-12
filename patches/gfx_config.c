@@ -4,6 +4,8 @@
 #define GFX_POOL_EXTENDED_SIZE (GFX_POOL_SIZE * 0x10)
 
 Gfx gfxPoolExtended[2][GFX_POOL_EXTENDED_SIZE];
+int gRecompFrameCounter = 0;
+int gCurrentScreenIndex = 0;
 
 RECOMP_PATCH void config_gfx_pool(void) {
     gGfxPool = &gGfxPools[gGlobalTimer & 1];
@@ -19,6 +21,14 @@ RECOMP_PATCH void config_gfx_pool(void) {
 
     // TODO: move this to a more appropriate place
     audio_set_volume();
+
+    // TODO: move this to a more appropriate place
+    if ((gRecompFrameCounter++) % 300 == 0) {
+        gCurrentScreenIndex = (gCurrentScreenIndex + 1) % 2;
+        // recomp_printf("New Index: %d\n", gCurrentScreenIndex);
+    } else {
+        // recomp_printf("gRecompFrameCounter: %d\n", gRecompFrameCounter);
+    }
 }
 
 #if 1
